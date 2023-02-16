@@ -4,8 +4,8 @@ raylib bindings for [Cyber](https://cyberscript.dev)!
 Import and use in your script with just a URL.
 
 # Instructions
-- [Install Cyber](https://github.com/fubark/cyber#install)
-- Create a new cyber script `game.cys`:
+1. [Install Cyber](https://github.com/fubark/cyber#install)
+2. Create a new cyber script `game.cys`:
 ```text
 import ray 'https://github.com/fubark/ray-cyber'
 
@@ -22,10 +22,18 @@ while !ray.WindowShouldClose():
 
 ray.CloseWindow()
 ```
-- Run the game!
+3. Run the game!
 ```sh
 cyber game.cys
 ```
 
 # Run more examples.
+
+## Snake
+```sh
+cyber examples/snake.cys
+```
+![snake](./images/classic_snake.png)
+
+## More
 TODO

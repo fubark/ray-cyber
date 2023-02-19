@@ -1,9 +1,9 @@
 # ray-cyber
 raylib bindings for [Cyber](https://cyberscript.dev)!
 
-Import and use in your script with just a URL.
+Start using by importing the URL from your script.
 
-# Instructions
+# Instructions.
 1. [Install Cyber](https://github.com/fubark/cyber#install)
 2. Create a new cyber script `game.cys`:
 ```text
@@ -27,19 +27,23 @@ ray.CloseWindow()
 cyber game.cys
 ```
 
-# Run more examples.
-
+# More examples.
+```sh
+git clone https://github.com/fubark/ray-cyber
+cd ray-cyber
+```
 ## Snake
 ```sh
 cyber examples/snake.cys
 ```
-
-
-
-
 ![snake](./images/classic_snake.png)
 
 ## Asteroids
 cyber examples/asteroids.cys
 
 https://user-images.githubusercontent.com/94020660/219881427-1244fd8d-29da-4a72-87bb-fcef46de650a.mp4
+
+## Clash
+cyber examples/clash.cys
+
+https://user-images.githubusercontent.com/94020660/219976051-ea658da6-e46b-4bbf-b191-f73151efa309.mp4

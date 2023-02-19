@@ -1,4 +1,5 @@
 import os 'os'
+import m 'math'
 
 var libUrl = match os.system:
     'linux': 'https://raw.githubusercontent.com/fubark/ray-cyber/master/libraylib.so.4.2.0'
@@ -8,6 +9,7 @@ var libUrl = match os.system:
 
 export func BeginDrawing() = lib.BeginDrawing
 export func CheckCollisionCircles(v1, r1, v2, r2) = lib.CheckCollisionCircles
+export func CheckCollisionRecs(rec1 Rect, rec2 Rect) = lib.CheckCollisionRecs
 export func ClearBackground(color) = lib.ClearBackground
 export func CloseWindow() = lib.CloseWindow
 export func DrawCircle(centerX, centerY, radius, color) = lib.DrawCircle
@@ -15,15 +17,23 @@ export func DrawCircleV(center, radius, color) = lib.DrawCircleV
 export func DrawLine(x, y, x2, y2, color) = lib.DrawLine
 export func DrawRectangle(x, y, width, height, color) = lib.DrawRectangle
 export func DrawText(text, x, y, size, color) = lib.DrawText
+export func DrawTextureEx(tex Texture2D, pos Vec2, rotation number, scale number, tint number) = lib.DrawTextureEx
+export func DrawTexturePro(tex Texture2D, src Rect, dst Rect, origin Vec2, rotation number, tint number) = lib.DrawTexturePro
 export func DrawTriangle(v1, v2, v3, color) = lib.DrawTriangle
 export func EndDrawing() = lib.EndDrawing
 export func Fade(color, alpha) = lib.Fade
+export func GetFrameTime() = lib.GetFrameTime
 export func GetRandomValue(start, end) = lib.GetRandomValue
 export func GetScreenHeight() = lib.GetScreenHeight
 export func GetScreenWidth() = lib.GetScreenWidth
 export func InitWindow(width, height, title) = lib.InitWindow
 export func IsKeyDown(key) = lib.IsKeyDown
 export func IsKeyPressed(key) = lib.IsKeyPressed
+export func IsMouseButtonPressed(button number) = lib.IsMouseButtonPressed
+export func IsMouseButtonDown(button number) = lib.IsMouseButtonDown
+export func IsMouseButtonReleased(button number) = lib.IsMouseButtonReleased
+export func IsMouseButtonUp(button number) = lib.IsMouseButtonUp 
+export func LoadTexture(fileName) = lib.LoadTexture
 export func MeasureText(text, size) = lib.MeasureText
 export func SetTargetFPS(fps) = lib.SetTargetFPS
 export func WindowShouldClose() = lib.WindowShouldClose
@@ -32,6 +42,7 @@ var libPath = cacheUrl(libUrl)
 var lib = try os.bindLib(libPath, [
     os.CFunc{ sym: 'BeginDrawing', args: [], ret: #void }
     os.CFunc{ sym: 'CheckCollisionCircles', args: [Vec2, #float, Vec2, #float], ret: #bool }
+    os.CFunc{ sym: 'CheckCollisionRecs', args: [Rect, Rect], ret: #bool }
     os.CFunc{ sym: 'ClearBackground', args: [#uint], ret: #void }
     os.CFunc{ sym: 'CloseWindow', args: [], ret: #void }
     os.CFunc{ sym: 'DrawCircle', args: [#int, #int, #float, #int], ret: #void }
@@ -39,24 +50,77 @@ var lib = try os.bindLib(libPath, [
     os.CFunc{ sym: 'DrawLine', args: [#int, #int, #int, #int, #int], ret: #void }
     os.CFunc{ sym: 'DrawRectangle', args: [#int, #int, #int, #int, #int], ret: #void }
     os.CFunc{ sym: 'DrawText', args: [#charPtrZ, #int, #int, #int, #int], ret: #void }
+    os.CFunc{ sym: 'DrawTextureEx', args: [Texture2D, Vec2, #float, #float, #int], ret: #void }
+    os.CFunc{ sym: 'DrawTexturePro', args: [Texture2D, Rect, Rect, Vec2, #float, #int], ret: #void }
     os.CFunc{ sym: 'DrawTriangle', args: [Vec2, Vec2, Vec2, #int], ret: #void }
     os.CFunc{ sym: 'EndDrawing', args: [], ret: #void }
     os.CFunc{ sym: 'Fade', args: [#int, #float], ret: #int }
+    os.CFunc{ sym: 'GetFrameTime', args: [], ret: #float }
     os.CFunc{ sym: 'GetRandomValue', args: [#int, #int], ret: #int }
     os.CFunc{ sym: 'GetScreenHeight', args: [], ret: #int }
     os.CFunc{ sym: 'GetScreenWidth', args: [], ret: #int }
     os.CFunc{ sym: 'InitWindow', args: [#int, #int, #charPtrZ], ret: #void }
     os.CFunc{ sym: 'IsKeyDown', args: [#int], ret: #bool }
     os.CFunc{ sym: 'IsKeyPressed', args: [#int], ret: #bool }
+    os.CFunc{ sym: 'IsMouseButtonPressed', args: [#int], ret: #bool }
+    os.CFunc{ sym: 'IsMouseButtonDown', args: [#int], ret: #bool }
+    os.CFunc{ sym: 'IsMouseButtonReleased', args: [#int], ret: #bool }
+    os.CFunc{ sym: 'IsMouseButtonUp', args: [#int], ret: #bool }
+    os.CFunc{ sym: 'LoadTexture', args: [#charPtrZ], ret: Texture2D }
     os.CFunc{ sym: 'MeasureText', args: [#charPtrZ, #int], ret: #int }
     os.CFunc{ sym: 'SetTargetFPS', args: [#int], ret: #void }
     os.CFunc{ sym: 'WindowShouldClose', args: [], ret: #bool }
     os.CStruct{ fields: [#float, #float], type: Vec2 }
+    os.CStruct{ fields: [#float, #float, #float, #float], type: Rect }
+    os.CStruct{ fields: [#uint, #int, #int, #int, #int], type: Texture2D }
 ], { genMap: true })
 
-object Vec2:
+export object Texture2D:
+    id number
+    width number
+    height number
+    mipmaps number
+    format number
+
+export object Vec2:
     x number
     y number
+
+    func sub(v1 Vec2, v2 Vec2):
+        return Vec2{
+            x: v1.x - v2.x,
+            y: v1.y - v2.y,
+        }
+
+    func add(v1 Vec2, v2 Vec2):
+        return Vec2{
+            x: v1.x + v2.x,
+            y: v1.y + v2.y,
+        }
+
+    func scale(v Vec2, scale number):
+        return Vec2{
+            x: v.x * scale,
+            y: v.y * scale,
+        }
+
+    func normalize(v Vec2):
+        res = Vec2{ x: 0, y: 0 }
+        len = v.len()
+        if len > 0:
+            ilen = 1/len
+            res.x = v.x*ilen
+            res.y = v.y*ilen
+        return res
+
+    func len(self):
+        return m.sqrt(self.x*self.x + self.y*self.y)
+
+export object Rect:
+    x number
+    y number
+    width number
+    height number
 
 export func toColor(r, g, b, a):
     if os.endian == #little:
@@ -78,9 +142,39 @@ export var SKYBLUE = toColor(102, 191, 255, 255)
 export var WHITE = toColor(255, 255, 255, 255)
 export var YELLOW = toColor(253, 249, 0, 255)
 
+export var KEY_A = 65
+export var KEY_B = 66
+export var KEY_C = 67
+export var KEY_D = 68
+export var KEY_E = 69
+export var KEY_F = 70
+export var KEY_G = 71
+export var KEY_H = 72
+export var KEY_I = 73
+export var KEY_J = 74
+export var KEY_K = 75
+export var KEY_L = 76
+export var KEY_M = 77
+export var KEY_N = 78
+export var KEY_O = 79
+export var KEY_P = 80
+export var KEY_Q = 81
+export var KEY_R = 82
+export var KEY_S = 83
+export var KEY_T = 84
+export var KEY_U = 85
+export var KEY_V = 86
+export var KEY_W = 87
+export var KEY_X = 88
+export var KEY_Y = 89
+export var KEY_Z = 90  
 export var KEY_RIGHT = 262
 export var KEY_LEFT = 263
 export var KEY_DOWN = 264
 export var KEY_UP = 265
 export var KEY_ENTER = 257
 export var KEY_SPACE = 32
+
+export var MOUSE_LEFT_BUTTON = 0
+export var MOUSE_RIGHT_BUTTON = 1
+export var MOUSE_MIDDLE_BUTTON = 2

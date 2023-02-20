@@ -1,5 +1,5 @@
 # ray-cyber
-raylib bindings for [Cyber](https://cyberscript.dev)!
+[raylib](https://github.com/raysan5/raylib) bindings for [Cyber](https://cyberscript.dev)!
 
 Start using by importing the URL from your script.
 

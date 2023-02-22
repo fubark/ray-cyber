@@ -343,7 +343,7 @@ object Enemy:
 
         -- get toTarget
         self.base.velocity = Vec2.sub(self.target.base.getWorldPos(), self.base.getWorldPos())
-        if self.base.velocity.len() < radius: self.base.velocity = Vec2{ x: 0, y: 0 }
+        if self.base.velocity.len() < self.radius: self.base.velocity = Vec2{ x: 0, y: 0 }
         self.base.tick(deltaTime)
 
         if ray.CheckCollisionRecs(self.target.base.getCollideRect(), self.base.getCollideRect()):

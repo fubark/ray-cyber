@@ -183,6 +183,7 @@ func UpdateGame():
     static gameOver
     static destroyedMeteorsCount
     static midMeteorsCount
+    static smallMeteorsCount
 
     if !gameOver:
         if ray.IsKeyPressed(asciiCode('P')):

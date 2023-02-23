@@ -20,6 +20,10 @@ var score = 0
 var CharIdleTex = none
 var CharRunTex = none
 var WeaponTex = none
+var GoblinIdleTex = none
+var GoblinRunTex = none
+var SlimeIdleTex = none
+var SlimeRunTex = none
 
 atype Vec2 ray.Vec2
 

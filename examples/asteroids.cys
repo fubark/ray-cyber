@@ -361,7 +361,7 @@ func UpdateGame():
                                 midMeteorsCount += 1
                             --bigMeteor[a].position = (Vector2){-100, -100};
                             bigMeteor[a].color = ray.RED
-                            a = MAX_BIG_METEORS
+                            break
 
                     for 0..MAX_MEDIUM_METEORS each b:
                         if mediumMeteor[b].active and ray.CheckCollisionCircles(shoot[i].position, shoot[i].radius, mediumMeteor[b].position, mediumMeteor[b].radius):
@@ -392,7 +392,7 @@ func UpdateGame():
                                 smallMeteorsCount += 1
                             --mediumMeteor[b].position = Vec2{ x: -100, y: -100};
                             mediumMeteor[b].color = ray.GREEN
-                            b = MAX_MEDIUM_METEORS
+                            break
 
                     for 0..MAX_SMALL_METEORS each c:
                         if smallMeteor[c].active and ray.CheckCollisionCircles(shoot[i].position, shoot[i].radius, smallMeteor[c].position, smallMeteor[c].radius):
@@ -402,7 +402,7 @@ func UpdateGame():
                             destroyedMeteorsCount += 1
                             smallMeteor[c].color = ray.YELLOW
                             -- smallMeteor[c].position = Vec2{x: -100, y:-100}
-                            c = MAX_SMALL_METEORS
+                            break
 
         if destroyedMeteorsCount == MAX_BIG_METEORS + MAX_MEDIUM_METEORS + MAX_SMALL_METEORS:
             victory = true

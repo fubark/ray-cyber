@@ -5,19 +5,20 @@
 
 import os 'os'
 import m 'math'
-import ray 'https://github.com/fubark/ray-cyber'
+--import ray 'https://github.com/fubark/ray-cyber'
+import ray '../mod.cys'
 
-var DEG2RAD = m.pi/180
+var DEG2RAD: m.pi/180
 
 -- Some Constants
-var PLAYER_BASE_SIZE = 20
-var PLAYER_SPEED = 6
-var PLAYER_MAX_SHOOTS = 10
+var PLAYER_BASE_SIZE: 20
+var PLAYER_SPEED: 6
+var PLAYER_MAX_SHOOTS: 10
 
-var METEORS_SPEED = 2
-var MAX_BIG_METEORS = 4
-var MAX_MEDIUM_METEORS = 8
-var MAX_SMALL_METEORS = 16
+var METEORS_SPEED: 2
+var MAX_BIG_METEORS: 4
+var MAX_MEDIUM_METEORS: 8
+var MAX_SMALL_METEORS: 16
 
 -- Types and Structures Definition
 object Player:
@@ -54,25 +55,25 @@ object Vec3:
     z number
 
 -- Global Variables Declaration
-var screenWidth = 800
-var screenHeight = 450
+var screenWidth: 800
+var screenHeight: 450
 
-var gameOver = false
-var pause = false
-var victory = false
+var gameOver: false
+var pause: false
+var victory: false
 
 -- NOTE: Defined triangle is isosceles with common angles of 70 degrees.
-var shipHeight = 0
+var shipHeight: 0
 
-var player = Player{}
-var shoot = arrayFill(Shoot{}, PLAYER_MAX_SHOOTS)
-var bigMeteor = arrayFill(Meteor{}, MAX_BIG_METEORS)
-var mediumMeteor = arrayFill(Meteor{}, MAX_MEDIUM_METEORS)
-var smallMeteor = arrayFill(Meteor{}, MAX_SMALL_METEORS)
+var player: Player{}
+var shoot: arrayFill(Shoot{}, PLAYER_MAX_SHOOTS)
+var bigMeteor: arrayFill(Meteor{}, MAX_BIG_METEORS)
+var mediumMeteor: arrayFill(Meteor{}, MAX_MEDIUM_METEORS)
+var smallMeteor: arrayFill(Meteor{}, MAX_SMALL_METEORS)
 
-var midMeteorsCount = 0
-var smallMeteorsCount = 0
-var destroyedMeteorsCount = 0
+var midMeteorsCount: 0
+var smallMeteorsCount: 0
+var destroyedMeteorsCount: 0
 
 -- Program main entry point
 main()

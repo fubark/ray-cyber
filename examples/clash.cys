@@ -10,31 +10,31 @@
 import os 'os'
 import m 'math'
 
-import ray 'https://github.com/fubark/ray-cyber'
---import ray '../mod.cys'
+--import ray 'https://github.com/fubark/ray-cyber'
+import ray '../mod.cys'
 
-var screenWidth = 600
-var screenHeight = 400
-var score = 0
+var screenWidth: 600
+var screenHeight: 400
+var score: 0
 
-var CharIdleTex = none
-var CharRunTex = none
-var WeaponTex = none
-var GoblinIdleTex = none
-var GoblinRunTex = none
-var SlimeIdleTex = none
-var SlimeRunTex = none
+var CharIdleTex: none
+var CharRunTex: none
+var WeaponTex: none
+var GoblinIdleTex: none
+var GoblinRunTex: none
+var SlimeIdleTex: none
+var SlimeRunTex: none
 
 atype Vec2 ray.Vec2
 
-var viewPos = Vec2{ x: 0, y: 0 }
-var mapScale = 4
-var boundsMinX = 45 * mapScale
-var boundsMinY = 45 * mapScale
-var boundsMaxX = 700 * mapScale
-var boundsMaxY = 700 * mapScale
-var knight = none
-var enemies = []
+var viewPos: Vec2{ x: 0, y: 0 }
+var mapScale: 4
+var boundsMinX: 45 * mapScale
+var boundsMinY: 45 * mapScale
+var boundsMaxX: 700 * mapScale
+var boundsMaxY: 700 * mapScale
+var knight: none
+var enemies: []
 
 -- Assumes script path is the second arg.
 basePath = os.dirName(try os.realPath(os.args()[1].utf8()))

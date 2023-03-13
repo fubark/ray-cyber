@@ -306,7 +306,7 @@ object Prop:
     texture ray.Texture2D
     scale number
 
-    func new(pos Vec2, tex):
+    func new(pos, tex):
         return Prop{ worldPos: pos, texture: tex, scale: 4 }
 
     func render(self):
@@ -327,7 +327,7 @@ object Enemy:
     damagePerSec number
     radius number
 
-    func new(pos Vec2, idleTex ray.Texture2D, runTex ray.Texture2D):
+    func new(pos, idleTex, runTex):
         o = Enemy{
             base: BaseCharacter.new(),
             damagePerSec: 10,

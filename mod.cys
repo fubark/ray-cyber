@@ -9,7 +9,7 @@ var libUrl: match os.system:
 
 export func BeginDrawing() = lib.BeginDrawing
 export func CheckCollisionCircles(v1, r1, v2, r2) = lib.CheckCollisionCircles
-export func CheckCollisionRecs(rec1 Rect, rec2 Rect) = lib.CheckCollisionRecs
+export func CheckCollisionRecs(rec1, rec2) = lib.CheckCollisionRecs
 export func ClearBackground(color) = lib.ClearBackground
 export func CloseWindow() = lib.CloseWindow
 export func DrawCircle(centerX, centerY, radius, color) = lib.DrawCircle
@@ -17,8 +17,8 @@ export func DrawCircleV(center, radius, color) = lib.DrawCircleV
 export func DrawLine(x, y, x2, y2, color) = lib.DrawLine
 export func DrawRectangle(x, y, width, height, color) = lib.DrawRectangle
 export func DrawText(text, x, y, size, color) = lib.DrawText
-export func DrawTextureEx(tex Texture2D, pos Vec2, rotation number, scale number, tint number) = lib.DrawTextureEx
-export func DrawTexturePro(tex Texture2D, src Rect, dst Rect, origin Vec2, rotation number, tint number) = lib.DrawTexturePro
+export func DrawTextureEx(tex, pos, rotation, scale, tint) = lib.DrawTextureEx
+export func DrawTexturePro(tex, src, dst, origin, rotation, tint) = lib.DrawTexturePro
 export func DrawTriangle(v1, v2, v3, color) = lib.DrawTriangle
 export func EndDrawing() = lib.EndDrawing
 export func Fade(color, alpha) = lib.Fade
@@ -29,10 +29,10 @@ export func GetScreenWidth() = lib.GetScreenWidth
 export func InitWindow(width, height, title) = lib.InitWindow
 export func IsKeyDown(key) = lib.IsKeyDown
 export func IsKeyPressed(key) = lib.IsKeyPressed
-export func IsMouseButtonPressed(button number) = lib.IsMouseButtonPressed
-export func IsMouseButtonDown(button number) = lib.IsMouseButtonDown
-export func IsMouseButtonReleased(button number) = lib.IsMouseButtonReleased
-export func IsMouseButtonUp(button number) = lib.IsMouseButtonUp 
+export func IsMouseButtonPressed(button) = lib.IsMouseButtonPressed
+export func IsMouseButtonDown(button) = lib.IsMouseButtonDown
+export func IsMouseButtonReleased(button) = lib.IsMouseButtonReleased
+export func IsMouseButtonUp(button) = lib.IsMouseButtonUp 
 export func LoadTexture(fileName) = lib.LoadTexture
 export func MeasureText(text, size) = lib.MeasureText
 export func SetTargetFPS(fps) = lib.SetTargetFPS
@@ -86,25 +86,25 @@ export object Vec2:
     x number
     y number
 
-    func sub(v1 Vec2, v2 Vec2):
+    func sub(v1, v2):
         return Vec2{
             x: v1.x - v2.x,
             y: v1.y - v2.y,
         }
 
-    func add(v1 Vec2, v2 Vec2):
+    func add(v1, v2):
         return Vec2{
             x: v1.x + v2.x,
             y: v1.y + v2.y,
         }
 
-    func scale(v Vec2, scale number):
+    func scale(v, scale):
         return Vec2{
             x: v.x * scale,
             y: v.y * scale,
         }
 
-    func normalize(v Vec2):
+    func normalize(v):
         res = Vec2{ x: 0, y: 0 }
         len = v.len()
         if len > 0:

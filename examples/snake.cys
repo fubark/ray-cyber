@@ -91,7 +91,7 @@ func UpdateGame():
     static counterTail
 
     if !gameOver:
-        if ray.IsKeyPressed(asciiCode('P')):
+        if ray.IsKeyPressed(0u'P'):
             pause = !pause
 
         if !pause:

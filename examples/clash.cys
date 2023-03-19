@@ -94,7 +94,7 @@ while !ray.WindowShouldClose():
         continue
     else:
         -- Character is alive
-        ray.DrawText('Health: {m.floor(knight.getHealth())}', 30, 20, 40, ray.RED)
+        ray.DrawText('Health: {m.floor(number(knight.getHealth()))}', 30, 20, 40, ray.RED)
         ray.DrawText('Score: {score}', 30, 70, 40, ray.GREEN)
 
     knight.tick(ray.GetFrameTime())

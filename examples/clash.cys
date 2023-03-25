@@ -373,7 +373,7 @@ func spawnRandomEnemy(target):
 func removeEnemy(enemy):
     for enemies each i, it:
         if it == enemy:
-            enemies.remove(i)
+            enemies.remove(number(i))
             break
 
 func InitGame():

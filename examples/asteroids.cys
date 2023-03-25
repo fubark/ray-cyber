@@ -66,10 +66,10 @@ var victory: false
 var shipHeight: 0
 
 var player: Player{}
-var shoot: arrayFill(Shoot{}, PLAYER_MAX_SHOOTS)
-var bigMeteor: arrayFill(Meteor{}, MAX_BIG_METEORS)
-var mediumMeteor: arrayFill(Meteor{}, MAX_MEDIUM_METEORS)
-var smallMeteor: arrayFill(Meteor{}, MAX_SMALL_METEORS)
+var shoot: arrayFill(Shoot{}, number(PLAYER_MAX_SHOOTS))
+var bigMeteor: arrayFill(Meteor{}, number(MAX_BIG_METEORS))
+var mediumMeteor: arrayFill(Meteor{}, number(MAX_MEDIUM_METEORS))
+var smallMeteor: arrayFill(Meteor{}, number(MAX_SMALL_METEORS))
 
 var midMeteorsCount: 0
 var smallMeteorsCount: 0

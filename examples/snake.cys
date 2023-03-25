@@ -33,8 +33,8 @@ var gameOver: false
 var pause: false
 
 var fruit: Food{}
-var snake: arrayFill(Snake{}, SNAKE_LENGTH)
-var snakePosition: arrayFill(Vec2{}, SNAKE_LENGTH)
+var snake: arrayFill(Snake{}, number(SNAKE_LENGTH))
+var snakePosition: arrayFill(Vec2{}, number(SNAKE_LENGTH))
 var allowMove: false
 var offset: Vec2{ x: 0, y: 0 }
 var counterTail: 0

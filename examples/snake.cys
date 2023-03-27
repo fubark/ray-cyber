@@ -9,17 +9,17 @@ import ray '../mod.cys'
 var SNAKE_LENGTH: 256
 var SQUARE_SIZE: 31
 
-object Vec2:
+type Vec2 object:
     x number
     y number
 
-object Snake:
+type Snake object:
     pos Vec2
     size Vec2
     speed Vec2
     color Color
 
-object Food:
+type Food object:
     pos Vec2
     size Vec2
     active bool

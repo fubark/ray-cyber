@@ -25,7 +25,7 @@ var GoblinRunTex: none
 var SlimeIdleTex: none
 var SlimeRunTex: none
 
-atype Vec2 ray.Vec2
+type Vec2 ray.Vec2
 
 var viewPos: Vec2{ x: 0, y: 0 }
 var mapScale: 4
@@ -122,7 +122,7 @@ while !ray.WindowShouldClose():
     ray.EndDrawing()
 ray.CloseWindow()
 
-object Character:
+type Character object:
     base BaseCharacter
     weapon ray.Texture2D
     weaponCollideRect ray.Rect
@@ -198,7 +198,7 @@ object Character:
     func getHealth(self): return self.health
     func getWeaponCollideRect(self): return self.weaponCollideRect
 
-object BaseCharacter:
+type BaseCharacter object:
     worldPos Vec2
     velocity Vec2
     alive bool
@@ -301,7 +301,7 @@ object BaseCharacter:
             height: self.height * self.scale,
         }
 
-object Prop:
+type Prop object:
     worldPos Vec2
     texture ray.Texture2D
     scale number
@@ -321,7 +321,7 @@ object Prop:
             height: self.texture.height * self.scale,
         }
 
-object Enemy:
+type Enemy object:
     base BaseCharacter
     target Character
     damagePerSec number

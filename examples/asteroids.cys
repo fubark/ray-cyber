@@ -21,7 +21,7 @@ var MAX_MEDIUM_METEORS: 8
 var MAX_SMALL_METEORS: 16
 
 -- Types and Structures Definition
-object Player:
+type Player object:
     position Vec2
     speed Vec2
     acceleration number
@@ -29,7 +29,7 @@ object Player:
     collider Vec3
     color Color
 
-object Shoot:
+type Shoot object:
     position Vec2
     speed Vec2
     radius number
@@ -38,18 +38,18 @@ object Shoot:
     active bool
     color Color
 
-object Meteor:
+type Meteor object:
     position Vec2
     speed Vec2
     radius number
     active bool
     color Color
 
-object Vec2:
+type Vec2 object:
     x number
     y number
 
-object Vec3:
+type Vec3 object:
     x number
     y number
     z number

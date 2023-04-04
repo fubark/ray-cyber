@@ -37,7 +37,7 @@ var knight: none
 var enemies: []
 
 -- Assumes script path is the second arg.
-basePath = os.dirName(try os.realPath(os.args()[1].utf8()))
+basePath = os.dirName(try os.realPath(os.args()[1]))
 
 ray.InitWindow(screenWidth, screenHeight, 'Clash Game')
 ray.SetTargetFPS(60)

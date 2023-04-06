@@ -15,10 +15,10 @@ var PLAYER_BASE_SIZE: 20
 var PLAYER_SPEED: 6
 var PLAYER_MAX_SHOOTS: 10
 
-var METEORS_SPEED: 2
-var MAX_BIG_METEORS: 4
-var MAX_MEDIUM_METEORS: 8
-var MAX_SMALL_METEORS: 16
+var METEORS_SPEED number: 2
+var MAX_BIG_METEORS number: 4
+var MAX_MEDIUM_METEORS number: 8
+var MAX_SMALL_METEORS number: 16
 
 -- Types and Structures Definition
 type Player object:
@@ -27,7 +27,7 @@ type Player object:
     acceleration number
     rotation number
     collider Vec3
-    color Color
+    color number
 
 type Shoot object:
     position Vec2
@@ -35,19 +35,17 @@ type Shoot object:
     radius number
     rotation number
     lifeSpawn number
-    active bool
-    color Color
+    active boolean
+    color number
 
 type Meteor object:
     position Vec2
     speed Vec2
     radius number
-    active bool
-    color Color
+    active boolean
+    color number
 
-type Vec2 object:
-    x number
-    y number
+type Vec2 ray.Vec2
 
 type Vec3 object:
     x number
@@ -55,8 +53,8 @@ type Vec3 object:
     z number
 
 -- Global Variables Declaration
-var screenWidth: 800
-var screenHeight: 450
+var screenWidth number: 800
+var screenHeight number: 450
 
 var gameOver: false
 var pause: false
@@ -65,7 +63,7 @@ var victory: false
 -- NOTE: Defined triangle is isosceles with common angles of 70 degrees.
 var shipHeight: 0
 
-var player: Player{}
+var player Player: Player{}
 var shoot: arrayFill(Shoot{}, number(PLAYER_MAX_SHOOTS))
 var bigMeteor: arrayFill(Meteor{}, number(MAX_BIG_METEORS))
 var mediumMeteor: arrayFill(Meteor{}, number(MAX_MEDIUM_METEORS))
@@ -274,21 +272,24 @@ func UpdateGame():
             }
 
             for 0..MAX_BIG_METEORS each a:
+                meteor = bigMeteor[a] as Meteor
                 if ray.CheckCollisionCircles(
                     Vec2{ x: player.collider.x, y: player.collider.y}, player.collider.z,
-                    bigMeteor[a].position, bigMeteor[a].radius) and bigMeteor[a].active:
+                    meteor.position, meteor.radius) and meteor.active:
                     gameOver = true
 
             for 0..MAX_MEDIUM_METEORS each a:
+                meteor = mediumMeteor[a] as Meteor
                 if ray.CheckCollisionCircles(
                     Vec2{ x: player.collider.x, y: player.collider.y}, player.collider.z,
-                    mediumMeteor[a].position, mediumMeteor[a].radius) and mediumMeteor[a].active:
+                    meteor.position, meteor.radius) and meteor.active:
                     gameOver = true
 
             for 0..MAX_SMALL_METEORS each a:
+                meteor = smallMeteor[a] as Meteor
                 if ray.CheckCollisionCircles(
                     Vec2{ x: player.collider.x, y: player.collider.y}, player.collider.z,
-                    smallMeteor[a].position, smallMeteor[a].radius) and smallMeteor[a].active:
+                    meteor.position, meteor.radius) and meteor.active:
                     gameOver = true
 
             -- Meteors logic: big meteors
@@ -332,12 +333,14 @@ func UpdateGame():
 
             -- Collision logic: player-shoots vs meteors
             for 0..PLAYER_MAX_SHOOTS each i:
-                if shoot[i].active:
+                shooti = shoot[i] as Shoot
+                if shooti.active:
                     for 0..MAX_BIG_METEORS each a:
-                        if bigMeteor[a].active and ray.CheckCollisionCircles(shoot[i].position, shoot[i].radius, bigMeteor[a].position, bigMeteor[a].radius):
-                            shoot[i].active = false
-                            shoot[i].lifeSpawn = 0
-                            bigMeteor[a].active = false
+                        meteor = bigMeteor[a] as Meteor
+                        if meteor.active and ray.CheckCollisionCircles(shooti.position, shooti.radius, meteor.position, meteor.radius):
+                            shooti.active = false
+                            shooti.lifeSpawn = 0
+                            meteor.active = false
                             destroyedMeteorsCount += 1
 
                             for 0..2 each j:
@@ -346,29 +349,30 @@ func UpdateGame():
                                         x: bigMeteor[a].position.x, y: bigMeteor[a].position.y
                                     }
                                     mediumMeteor[midMeteorsCount].speed = Vec2{
-                                        x: m.cos(shoot[i].rotation*DEG2RAD)*METEORS_SPEED*-1,
-                                        y: m.sin(shoot[i].rotation*DEG2RAD)*METEORS_SPEED*-1,
+                                        x: m.cos(shooti.rotation*DEG2RAD)*METEORS_SPEED*-1,
+                                        y: m.sin(shooti.rotation*DEG2RAD)*METEORS_SPEED*-1,
                                     }
                                 else:
                                     mediumMeteor[midMeteorsCount].position = Vec2{
                                         x: bigMeteor[a].position.x, y: bigMeteor[a].position.y
                                     }
                                     mediumMeteor[midMeteorsCount].speed = Vec2{
-                                        x: m.cos(shoot[i].rotation*DEG2RAD)*METEORS_SPEED,
-                                        y: m.sin(shoot[i].rotation*DEG2RAD)*METEORS_SPEED
+                                        x: m.cos(shooti.rotation*DEG2RAD)*METEORS_SPEED,
+                                        y: m.sin(shooti.rotation*DEG2RAD)*METEORS_SPEED
                                     }
 
                                 mediumMeteor[midMeteorsCount].active = true
                                 midMeteorsCount += 1
                             --bigMeteor[a].position = (Vector2){-100, -100};
-                            bigMeteor[a].color = ray.RED
+                            meteor.color = ray.RED
                             break
 
                     for 0..MAX_MEDIUM_METEORS each b:
-                        if mediumMeteor[b].active and ray.CheckCollisionCircles(shoot[i].position, shoot[i].radius, mediumMeteor[b].position, mediumMeteor[b].radius):
-                            shoot[i].active = false
-                            shoot[i].lifeSpawn = 0
-                            mediumMeteor[b].active = false
+                        meteor = mediumMeteor[b] as Meteor
+                        if meteor.active and ray.CheckCollisionCircles(shooti.position, shooti.radius, meteor.position, meteor.radius):
+                            shooti.active = false
+                            shooti.lifeSpawn = 0
+                            meteor.active = false
                             destroyedMeteorsCount += 1
 
                             for 0..2 each j:
@@ -377,31 +381,32 @@ func UpdateGame():
                                         x: mediumMeteor[b].position.x, y: mediumMeteor[b].position.y
                                     }
                                     smallMeteor[smallMeteorsCount].speed = Vec2{
-                                        x: m.cos(shoot[i].rotation*DEG2RAD)*METEORS_SPEED*-1,
-                                        y: m.sin(shoot[i].rotation*DEG2RAD)*METEORS_SPEED*-1,
+                                        x: m.cos(shooti.rotation*DEG2RAD)*METEORS_SPEED*-1,
+                                        y: m.sin(shooti.rotation*DEG2RAD)*METEORS_SPEED*-1,
                                     }
                                 else:
                                     smallMeteor[smallMeteorsCount].position = Vec2{
-                                        x: mediumMeteor[b].position.x, y: mediumMeteor[b].position.y
+                                        x: meteor.position.x, y: meteor.position.y
                                     }
                                     smallMeteor[smallMeteorsCount].speed = Vec2{
-                                        x: m.cos(shoot[i].rotation*DEG2RAD)*METEORS_SPEED,
-                                        y: m.sin(shoot[i].rotation*DEG2RAD)*METEORS_SPEED
+                                        x: m.cos(shooti.rotation*DEG2RAD)*METEORS_SPEED,
+                                        y: m.sin(shooti.rotation*DEG2RAD)*METEORS_SPEED
                                     }
 
                                 smallMeteor[smallMeteorsCount].active = true
                                 smallMeteorsCount += 1
                             --mediumMeteor[b].position = Vec2{ x: -100, y: -100};
-                            mediumMeteor[b].color = ray.GREEN
+                            meteor.color = ray.GREEN
                             break
 
                     for 0..MAX_SMALL_METEORS each c:
-                        if smallMeteor[c].active and ray.CheckCollisionCircles(shoot[i].position, shoot[i].radius, smallMeteor[c].position, smallMeteor[c].radius):
-                            shoot[i].active = false
-                            shoot[i].lifeSpawn = 0
-                            smallMeteor[c].active = false
+                        meteor = smallMeteor[c] as Meteor
+                        if meteor.active and ray.CheckCollisionCircles(shooti.position, shooti.radius, meteor.position, meteor.radius):
+                            shooti.active = false
+                            shooti.lifeSpawn = 0
+                            meteor.active = false
                             destroyedMeteorsCount += 1
-                            smallMeteor[c].color = ray.YELLOW
+                            meteor.color = ray.YELLOW
                             -- smallMeteor[c].position = Vec2{x: -100, y:-100}
                             break
 
@@ -439,27 +444,31 @@ func DrawGame():
 
         -- Draw meteors
         for 0..MAX_BIG_METEORS each i:
-            if bigMeteor[i].active:
-                ray.DrawCircleV(bigMeteor[i].position, bigMeteor[i].radius, ray.DARKGRAY)
+            meteor = bigMeteor[i] as Meteor
+            if meteor.active:
+                ray.DrawCircleV(meteor.position, meteor.radius, ray.DARKGRAY)
             else:
-                ray.DrawCircleV(bigMeteor[i].position, bigMeteor[i].radius, ray.Fade(ray.LIGHTGRAY, 0.3))
+                ray.DrawCircleV(meteor.position, meteor.radius, ray.Fade(ray.LIGHTGRAY, 0.3))
 
         for 0..MAX_MEDIUM_METEORS each i:
-            if mediumMeteor[i].active:
-                ray.DrawCircleV(mediumMeteor[i].position, mediumMeteor[i].radius, ray.GRAY)
+            meteor = mediumMeteor[i] as Meteor
+            if meteor.active:
+                ray.DrawCircleV(meteor.position, meteor.radius, ray.GRAY)
             else:
-                ray.DrawCircleV(mediumMeteor[i].position, mediumMeteor[i].radius, ray.Fade(ray.LIGHTGRAY, 0.3))
+                ray.DrawCircleV(meteor.position, meteor.radius, ray.Fade(ray.LIGHTGRAY, 0.3))
 
         for 0..MAX_SMALL_METEORS each i:
-            if smallMeteor[i].active:
-                ray.DrawCircleV(smallMeteor[i].position, smallMeteor[i].radius, ray.GRAY)
+            meteor = smallMeteor[i] as Meteor
+            if meteor.active:
+                ray.DrawCircleV(meteor.position, meteor.radius, ray.GRAY)
             else:
-                ray.DrawCircleV(smallMeteor[i].position, smallMeteor[i].radius, ray.Fade(ray.LIGHTGRAY, 0.3))
+                ray.DrawCircleV(meteor.position, meteor.radius, ray.Fade(ray.LIGHTGRAY, 0.3))
 
         -- Draw shoot
         for 0..PLAYER_MAX_SHOOTS each i:
-            if shoot[i].active:
-                ray.DrawCircleV(shoot[i].position, shoot[i].radius, ray.BLACK)
+            shooti = shoot[i] as Shoot
+            if shooti.active:
+                ray.DrawCircleV(shooti.position, shooti.radius, ray.BLACK)
 
         if victory:
             ray.DrawText('VICTORY', screenWidth/2 - ray.MeasureText('VICTORY', 20)/2, screenHeight/2, 20, ray.LIGHTGRAY)

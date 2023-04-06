@@ -13,8 +13,12 @@ import m 'math'
 --import ray 'https://github.com/fubark/ray-cyber'
 import ray '../mod.cys'
 
-var screenWidth: 600
-var screenHeight: 400
+type Texture2D ray.Texture2D
+type Rect ray.Rect
+type Vec2 ray.Vec2
+
+var screenWidth number: 600
+var screenHeight number: 400
 var score: 0
 
 var CharIdleTex: none
@@ -25,15 +29,13 @@ var GoblinRunTex: none
 var SlimeIdleTex: none
 var SlimeRunTex: none
 
-type Vec2 ray.Vec2
-
 var viewPos: Vec2{ x: 0, y: 0 }
-var mapScale: 4
-var boundsMinX: 45 * mapScale
-var boundsMinY: 45 * mapScale
-var boundsMaxX: 700 * mapScale
-var boundsMaxY: 700 * mapScale
-var knight: none
+var mapScale number: 4
+var boundsMinX number: 45 * mapScale
+var boundsMinY number: 45 * mapScale
+var boundsMaxX number: 700 * mapScale
+var boundsMaxY number: 700 * mapScale
+var knight Character: none
 var enemies: []
 
 -- Assumes script path is the second arg.
@@ -103,7 +105,7 @@ while !ray.WindowShouldClose():
 
     -- Check prop collisions
     for props each prop:
-        if ray.CheckCollisionRecs(prop.getCollideRect(), knight.base.getCollideRect()):
+        if ray.CheckCollisionRecs(prop.getCollideRect() as Rect, knight.base.getCollideRect() as Rect):
             knight.base.undoMovement()
 
     for enemies each enemy:
@@ -112,7 +114,7 @@ while !ray.WindowShouldClose():
 
     if ray.IsMouseButtonPressed(ray.MOUSE_LEFT_BUTTON):
         for enemies each enemy:
-            if ray.CheckCollisionRecs(enemy.base.getCollideRect(), knight.getWeaponCollideRect()):
+            if ray.CheckCollisionRecs(enemy.base.getCollideRect() as Rect, knight.getWeaponCollideRect() as Rect):
                 removeEnemy(enemy)
                 score += 10
                 -- Spawn 2 more
@@ -188,7 +190,7 @@ type Character object:
             width: self.weapon.width * self.base.scale,
             height: self.weapon.height * self.base.scale,
         }
-        ray.DrawTexturePro(self.weapon, source, dest, origin, rotation, ray.WHITE)
+        ray.DrawTexturePro(self.weapon as Texture2D, source, dest, origin, rotation as number, ray.WHITE)
 
     func takeDamage(self, damage):
         self.health -= damage
@@ -201,7 +203,7 @@ type Character object:
 type BaseCharacter object:
     worldPos Vec2
     velocity Vec2
-    alive bool
+    alive boolean
     width number
     height number
     speed number
@@ -291,9 +293,9 @@ type BaseCharacter object:
         screenPos = Vec2.sub(self.worldPos, viewPos)
         dest = ray.Rect{ x: screenPos.x, y: screenPos.y,
             width: self.scale * self.width, height: self.scale * self.height }
-        ray.DrawTexturePro(self.texture, source, dest, Vec2{ x: 0, y: 0 }, 0, ray.WHITE)
+        ray.DrawTexturePro(self.texture as Texture2D, source, dest, Vec2{ x: 0, y: 0 }, 0, ray.WHITE)
 
-    func getCollideRect(self):
+    func getCollideRect(self) Rect:
         return ray.Rect{
             x: self.worldPos.x,
             y: self.worldPos.y,
@@ -311,7 +313,7 @@ type Prop object:
 
     func render(self):
         screenPos = Vec2.sub(self.worldPos, viewPos)
-        ray.DrawTextureEx(self.texture, screenPos, 0, self.scale, ray.WHITE)
+        ray.DrawTextureEx(self.texture as Texture2D, screenPos, 0, self.scale as number, ray.WHITE)
 
     func getCollideRect(self):
         return ray.Rect{
@@ -350,7 +352,7 @@ type Enemy object:
         if self.base.velocity.len() < self.radius: self.base.velocity = Vec2{ x: 0, y: 0 }
         self.base.tick(deltaTime)
 
-        if ray.CheckCollisionRecs(self.target.base.getCollideRect(), self.base.getCollideRect()):
+        if ray.CheckCollisionRecs(self.target.base.getCollideRect() as Rect, self.base.getCollideRect() as Rect):
             self.target.takeDamage(self.damagePerSec * deltaTime)
 
     func setTarget(self, char):

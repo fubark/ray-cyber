@@ -6,8 +6,8 @@ import os 'os'
 --import ray 'https://github.com/fubark/ray-cyber'
 import ray '../mod.cys'
 
-var SNAKE_LENGTH: 256
-var SQUARE_SIZE: 31
+var SNAKE_LENGTH number: 256
+var SQUARE_SIZE number: 31
 
 type Vec2 object:
     x number
@@ -17,24 +17,24 @@ type Snake object:
     pos Vec2
     size Vec2
     speed Vec2
-    color Color
+    color number
 
 type Food object:
     pos Vec2
     size Vec2
-    active bool
-    color Color
+    active boolean
+    color number
 
-var screenWidth: 800
-var screenHeight: 450
+var screenWidth number: 800
+var screenHeight number: 450
 
 var framesCounter: 0
 var gameOver: false
 var pause: false
 
-var fruit: Food{}
-var snake: arrayFill(Snake{}, number(SNAKE_LENGTH))
-var snakePosition: arrayFill(Vec2{}, number(SNAKE_LENGTH))
+var fruit Food: Food{}
+var snake: arrayFill(Snake{}, SNAKE_LENGTH)
+var snakePosition: arrayFill(Vec2{}, SNAKE_LENGTH)
 var allowMove: false
 var offset: Vec2{ x: 0, y: 0 }
 var counterTail: 0
@@ -192,7 +192,8 @@ func DrawGame():
 
         -- Draw snake
         for 0..counterTail each i:
-            ray.DrawRectangle(snake[i].pos.x, snake[i].pos.y, snake[i].size.x, snake[i].size.y, snake[i].color)
+            snakei = snake[i] as Snake
+            ray.DrawRectangle(snakei.pos.x, snakei.pos.y, snakei.size.x, snakei.size.y, snakei.color)
 
         -- Draw fruit to pick
         ray.DrawRectangle(fruit.pos.x, fruit.pos.y, fruit.size.x, fruit.size.y, fruit.color)

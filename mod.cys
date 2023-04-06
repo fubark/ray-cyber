@@ -16,7 +16,10 @@ func DrawCircle(centerX, centerY, radius, color) = lib.DrawCircle
 func DrawCircleV(center, radius, color) = lib.DrawCircleV
 func DrawLine(x, y, x2, y2, color) = lib.DrawLine
 func DrawRectangle(x, y, width, height, color) = lib.DrawRectangle
-func DrawText(text, x, y, size, color) = lib.DrawText
+func DrawText(text, x, y, size, color):
+    cstr = os.cstr(text)
+    (lib.DrawText)(cstr, x, y, size, color)
+    os.free(cstr)
 func DrawTextureEx(tex, pos, rotation, scale, tint) = lib.DrawTextureEx
 func DrawTexturePro(tex, src, dst, origin, rotation, tint) = lib.DrawTexturePro
 func DrawTriangle(v1, v2, v3, color) = lib.DrawTriangle
@@ -26,15 +29,26 @@ func GetFrameTime() = lib.GetFrameTime
 func GetRandomValue(start, end) = lib.GetRandomValue
 func GetScreenHeight() = lib.GetScreenHeight
 func GetScreenWidth() = lib.GetScreenWidth
-func InitWindow(width, height, title) = lib.InitWindow
+func InitWindow(width, height, title):
+    cstr = os.cstr(title)
+    (lib.InitWindow)(width, height, cstr)
+    os.free(cstr)
 func IsKeyDown(key) = lib.IsKeyDown
 func IsKeyPressed(key) = lib.IsKeyPressed
 func IsMouseButtonPressed(button) = lib.IsMouseButtonPressed
 func IsMouseButtonDown(button) = lib.IsMouseButtonDown
 func IsMouseButtonReleased(button) = lib.IsMouseButtonReleased
 func IsMouseButtonUp(button) = lib.IsMouseButtonUp 
-func LoadTexture(fileName) = lib.LoadTexture
-func MeasureText(text, size) = lib.MeasureText
+func LoadTexture(fileName):
+    cstr = os.cstr(fileName)
+    res = (lib.LoadTexture)(cstr)
+    os.free(cstr)
+    return res
+func MeasureText(text, size):
+    cstr = os.cstr(text)
+    res = (lib.MeasureText)(cstr, size)
+    os.free(cstr)
+    return res
 func SetTargetFPS(fps) = lib.SetTargetFPS
 func WindowShouldClose() = lib.WindowShouldClose
 
@@ -49,7 +63,7 @@ var lib: try os.bindLib(libPath, [
     os.CFunc{ sym: 'DrawCircleV', args: [Vec2, #float, #int], ret: #void }
     os.CFunc{ sym: 'DrawLine', args: [#int, #int, #int, #int, #int], ret: #void }
     os.CFunc{ sym: 'DrawRectangle', args: [#int, #int, #int, #int, #int], ret: #void }
-    os.CFunc{ sym: 'DrawText', args: [#charPtrZ, #int, #int, #int, #int], ret: #void }
+    os.CFunc{ sym: 'DrawText', args: [#charPtr, #int, #int, #int, #int], ret: #void }
     os.CFunc{ sym: 'DrawTextureEx', args: [Texture2D, Vec2, #float, #float, #int], ret: #void }
     os.CFunc{ sym: 'DrawTexturePro', args: [Texture2D, Rect, Rect, Vec2, #float, #int], ret: #void }
     os.CFunc{ sym: 'DrawTriangle', args: [Vec2, Vec2, Vec2, #int], ret: #void }
@@ -59,15 +73,15 @@ var lib: try os.bindLib(libPath, [
     os.CFunc{ sym: 'GetRandomValue', args: [#int, #int], ret: #int }
     os.CFunc{ sym: 'GetScreenHeight', args: [], ret: #int }
     os.CFunc{ sym: 'GetScreenWidth', args: [], ret: #int }
-    os.CFunc{ sym: 'InitWindow', args: [#int, #int, #charPtrZ], ret: #void }
+    os.CFunc{ sym: 'InitWindow', args: [#int, #int, #charPtr], ret: #void }
     os.CFunc{ sym: 'IsKeyDown', args: [#int], ret: #bool }
     os.CFunc{ sym: 'IsKeyPressed', args: [#int], ret: #bool }
     os.CFunc{ sym: 'IsMouseButtonPressed', args: [#int], ret: #bool }
     os.CFunc{ sym: 'IsMouseButtonDown', args: [#int], ret: #bool }
     os.CFunc{ sym: 'IsMouseButtonReleased', args: [#int], ret: #bool }
     os.CFunc{ sym: 'IsMouseButtonUp', args: [#int], ret: #bool }
-    os.CFunc{ sym: 'LoadTexture', args: [#charPtrZ], ret: Texture2D }
-    os.CFunc{ sym: 'MeasureText', args: [#charPtrZ, #int], ret: #int }
+    os.CFunc{ sym: 'LoadTexture', args: [#charPtr], ret: Texture2D }
+    os.CFunc{ sym: 'MeasureText', args: [#charPtr, #int], ret: #int }
     os.CFunc{ sym: 'SetTargetFPS', args: [#int], ret: #void }
     os.CFunc{ sym: 'WindowShouldClose', args: [], ret: #bool }
     os.CStruct{ fields: [#float, #float], type: Vec2 }

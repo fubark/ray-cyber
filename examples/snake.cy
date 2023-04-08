@@ -4,26 +4,24 @@
 
 import os 'os'
 --import ray 'https://github.com/fubark/ray-cyber'
-import ray '../mod.cys'
+import ray '../mod.cy'
 
 var SNAKE_LENGTH number: 256
 var SQUARE_SIZE number: 31
 
-type Vec2 object:
-    x number
-    y number
+type Vec2 ray.Vector2
 
 type Snake object:
     pos Vec2
     size Vec2
     speed Vec2
-    color number
+    color ray.Color
 
 type Food object:
     pos Vec2
     size Vec2
     active boolean
-    color number
+    color ray.Color
 
 var screenWidth number: 800
 var screenHeight number: 450
@@ -173,10 +171,7 @@ func UpdateGame():
 
 func DrawGame():
     ray.BeginDrawing()
-    if os.system == 'macos':
-        ray.DrawRectangle(0, 0, screenWidth, screenHeight, ray.RAYWHITE)
-    else:
-        ray.ClearBackground(ray.RAYWHITE)
+    ray.ClearBackground(ray.RAYWHITE)
 
     if !gameOver:
         -- Draw grid lines

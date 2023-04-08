@@ -1,0 +1,4 @@
+*.cy text eol=lf
+
+*.cy linguist-language=Text
+**.cy linguist-language=Text

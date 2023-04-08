@@ -6,7 +6,7 @@
 import os 'os'
 import m 'math'
 --import ray 'https://github.com/fubark/ray-cyber'
-import ray '../mod.cys'
+import ray '../mod.cy'
 
 var DEG2RAD: m.pi/180
 
@@ -27,7 +27,7 @@ type Player object:
     acceleration number
     rotation number
     collider Vec3
-    color number
+    color ray.Color
 
 type Shoot object:
     position Vec2
@@ -36,16 +36,16 @@ type Shoot object:
     rotation number
     lifeSpawn number
     active boolean
-    color number
+    color ray.Color
 
 type Meteor object:
     position Vec2
     speed Vec2
     radius number
     active boolean
-    color number
+    color ray.Color
 
-type Vec2 ray.Vec2
+type Vec2 ray.Vector2
 
 type Vec3 object:
     x number
@@ -420,11 +420,7 @@ func UpdateGame():
 -- Draw game (one frame)
 func DrawGame():
     ray.BeginDrawing()
-
-    if os.system == 'macos':
-        ray.DrawRectangle(0, 0, screenWidth, screenHeight, ray.RAYWHITE)
-    else:
-        ray.ClearBackground(ray.RAYWHITE)
+    ray.ClearBackground(ray.RAYWHITE)
 
     if !gameOver:
         -- Draw spaceship

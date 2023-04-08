@@ -11,11 +11,11 @@ import os 'os'
 import m 'math'
 
 --import ray 'https://github.com/fubark/ray-cyber'
-import ray '../mod.cys'
+import ray '../mod.cy'
 
 type Texture2D ray.Texture2D
-type Rect ray.Rect
-type Vec2 ray.Vec2
+type Rect ray.Rectangle
+type Vec2 ray.Vector2
 
 var screenWidth number: 600
 var screenHeight number: 400
@@ -69,8 +69,6 @@ InitGame()
 while !ray.WindowShouldClose():
     ray.BeginDrawing()
     ray.ClearBackground(ray.WHITE)
-    if os.system == 'macos':
-        ray.DrawRectangle(0, 0, screenWidth, screenHeight, ray.WHITE)
 
     knightPos = knight.base.getWorldPos()
     viewPos = Vec2{ x: knightPos.x - screenWidth/2, y: knightPos.y - screenHeight/2 }
@@ -127,14 +125,14 @@ ray.CloseWindow()
 type Character object:
     base BaseCharacter
     weapon ray.Texture2D
-    weaponCollideRect ray.Rect
+    weaponCollideRect Rect
     health number
 
     func new():
         o = Character{
             base: BaseCharacter.new(),
             weapon: WeaponTex,
-            weaponCollideRect: ray.Rect{ x: 0, y: 0, width: 0, height: 0 },
+            weaponCollideRect: Rect{ x: 0, y: 0, width: 0, height: 0 },
             health: 100,
         }
         o.base.texture = CharIdleTex
@@ -162,7 +160,7 @@ type Character object:
         if self.base.rightLeft > 0:
             origin = Vec2{ x: 0, y: self.weapon.height * self.base.scale}
             offset = Vec2{ x: 35, y: 55 }
-            self.weaponCollideRect = ray.Rect{
+            self.weaponCollideRect = Rect{
                 x: self.base.worldPos.x + offset.x,
                 y: self.base.worldPos.y + offset.y - self.weapon.height * self.base.scale,
                 width: self.weapon.width * self.base.scale,
@@ -172,19 +170,19 @@ type Character object:
         else:
             origin = Vec2{ x: self.weapon.width * self.base.scale, y: self.weapon.height * self.base.scale }
             offset = Vec2{ x: 25, y: 55 }
-            self.weaponCollideRect = ray.Rect{
+            self.weaponCollideRect = Rect{
                 x: self.base.worldPos.x + offset.x - self.weapon.width * self.base.scale,
                 y: self.base.worldPos.y + offset.y - self.weapon.height * self.base.scale,
                 width: self.weapon.width * self.base.scale,
                 height: self.weapon.height * self.base.scale,
             }
             rotation = if ray.IsMouseButtonDown(ray.MOUSE_LEFT_BUTTON) then -35 else 0
-        source = ray.Rect{ x: 0, y: 0,
+        source = Rect{ x: 0, y: 0,
             width: self.weapon.width * self.base.rightLeft,
             height: self.weapon.height,
         }
         screenPos = Vec2.sub(self.base.worldPos, viewPos)
-        dest = ray.Rect{
+        dest = Rect{
             x: screenPos.x + offset.x,
             y: screenPos.y + offset.y,
             width: self.weapon.width * self.base.scale,
@@ -288,15 +286,15 @@ type BaseCharacter object:
 
     func render(self):
         if !self.alive: return
-        source = ray.Rect{ x: self.frame * self.width, y: 0, width: self.rightLeft * self.width, height: self.height }
+        source = Rect{ x: self.frame * self.width, y: 0, width: self.rightLeft * self.width, height: self.height }
 
         screenPos = Vec2.sub(self.worldPos, viewPos)
-        dest = ray.Rect{ x: screenPos.x, y: screenPos.y,
+        dest = Rect{ x: screenPos.x, y: screenPos.y,
             width: self.scale * self.width, height: self.scale * self.height }
         ray.DrawTexturePro(self.texture as Texture2D, source, dest, Vec2{ x: 0, y: 0 }, 0, ray.WHITE)
 
     func getCollideRect(self) Rect:
-        return ray.Rect{
+        return Rect{
             x: self.worldPos.x,
             y: self.worldPos.y,
             width: self.width * self.scale,
@@ -316,7 +314,7 @@ type Prop object:
         ray.DrawTextureEx(self.texture as Texture2D, screenPos, 0, self.scale as number, ray.WHITE)
 
     func getCollideRect(self):
-        return ray.Rect{
+        return Rect{
             x: self.worldPos.x,
             y: self.worldPos.y,
             width: self.texture.width * self.scale,

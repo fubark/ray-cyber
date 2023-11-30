@@ -31,11 +31,14 @@ my Root.gameOver = false
 my Root.pause = false
 
 my Root.fruit = [Food:]
-my Root.snake = arrayFill([Snake:], SNAKE_LENGTH)
-my Root.snakePosition = arrayFill([Vec2:], SNAKE_LENGTH)
+my Root.snake = List.fill([Snake:], SNAKE_LENGTH)
+my Root.snakePosition = List.fill([Vec2:], SNAKE_LENGTH)
 my Root.allowMove = false
 my Root.offset = [Vec2 x: 0, y: 0]
 my Root.counterTail = 0
+
+-- Invoke main.
+main()
 
 func main():
     ray.InitWindow(screenWidth, screenHeight, 'classic game: snake')
@@ -43,14 +46,16 @@ func main():
     ray.SetTargetFPS(60)
 
     -- Main game loop
-    while !ray.WindowShouldClose():  -- Detect window close button or ESC key
+    -- Detect window close button or ESC key
+    while !ray.WindowShouldClose(): 
         UpdateGame()
         DrawGame()
 
-    UnloadGame()    -- Unload loaded data (textures, sounds, models...)
-    ray.CloseWindow()   -- Close window and OpenGL context
+    -- Unload loaded data (textures, sounds, models...)
+    UnloadGame()
 
-main()
+    -- Close window and OpenGL context
+    ray.CloseWindow()
 
 -- Initialize game variables
 func InitGame():
@@ -82,86 +87,87 @@ func InitGame():
     fruit.active = false
 
 func UpdateGame():
-    if !gameOver:
-        if ray.IsKeyPressed(0u'P'):
-            pause = !pause
-
-        if !pause:
-            -- Player control
-            if ray.IsKeyPressed(ray.KEY_RIGHT) and snake[0].speed.x == 0.0 and allowMove:
-                snake[0].speed = [Vec2 x: float(SQUARE_SIZE), y: 0]
-                allowMove = false
-            if ray.IsKeyPressed(ray.KEY_LEFT) and snake[0].speed.x == 0.0 and allowMove:
-                snake[0].speed = [Vec2 x: float(-SQUARE_SIZE), y: 0]
-                allowMove = false
-            if ray.IsKeyPressed(ray.KEY_UP) and snake[0].speed.y == 0.0 and allowMove:
-                snake[0].speed = [Vec2 x: 0, y: float(-SQUARE_SIZE)]
-                allowMove = false
-            if ray.IsKeyPressed(ray.KEY_DOWN) and snake[0].speed.y == 0.0 and allowMove:
-                snake[0].speed = [Vec2 x: 0, y: float(SQUARE_SIZE)]
-                allowMove = false
-
-            -- Snake movement
-            for 0..counterTail -> i:
-                snakePosition[i] = copy(snake[i].pos)
-
-            if framesCounter % 5 == 0:
-                for 0..counterTail -> i:
-                    if i == 0:
-                        snake[0].pos.x += snake[0].speed.x
-                        snake[0].pos.y += snake[0].speed.y
-                        allowMove = true
-                    else:
-                        snake[i].pos = copy(snakePosition[i-1])
-
-            -- Wall behaviour
-            if snake[0].pos.x > float(screenWidth) - offset.x or
-                snake[0].pos.y > float(screenHeight) - offset.y or
-                snake[0].pos.x < 0.0 or snake[0].pos.y < 0.0:
-                gameOver = true
-
-            -- Collision with yourself
-            for 1..counterTail -> i:
-                if snake[0].pos.x == snake[i].pos.x and
-                    snake[0].pos.y == snake[i].pos.y:
-                    gameOver = true
-
-            -- Fruit position calculation
-            if !fruit.active:
-                fruit.active = true
-                fruit.pos = [Vec2
-                    x: float(ray.GetRandomValue(0, screenWidth/SQUARE_SIZE - 1) * SQUARE_SIZE) + offset.x/2.0,
-                    y: float(ray.GetRandomValue(0, screenHeight/SQUARE_SIZE - 1) * SQUARE_SIZE) + offset.y/2.0,
-                ]
-
-                while:
-                    fruit.pos = [Vec2
-                        x: float(ray.GetRandomValue(0, screenWidth/SQUARE_SIZE - 1) * SQUARE_SIZE) + offset.x/2.0,
-                        y: float(ray.GetRandomValue(0, screenHeight/SQUARE_SIZE - 1) * SQUARE_SIZE) + offset.y/2.0,
-                    ]
-                    my hit = false
-                    for 0..counterTail -> i:
-                        if fruit.pos.x == snake[i].pos.x and fruit.pos.y == snake[i].pos.y:
-                            hit = true
-                            break
-                    if !hit:
-                        break
-
-            -- Collision
-            if snake[0].pos.x < fruit.pos.x + fruit.size.x and
-                snake[0].pos.x + snake[0].size.x > fruit.pos.x and 
-                snake[0].pos.y < fruit.pos.y + fruit.size.y and
-                snake[0].pos.y + snake[0].size.y > fruit.pos.y:
-                snake[counterTail].pos = copy(snakePosition[counterTail - 1])
-                counterTail += 1
-                fruit.active = false
-
-            framesCounter += 1
-
-    else:
+    if gameOver:
         if ray.IsKeyPressed(ray.KEY_ENTER):
             InitGame()
             gameOver = false
+        return
+
+    if ray.IsKeyPressed(ray.KEY_P):
+        pause = !pause
+
+    if pause: return
+    
+    -- Player control
+    if ray.IsKeyPressed(ray.KEY_RIGHT) and snake[0].speed.x == 0.0 and allowMove:
+        snake[0].speed = [Vec2 x: float(SQUARE_SIZE), y: 0]
+        allowMove = false
+    if ray.IsKeyPressed(ray.KEY_LEFT) and snake[0].speed.x == 0.0 and allowMove:
+        snake[0].speed = [Vec2 x: float(-SQUARE_SIZE), y: 0]
+        allowMove = false
+    if ray.IsKeyPressed(ray.KEY_UP) and snake[0].speed.y == 0.0 and allowMove:
+        snake[0].speed = [Vec2 x: 0, y: float(-SQUARE_SIZE)]
+        allowMove = false
+    if ray.IsKeyPressed(ray.KEY_DOWN) and snake[0].speed.y == 0.0 and allowMove:
+        snake[0].speed = [Vec2 x: 0, y: float(SQUARE_SIZE)]
+        allowMove = false
+
+    -- Snake movement
+    for 0..counterTail -> i:
+        snakePosition[i] = copy(snake[i].pos)
+
+    if framesCounter % 5 == 0:
+        for 0..counterTail -> i:
+            if i == 0:
+                snake[0].pos.x += snake[0].speed.x
+                snake[0].pos.y += snake[0].speed.y
+                allowMove = true
+            else:
+                snake[i].pos = copy(snakePosition[i-1])
+
+    -- Wall behaviour
+    if snake[0].pos.x > float(screenWidth) - offset.x or
+        snake[0].pos.y > float(screenHeight) - offset.y or
+        snake[0].pos.x < 0.0 or snake[0].pos.y < 0.0:
+        gameOver = true
+
+    -- Collision with yourself
+    for 1..counterTail -> i:
+        if snake[0].pos.x == snake[i].pos.x and
+            snake[0].pos.y == snake[i].pos.y:
+            gameOver = true
+
+    -- Fruit position calculation
+    if !fruit.active:
+        fruit.active = true
+        fruit.pos = [Vec2
+            x: float(ray.GetRandomValue(0, screenWidth/SQUARE_SIZE - 1) * SQUARE_SIZE) + offset.x/2.0,
+            y: float(ray.GetRandomValue(0, screenHeight/SQUARE_SIZE - 1) * SQUARE_SIZE) + offset.y/2.0,
+        ]
+
+        while:
+            fruit.pos = [Vec2
+                x: float(ray.GetRandomValue(0, screenWidth/SQUARE_SIZE - 1) * SQUARE_SIZE) + offset.x/2.0,
+                y: float(ray.GetRandomValue(0, screenHeight/SQUARE_SIZE - 1) * SQUARE_SIZE) + offset.y/2.0,
+            ]
+            my hit = false
+            for 0..counterTail -> i:
+                if fruit.pos.x == snake[i].pos.x and fruit.pos.y == snake[i].pos.y:
+                    hit = true
+                    break
+            if !hit:
+                break
+
+    -- Collision
+    if snake[0].pos.x < fruit.pos.x + fruit.size.x and
+        snake[0].pos.x + snake[0].size.x > fruit.pos.x and 
+        snake[0].pos.y < fruit.pos.y + fruit.size.y and
+        snake[0].pos.y + snake[0].size.y > fruit.pos.y:
+        snake[counterTail].pos = copy(snakePosition[counterTail - 1])
+        counterTail += 1
+        fruit.active = false
+
+    framesCounter += 1
 
 func DrawGame():
     ray.BeginDrawing()

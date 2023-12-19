@@ -1,9 +1,9 @@
 import math
 
 var Root.libUrl = switch os.system:
-case 'linux' => 'https://raw.githubusercontent.com/fubark/ray-cyber/master/libraylib.so.4.5.0'
-case 'windows' => 'https://raw.githubusercontent.com/fubark/ray-cyber/master/raylib.4.5.0.dll'
-case 'macos' => 'https://raw.githubusercontent.com/fubark/ray-cyber/master/libraylib.4.5.0.dylib'
+case 'linux' => 'https://raw.githubusercontent.com/fubark/ray-cyber/master/libraylib.so.5.0.0'
+case 'windows' => 'https://raw.githubusercontent.com/fubark/ray-cyber/master/raylib.5.0.0.dll'
+case 'macos' => 'https://raw.githubusercontent.com/fubark/ray-cyber/master/libraylib.5.0.0.dylib'
 else => throw error.Unsupported
 
 var Root.libPath = os.cacheUrl(libUrl)

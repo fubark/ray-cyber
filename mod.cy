@@ -234,6 +234,7 @@ type ModelAnimation object:
     var frameCount int
     var bones any -- BoneInfo *
     var framePoses any -- Transform **
+    var name List -- char[32]
 
 type Ray object:
     var position Vector3
@@ -301,6 +302,17 @@ type FilePathList object:
     var count int
     var paths any -- char **
 
+type AutomationEvent object:
+    var frame int
+    var type int
+    var params List -- int[4]
+
+type AutomationEventList object:
+    var capacity int
+    var count int
+    var events any -- AutomationEvent *
+
+type ConfigFlags int
 var Root.FLAG_VSYNC_HINT int = 64
 var Root.FLAG_FULLSCREEN_MODE int = 2
 var Root.FLAG_WINDOW_RESIZABLE int = 4
@@ -314,11 +326,11 @@ var Root.FLAG_WINDOW_ALWAYS_RUN int = 256
 var Root.FLAG_WINDOW_TRANSPARENT int = 16
 var Root.FLAG_WINDOW_HIGHDPI int = 8192
 var Root.FLAG_WINDOW_MOUSE_PASSTHROUGH int = 16384
+var Root.FLAG_BORDERLESS_WINDOWED_MODE int = 32768
 var Root.FLAG_MSAA_4X_HINT int = 32
 var Root.FLAG_INTERLACED_HINT int = 65536
 
-type ConfigFlags int
-
+type TraceLogLevel int
 var Root.LOG_ALL int = 0
 var Root.LOG_TRACE int = 1
 var Root.LOG_DEBUG int = 2
@@ -328,8 +340,7 @@ var Root.LOG_ERROR int = 5
 var Root.LOG_FATAL int = 6
 var Root.LOG_NONE int = 7
 
-type TraceLogLevel int
-
+type KeyboardKey int
 var Root.KEY_NULL int = 0
 var Root.KEY_APOSTROPHE int = 39
 var Root.KEY_COMMA int = 44
@@ -441,8 +452,7 @@ var Root.KEY_MENU int = 82
 var Root.KEY_VOLUME_UP int = 24
 var Root.KEY_VOLUME_DOWN int = 25
 
-type KeyboardKey int
-
+type MouseButton int
 var Root.MOUSE_BUTTON_LEFT int = 0
 var Root.MOUSE_BUTTON_RIGHT int = 1
 var Root.MOUSE_BUTTON_MIDDLE int = 2
@@ -451,8 +461,7 @@ var Root.MOUSE_BUTTON_EXTRA int = 4
 var Root.MOUSE_BUTTON_FORWARD int = 5
 var Root.MOUSE_BUTTON_BACK int = 6
 
-type MouseButton int
-
+type MouseCursor int
 var Root.MOUSE_CURSOR_DEFAULT int = 0
 var Root.MOUSE_CURSOR_ARROW int = 1
 var Root.MOUSE_CURSOR_IBEAM int = 2
@@ -465,8 +474,7 @@ var Root.MOUSE_CURSOR_RESIZE_NESW int = 8
 var Root.MOUSE_CURSOR_RESIZE_ALL int = 9
 var Root.MOUSE_CURSOR_NOT_ALLOWED int = 10
 
-type MouseCursor int
-
+type GamepadButton int
 var Root.GAMEPAD_BUTTON_UNKNOWN int = 0
 var Root.GAMEPAD_BUTTON_LEFT_FACE_UP int = 1
 var Root.GAMEPAD_BUTTON_LEFT_FACE_RIGHT int = 2
@@ -486,8 +494,7 @@ var Root.GAMEPAD_BUTTON_MIDDLE_RIGHT int = 15
 var Root.GAMEPAD_BUTTON_LEFT_THUMB int = 16
 var Root.GAMEPAD_BUTTON_RIGHT_THUMB int = 17
 
-type GamepadButton int
-
+type GamepadAxis int
 var Root.GAMEPAD_AXIS_LEFT_X int = 0
 var Root.GAMEPAD_AXIS_LEFT_Y int = 1
 var Root.GAMEPAD_AXIS_RIGHT_X int = 2
@@ -495,8 +502,7 @@ var Root.GAMEPAD_AXIS_RIGHT_Y int = 3
 var Root.GAMEPAD_AXIS_LEFT_TRIGGER int = 4
 var Root.GAMEPAD_AXIS_RIGHT_TRIGGER int = 5
 
-type GamepadAxis int
-
+type MaterialMapIndex int
 var Root.MATERIAL_MAP_ALBEDO int = 0
 var Root.MATERIAL_MAP_METALNESS int = 1
 var Root.MATERIAL_MAP_NORMAL int = 2
@@ -509,8 +515,7 @@ var Root.MATERIAL_MAP_IRRADIANCE int = 8
 var Root.MATERIAL_MAP_PREFILTER int = 9
 var Root.MATERIAL_MAP_BRDF int = 10
 
-type MaterialMapIndex int
-
+type ShaderLocationIndex int
 var Root.SHADER_LOC_VERTEX_POSITION int = 0
 var Root.SHADER_LOC_VERTEX_TEXCOORD01 int = 1
 var Root.SHADER_LOC_VERTEX_TEXCOORD02 int = 2
@@ -538,8 +543,7 @@ var Root.SHADER_LOC_MAP_IRRADIANCE int = 23
 var Root.SHADER_LOC_MAP_PREFILTER int = 24
 var Root.SHADER_LOC_MAP_BRDF int = 25
 
-type ShaderLocationIndex int
-
+type ShaderUniformDataType int
 var Root.SHADER_UNIFORM_FLOAT int = 0
 var Root.SHADER_UNIFORM_VEC2 int = 1
 var Root.SHADER_UNIFORM_VEC3 int = 2
@@ -550,15 +554,13 @@ var Root.SHADER_UNIFORM_IVEC3 int = 6
 var Root.SHADER_UNIFORM_IVEC4 int = 7
 var Root.SHADER_UNIFORM_SAMPLER2D int = 8
 
-type ShaderUniformDataType int
-
+type ShaderAttributeDataType int
 var Root.SHADER_ATTRIB_FLOAT int = 0
 var Root.SHADER_ATTRIB_VEC2 int = 1
 var Root.SHADER_ATTRIB_VEC3 int = 2
 var Root.SHADER_ATTRIB_VEC4 int = 3
 
-type ShaderAttributeDataType int
-
+type PixelFormat int
 var Root.PIXELFORMAT_UNCOMPRESSED_GRAYSCALE int = 1
 var Root.PIXELFORMAT_UNCOMPRESSED_GRAY_ALPHA int = 2
 var Root.PIXELFORMAT_UNCOMPRESSED_R5G6B5 int = 3
@@ -569,20 +571,22 @@ var Root.PIXELFORMAT_UNCOMPRESSED_R8G8B8A8 int = 7
 var Root.PIXELFORMAT_UNCOMPRESSED_R32 int = 8
 var Root.PIXELFORMAT_UNCOMPRESSED_R32G32B32 int = 9
 var Root.PIXELFORMAT_UNCOMPRESSED_R32G32B32A32 int = 10
-var Root.PIXELFORMAT_COMPRESSED_DXT1_RGB int = 11
-var Root.PIXELFORMAT_COMPRESSED_DXT1_RGBA int = 12
-var Root.PIXELFORMAT_COMPRESSED_DXT3_RGBA int = 13
-var Root.PIXELFORMAT_COMPRESSED_DXT5_RGBA int = 14
-var Root.PIXELFORMAT_COMPRESSED_ETC1_RGB int = 15
-var Root.PIXELFORMAT_COMPRESSED_ETC2_RGB int = 16
-var Root.PIXELFORMAT_COMPRESSED_ETC2_EAC_RGBA int = 17
-var Root.PIXELFORMAT_COMPRESSED_PVRT_RGB int = 18
-var Root.PIXELFORMAT_COMPRESSED_PVRT_RGBA int = 19
-var Root.PIXELFORMAT_COMPRESSED_ASTC_4x4_RGBA int = 20
-var Root.PIXELFORMAT_COMPRESSED_ASTC_8x8_RGBA int = 21
+var Root.PIXELFORMAT_UNCOMPRESSED_R16 int = 11
+var Root.PIXELFORMAT_UNCOMPRESSED_R16G16B16 int = 12
+var Root.PIXELFORMAT_UNCOMPRESSED_R16G16B16A16 int = 13
+var Root.PIXELFORMAT_COMPRESSED_DXT1_RGB int = 14
+var Root.PIXELFORMAT_COMPRESSED_DXT1_RGBA int = 15
+var Root.PIXELFORMAT_COMPRESSED_DXT3_RGBA int = 16
+var Root.PIXELFORMAT_COMPRESSED_DXT5_RGBA int = 17
+var Root.PIXELFORMAT_COMPRESSED_ETC1_RGB int = 18
+var Root.PIXELFORMAT_COMPRESSED_ETC2_RGB int = 19
+var Root.PIXELFORMAT_COMPRESSED_ETC2_EAC_RGBA int = 20
+var Root.PIXELFORMAT_COMPRESSED_PVRT_RGB int = 21
+var Root.PIXELFORMAT_COMPRESSED_PVRT_RGBA int = 22
+var Root.PIXELFORMAT_COMPRESSED_ASTC_4x4_RGBA int = 23
+var Root.PIXELFORMAT_COMPRESSED_ASTC_8x8_RGBA int = 24
 
-type PixelFormat int
-
+type TextureFilter int
 var Root.TEXTURE_FILTER_POINT int = 0
 var Root.TEXTURE_FILTER_BILINEAR int = 1
 var Root.TEXTURE_FILTER_TRILINEAR int = 2
@@ -590,15 +594,13 @@ var Root.TEXTURE_FILTER_ANISOTROPIC_4X int = 3
 var Root.TEXTURE_FILTER_ANISOTROPIC_8X int = 4
 var Root.TEXTURE_FILTER_ANISOTROPIC_16X int = 5
 
-type TextureFilter int
-
+type TextureWrap int
 var Root.TEXTURE_WRAP_REPEAT int = 0
 var Root.TEXTURE_WRAP_CLAMP int = 1
 var Root.TEXTURE_WRAP_MIRROR_REPEAT int = 2
 var Root.TEXTURE_WRAP_MIRROR_CLAMP int = 3
 
-type TextureWrap int
-
+type CubemapLayout int
 var Root.CUBEMAP_LAYOUT_AUTO_DETECT int = 0
 var Root.CUBEMAP_LAYOUT_LINE_VERTICAL int = 1
 var Root.CUBEMAP_LAYOUT_LINE_HORIZONTAL int = 2
@@ -606,14 +608,12 @@ var Root.CUBEMAP_LAYOUT_CROSS_THREE_BY_FOUR int = 3
 var Root.CUBEMAP_LAYOUT_CROSS_FOUR_BY_THREE int = 4
 var Root.CUBEMAP_LAYOUT_PANORAMA int = 5
 
-type CubemapLayout int
-
+type FontType int
 var Root.FONT_DEFAULT int = 0
 var Root.FONT_BITMAP int = 1
 var Root.FONT_SDF int = 2
 
-type FontType int
-
+type BlendMode int
 var Root.BLEND_ALPHA int = 0
 var Root.BLEND_ADDITIVE int = 1
 var Root.BLEND_MULTIPLIED int = 2
@@ -623,8 +623,7 @@ var Root.BLEND_ALPHA_PREMULTIPLY int = 5
 var Root.BLEND_CUSTOM int = 6
 var Root.BLEND_CUSTOM_SEPARATE int = 7
 
-type BlendMode int
-
+type Gesture int
 var Root.GESTURE_NONE int = 0
 var Root.GESTURE_TAP int = 1
 var Root.GESTURE_DOUBLETAP int = 2
@@ -637,26 +636,21 @@ var Root.GESTURE_SWIPE_DOWN int = 128
 var Root.GESTURE_PINCH_IN int = 256
 var Root.GESTURE_PINCH_OUT int = 512
 
-type Gesture int
-
+type CameraMode int
 var Root.CAMERA_CUSTOM int = 0
 var Root.CAMERA_FREE int = 1
 var Root.CAMERA_ORBITAL int = 2
 var Root.CAMERA_FIRST_PERSON int = 3
 var Root.CAMERA_THIRD_PERSON int = 4
 
-type CameraMode int
-
+type CameraProjection int
 var Root.CAMERA_PERSPECTIVE int = 0
 var Root.CAMERA_ORTHOGRAPHIC int = 1
 
-type CameraProjection int
-
+type NPatchLayout int
 var Root.NPATCH_NINE_PATCH int = 0
 var Root.NPATCH_THREE_PATCH_VERTICAL int = 1
 var Root.NPATCH_THREE_PATCH_HORIZONTAL int = 2
-
-type NPatchLayout int
 
 type TraceLogCallback pointer
 
@@ -669,9 +663,8 @@ type LoadFileTextCallback pointer
 type SaveFileTextCallback pointer
 
 -- func InitWindow(width int, height int, title any) none: pass
--- func InitFoo(width int, height int, title any) none: pass
-func WindowShouldClose() bool: pass
 func CloseWindow() none: pass
+func WindowShouldClose() bool: pass
 func IsWindowReady() bool: pass
 func IsWindowFullscreen() bool: pass
 func IsWindowHidden() bool: pass
@@ -683,6 +676,7 @@ func IsWindowState(flag int) bool: pass
 func SetWindowState(flags int) none: pass
 func ClearWindowState(flags int) none: pass
 func ToggleFullscreen() none: pass
+func ToggleBorderlessWindowed() none: pass
 func MaximizeWindow() none: pass
 func MinimizeWindow() none: pass
 func RestoreWindow() none: pass
@@ -692,8 +686,10 @@ func SetWindowTitle(title any) none: pass
 func SetWindowPosition(x int, y int) none: pass
 func SetWindowMonitor(monitor int) none: pass
 func SetWindowMinSize(width int, height int) none: pass
+func SetWindowMaxSize(width int, height int) none: pass
 func SetWindowSize(width int, height int) none: pass
 func SetWindowOpacity(opacity float) none: pass
+func SetWindowFocused() none: pass
 func GetWindowHandle() pointer: pass
 func GetScreenWidth() int: pass
 func GetScreenHeight() int: pass
@@ -714,9 +710,6 @@ func SetClipboardText(text any) none: pass
 func GetClipboardText() pointer: pass
 func EnableEventWaiting() none: pass
 func DisableEventWaiting() none: pass
-func SwapScreenBuffer() none: pass
-func PollInputEvents() none: pass
-func WaitTime(seconds float) none: pass
 func ShowCursor() none: pass
 func HideCursor() none: pass
 func IsCursorHidden() bool: pass
@@ -760,28 +753,33 @@ func GetScreenToWorld2D(position Vector2, camera Camera2D) Vector2: pass
 func GetWorldToScreenEx(position Vector3, camera Camera3D, width int, height int) Vector2: pass
 func GetWorldToScreen2D(position Vector2, camera Camera2D) Vector2: pass
 func SetTargetFPS(fps int) none: pass
-func GetFPS() int: pass
 func GetFrameTime() float: pass
 func GetTime() float: pass
-func GetRandomValue(min int, max int) int: pass
+func GetFPS() int: pass
+func SwapScreenBuffer() none: pass
+func PollInputEvents() none: pass
+func WaitTime(seconds float) none: pass
 func SetRandomSeed(seed int) none: pass
+func GetRandomValue(min int, max int) int: pass
+func LoadRandomSequence(count int, min int, max int) pointer: pass
+func UnloadRandomSequence(sequence any) none: pass
 func TakeScreenshot(fileName any) none: pass
 func SetConfigFlags(flags int) none: pass
+func OpenURL(url any) none: pass
 func TraceLog(logLevel int, text any) none: pass
 func SetTraceLogLevel(logLevel int) none: pass
 func MemAlloc(size int) pointer: pass
 func MemRealloc(ptr any, size int) pointer: pass
 func MemFree(ptr any) none: pass
-func OpenURL(url any) none: pass
 func SetTraceLogCallback(callback any) none: pass
 func SetLoadFileDataCallback(callback any) none: pass
 func SetSaveFileDataCallback(callback any) none: pass
 func SetLoadFileTextCallback(callback any) none: pass
 func SetSaveFileTextCallback(callback any) none: pass
-func LoadFileData(fileName any, bytesRead any) pointer: pass
+func LoadFileData(fileName any, dataSize any) pointer: pass
 func UnloadFileData(data any) none: pass
-func SaveFileData(fileName any, data any, bytesToWrite int) bool: pass
-func ExportDataAsCode(data any, size int, fileName any) bool: pass
+func SaveFileData(fileName any, data any, dataSize int) bool: pass
+func ExportDataAsCode(data any, dataSize int, fileName any) bool: pass
 func LoadFileText(fileName any) pointer: pass
 func UnloadFileText(text any) none: pass
 func SaveFileText(fileName any, text any) bool: pass
@@ -809,13 +807,22 @@ func CompressData(data any, dataSize int, compDataSize any) pointer: pass
 func DecompressData(compData any, compDataSize int, dataSize any) pointer: pass
 func EncodeDataBase64(data any, dataSize int, outputSize any) pointer: pass
 func DecodeDataBase64(data any, outputSize any) pointer: pass
+func LoadAutomationEventList(fileName any) AutomationEventList: pass
+func UnloadAutomationEventList(list any) none: pass
+func ExportAutomationEventList(list AutomationEventList, fileName any) bool: pass
+func SetAutomationEventList(list any) none: pass
+func SetAutomationEventBaseFrame(frame int) none: pass
+func StartAutomationEventRecording() none: pass
+func StopAutomationEventRecording() none: pass
+func PlayAutomationEvent(event AutomationEvent) none: pass
 func IsKeyPressed(key int) bool: pass
+func IsKeyPressedRepeat(key int) bool: pass
 func IsKeyDown(key int) bool: pass
 func IsKeyReleased(key int) bool: pass
 func IsKeyUp(key int) bool: pass
-func SetExitKey(key int) none: pass
 func GetKeyPressed() int: pass
 func GetCharPressed() int: pass
+func SetExitKey(key int) none: pass
 func IsGamepadAvailable(gamepad int) bool: pass
 func GetGamepadName(gamepad int) pointer: pass
 func IsGamepadButtonPressed(gamepad int, button int) bool: pass
@@ -861,16 +868,15 @@ func DrawPixelV(position Vector2, color Color) none: pass
 func DrawLine(startPosX int, startPosY int, endPosX int, endPosY int, color Color) none: pass
 func DrawLineV(startPos Vector2, endPos Vector2, color Color) none: pass
 func DrawLineEx(startPos Vector2, endPos Vector2, thick float, color Color) none: pass
-func DrawLineBezier(startPos Vector2, endPos Vector2, thick float, color Color) none: pass
-func DrawLineBezierQuad(startPos Vector2, endPos Vector2, controlPos Vector2, thick float, color Color) none: pass
-func DrawLineBezierCubic(startPos Vector2, endPos Vector2, startControlPos Vector2, endControlPos Vector2, thick float, color Color) none: pass
 func DrawLineStrip(points any, pointCount int, color Color) none: pass
+func DrawLineBezier(startPos Vector2, endPos Vector2, thick float, color Color) none: pass
 func DrawCircle(centerX int, centerY int, radius float, color Color) none: pass
 func DrawCircleSector(center Vector2, radius float, startAngle float, endAngle float, segments int, color Color) none: pass
 func DrawCircleSectorLines(center Vector2, radius float, startAngle float, endAngle float, segments int, color Color) none: pass
 func DrawCircleGradient(centerX int, centerY int, radius float, color1 Color, color2 Color) none: pass
 func DrawCircleV(center Vector2, radius float, color Color) none: pass
 func DrawCircleLines(centerX int, centerY int, radius float, color Color) none: pass
+func DrawCircleLinesV(center Vector2, radius float, color Color) none: pass
 func DrawEllipse(centerX int, centerY int, radiusH float, radiusV float, color Color) none: pass
 func DrawEllipseLines(centerX int, centerY int, radiusH float, radiusV float, color Color) none: pass
 func DrawRing(center Vector2, innerRadius float, outerRadius float, startAngle float, endAngle float, segments int, color Color) none: pass
@@ -893,6 +899,21 @@ func DrawTriangleStrip(points any, pointCount int, color Color) none: pass
 func DrawPoly(center Vector2, sides int, radius float, rotation float, color Color) none: pass
 func DrawPolyLines(center Vector2, sides int, radius float, rotation float, color Color) none: pass
 func DrawPolyLinesEx(center Vector2, sides int, radius float, rotation float, lineThick float, color Color) none: pass
+func DrawSplineLinear(points any, pointCount int, thick float, color Color) none: pass
+func DrawSplineBasis(points any, pointCount int, thick float, color Color) none: pass
+func DrawSplineCatmullRom(points any, pointCount int, thick float, color Color) none: pass
+func DrawSplineBezierQuadratic(points any, pointCount int, thick float, color Color) none: pass
+func DrawSplineBezierCubic(points any, pointCount int, thick float, color Color) none: pass
+func DrawSplineSegmentLinear(p1 Vector2, p2 Vector2, thick float, color Color) none: pass
+func DrawSplineSegmentBasis(p1 Vector2, p2 Vector2, p3 Vector2, p4 Vector2, thick float, color Color) none: pass
+func DrawSplineSegmentCatmullRom(p1 Vector2, p2 Vector2, p3 Vector2, p4 Vector2, thick float, color Color) none: pass
+func DrawSplineSegmentBezierQuadratic(p1 Vector2, c2 Vector2, p3 Vector2, thick float, color Color) none: pass
+func DrawSplineSegmentBezierCubic(p1 Vector2, c2 Vector2, c3 Vector2, p4 Vector2, thick float, color Color) none: pass
+func GetSplinePointLinear(startPos Vector2, endPos Vector2, t float) Vector2: pass
+func GetSplinePointBasis(p1 Vector2, p2 Vector2, p3 Vector2, p4 Vector2, t float) Vector2: pass
+func GetSplinePointCatmullRom(p1 Vector2, p2 Vector2, p3 Vector2, p4 Vector2, t float) Vector2: pass
+func GetSplinePointBezierQuad(p1 Vector2, c2 Vector2, p3 Vector2, t float) Vector2: pass
+func GetSplinePointBezierCubic(p1 Vector2, c2 Vector2, c3 Vector2, p4 Vector2, t float) Vector2: pass
 func CheckCollisionRecs(rec1 Rectangle, rec2 Rectangle) bool: pass
 func CheckCollisionCircles(center1 Vector2, radius1 float, center2 Vector2, radius2 float) bool: pass
 func CheckCollisionCircleRec(center Vector2, radius float, rec Rectangle) bool: pass
@@ -905,6 +926,7 @@ func CheckCollisionPointLine(point Vector2, p1 Vector2, p2 Vector2, threshold in
 func GetCollisionRec(rec1 Rectangle, rec2 Rectangle) Rectangle: pass
 func LoadImage(fileName any) Image: pass
 func LoadImageRaw(fileName any, width int, height int, format int, headerSize int) Image: pass
+func LoadImageSvg(fileNameOrString any, width int, height int) Image: pass
 func LoadImageAnim(fileName any, frames any) Image: pass
 func LoadImageFromMemory(fileType any, fileData any, dataSize int) Image: pass
 func LoadImageFromTexture(texture Texture) Image: pass
@@ -912,11 +934,12 @@ func LoadImageFromScreen() Image: pass
 func IsImageReady(image Image) bool: pass
 func UnloadImage(image Image) none: pass
 func ExportImage(image Image, fileName any) bool: pass
+func ExportImageToMemory(image Image, fileType any, fileSize any) pointer: pass
 func ExportImageAsCode(image Image, fileName any) bool: pass
 func GenImageColor(width int, height int, color Color) Image: pass
-func GenImageGradientV(width int, height int, top Color, bottom Color) Image: pass
-func GenImageGradientH(width int, height int, left Color, right Color) Image: pass
+func GenImageGradientLinear(width int, height int, direction int, start Color, end Color) Image: pass
 func GenImageGradientRadial(width int, height int, density float, inner Color, outer Color) Image: pass
+func GenImageGradientSquare(width int, height int, density float, inner Color, outer Color) Image: pass
 func GenImageChecked(width int, height int, checksX int, checksY int, col1 Color, col2 Color) Image: pass
 func GenImageWhiteNoise(width int, height int, factor float) Image: pass
 func GenImagePerlinNoise(width int, height int, offsetX int, offsetY int, scale float) Image: pass
@@ -941,6 +964,7 @@ func ImageMipmaps(image any) none: pass
 func ImageDither(image any, rBpp int, gBpp int, bBpp int, aBpp int) none: pass
 func ImageFlipVertical(image any) none: pass
 func ImageFlipHorizontal(image any) none: pass
+func ImageRotate(image any, degrees int) none: pass
 func ImageRotateCW(image any) none: pass
 func ImageRotateCCW(image any) none: pass
 func ImageColorTint(image any, color Color) none: pass
@@ -1007,13 +1031,13 @@ func SetPixelColor(dstPtr any, color Color, format int) none: pass
 func GetPixelDataSize(width int, height int, format int) int: pass
 func GetFontDefault() Font: pass
 func LoadFont(fileName any) Font: pass
-func LoadFontEx(fileName any, fontSize int, fontChars any, glyphCount int) Font: pass
+func LoadFontEx(fileName any, fontSize int, codepoints any, codepointCount int) Font: pass
 func LoadFontFromImage(image Image, key Color, firstChar int) Font: pass
-func LoadFontFromMemory(fileType any, fileData any, dataSize int, fontSize int, fontChars any, glyphCount int) Font: pass
+func LoadFontFromMemory(fileType any, fileData any, dataSize int, fontSize int, codepoints any, codepointCount int) Font: pass
 func IsFontReady(font Font) bool: pass
-func LoadFontData(fileData any, dataSize int, fontSize int, fontChars any, glyphCount int, type int) pointer: pass
-func GenImageFontAtlas(chars any, recs any, glyphCount int, fontSize int, padding int, packMethod int) Image: pass
-func UnloadFontData(chars any, glyphCount int) none: pass
+func LoadFontData(fileData any, dataSize int, fontSize int, codepoints any, codepointCount int, type int) pointer: pass
+func GenImageFontAtlas(glyphs any, glyphRecs any, glyphCount int, fontSize int, padding int, packMethod int) Image: pass
+func UnloadFontData(glyphs any, glyphCount int) none: pass
 func UnloadFont(font Font) none: pass
 func ExportFontAsCode(font Font, fileName any) bool: pass
 func DrawFPS(posX int, posY int) none: pass
@@ -1021,7 +1045,8 @@ func DrawFPS(posX int, posY int) none: pass
 func DrawTextEx(font Font, text any, position Vector2, fontSize float, spacing float, tint Color) none: pass
 func DrawTextPro(font Font, text any, position Vector2, origin Vector2, rotation float, fontSize float, spacing float, tint Color) none: pass
 func DrawTextCodepoint(font Font, codepoint int, position Vector2, fontSize float, tint Color) none: pass
-func DrawTextCodepoints(font Font, codepoints any, count int, position Vector2, fontSize float, spacing float, tint Color) none: pass
+func DrawTextCodepoints(font Font, codepoints any, codepointCount int, position Vector2, fontSize float, spacing float, tint Color) none: pass
+func SetTextLineSpacing(spacing int) none: pass
 -- func MeasureText(text any, fontSize int) int: pass
 func MeasureTextEx(font Font, text any, fontSize float, spacing float) Vector2: pass
 func GetGlyphIndex(font Font, codepoint int) int: pass
@@ -1113,7 +1138,7 @@ func SetModelMeshMaterial(model any, meshId int, materialId int) none: pass
 func LoadModelAnimations(fileName any, animCount any) pointer: pass
 func UpdateModelAnimation(model Model, anim ModelAnimation, frame int) none: pass
 func UnloadModelAnimation(anim ModelAnimation) none: pass
-func UnloadModelAnimations(animations any, count int) none: pass
+func UnloadModelAnimations(animations any, animCount int) none: pass
 func IsModelAnimationValid(model Model, anim ModelAnimation) bool: pass
 func CheckCollisionSpheres(center1 Vector3, radius1 float, center2 Vector3, radius2 float) bool: pass
 func CheckCollisionBoxes(box1 BoundingBox, box2 BoundingBox) bool: pass
@@ -1129,15 +1154,18 @@ func InitAudioDevice() none: pass
 func CloseAudioDevice() none: pass
 func IsAudioDeviceReady() bool: pass
 func SetMasterVolume(volume float) none: pass
+func GetMasterVolume() float: pass
 func LoadWave(fileName any) Wave: pass
 func LoadWaveFromMemory(fileType any, fileData any, dataSize int) Wave: pass
 func IsWaveReady(wave Wave) bool: pass
 func LoadSound(fileName any) Sound: pass
 func LoadSoundFromWave(wave Wave) Sound: pass
+func LoadSoundAlias(source Sound) Sound: pass
 func IsSoundReady(sound Sound) bool: pass
 func UpdateSound(sound Sound, data any, sampleCount int) none: pass
 func UnloadWave(wave Wave) none: pass
 func UnloadSound(sound Sound) none: pass
+func UnloadSoundAlias(alias Sound) none: pass
 func ExportWave(wave Wave, fileName any) bool: pass
 func ExportWaveAsCode(wave Wave, fileName any) bool: pass
 func PlaySound(sound Sound) none: pass
@@ -1190,9 +1218,10 @@ func AttachAudioMixedProcessor(processor any) none: pass
 func DetachAudioMixedProcessor(processor any) none: pass
 
 import os
+my Root.ffi = none
 my Root.lib = load()
 func load():
-    var ffi = os.newFFI()
+    ffi = os.newFFI()
     ffi.cbind(Vector2, [.float, .float])
     ffi.cbind(Vector3, [.float, .float, .float])
     ffi.cbind(Vector4, [.float, .float, .float, .float])
@@ -1214,7 +1243,7 @@ func load():
     ffi.cbind(Transform, [Vector3, Vector4, Vector3])
     ffi.cbind(BoneInfo, [[os.CArray n: 32, elem: .char], .int])
     ffi.cbind(Model, [Matrix, .int, .int, .voidPtr, .voidPtr, .voidPtr, .int, .voidPtr, .voidPtr])
-    ffi.cbind(ModelAnimation, [.int, .int, .voidPtr, .voidPtr])
+    ffi.cbind(ModelAnimation, [.int, .int, .voidPtr, .voidPtr, [os.CArray n: 32, elem: .char]])
     ffi.cbind(Ray, [Vector3, Vector3])
     ffi.cbind(RayCollision, [.bool, .float, Vector3, Vector3])
     ffi.cbind(BoundingBox, [Vector3, Vector3])
@@ -1225,10 +1254,11 @@ func load():
     ffi.cbind(VrDeviceInfo, [.int, .int, .float, .float, .float, .float, .float, .float, [os.CArray n: 4, elem: .float], [os.CArray n: 4, elem: .float]])
     ffi.cbind(VrStereoConfig, [[os.CArray n: 2, elem: Matrix], [os.CArray n: 2, elem: Matrix], [os.CArray n: 2, elem: .float], [os.CArray n: 2, elem: .float], [os.CArray n: 2, elem: .float], [os.CArray n: 2, elem: .float], [os.CArray n: 2, elem: .float], [os.CArray n: 2, elem: .float]])
     ffi.cbind(FilePathList, [.uint, .uint, .voidPtr])
+    ffi.cbind(AutomationEvent, [.uint, .uint, [os.CArray n: 4, elem: .int]])
+    ffi.cbind(AutomationEventList, [.uint, .uint, .voidPtr])
     ffi.cfunc('InitWindow', [.int, .int, .voidPtr], .void)
-    ffi.cfunc('InitFoo', [.int, .int, .voidPtr], .void)
-    ffi.cfunc('WindowShouldClose', [], .bool)
     ffi.cfunc('CloseWindow', [], .void)
+    ffi.cfunc('WindowShouldClose', [], .bool)
     ffi.cfunc('IsWindowReady', [], .bool)
     ffi.cfunc('IsWindowFullscreen', [], .bool)
     ffi.cfunc('IsWindowHidden', [], .bool)
@@ -1240,6 +1270,7 @@ func load():
     ffi.cfunc('SetWindowState', [.uint], .void)
     ffi.cfunc('ClearWindowState', [.uint], .void)
     ffi.cfunc('ToggleFullscreen', [], .void)
+    ffi.cfunc('ToggleBorderlessWindowed', [], .void)
     ffi.cfunc('MaximizeWindow', [], .void)
     ffi.cfunc('MinimizeWindow', [], .void)
     ffi.cfunc('RestoreWindow', [], .void)
@@ -1249,8 +1280,10 @@ func load():
     ffi.cfunc('SetWindowPosition', [.int, .int], .void)
     ffi.cfunc('SetWindowMonitor', [.int], .void)
     ffi.cfunc('SetWindowMinSize', [.int, .int], .void)
+    ffi.cfunc('SetWindowMaxSize', [.int, .int], .void)
     ffi.cfunc('SetWindowSize', [.int, .int], .void)
     ffi.cfunc('SetWindowOpacity', [.float], .void)
+    ffi.cfunc('SetWindowFocused', [], .void)
     ffi.cfunc('GetWindowHandle', [], .voidPtr)
     ffi.cfunc('GetScreenWidth', [], .int)
     ffi.cfunc('GetScreenHeight', [], .int)
@@ -1271,9 +1304,6 @@ func load():
     ffi.cfunc('GetClipboardText', [], .voidPtr)
     ffi.cfunc('EnableEventWaiting', [], .void)
     ffi.cfunc('DisableEventWaiting', [], .void)
-    ffi.cfunc('SwapScreenBuffer', [], .void)
-    ffi.cfunc('PollInputEvents', [], .void)
-    ffi.cfunc('WaitTime', [.double], .void)
     ffi.cfunc('ShowCursor', [], .void)
     ffi.cfunc('HideCursor', [], .void)
     ffi.cfunc('IsCursorHidden', [], .bool)
@@ -1317,19 +1347,24 @@ func load():
     ffi.cfunc('GetWorldToScreenEx', [Vector3, Camera3D, .int, .int], Vector2)
     ffi.cfunc('GetWorldToScreen2D', [Vector2, Camera2D], Vector2)
     ffi.cfunc('SetTargetFPS', [.int], .void)
-    ffi.cfunc('GetFPS', [], .int)
     ffi.cfunc('GetFrameTime', [], .float)
     ffi.cfunc('GetTime', [], .double)
-    ffi.cfunc('GetRandomValue', [.int, .int], .int)
+    ffi.cfunc('GetFPS', [], .int)
+    ffi.cfunc('SwapScreenBuffer', [], .void)
+    ffi.cfunc('PollInputEvents', [], .void)
+    ffi.cfunc('WaitTime', [.double], .void)
     ffi.cfunc('SetRandomSeed', [.uint], .void)
+    ffi.cfunc('GetRandomValue', [.int, .int], .int)
+    ffi.cfunc('LoadRandomSequence', [.uint, .int, .int], .voidPtr)
+    ffi.cfunc('UnloadRandomSequence', [.voidPtr], .void)
     ffi.cfunc('TakeScreenshot', [.voidPtr], .void)
     ffi.cfunc('SetConfigFlags', [.uint], .void)
+    ffi.cfunc('OpenURL', [.voidPtr], .void)
     ffi.cfunc('TraceLog', [.int, .voidPtr], .void)
     ffi.cfunc('SetTraceLogLevel', [.int], .void)
     ffi.cfunc('MemAlloc', [.uint], .voidPtr)
     ffi.cfunc('MemRealloc', [.voidPtr, .uint], .voidPtr)
     ffi.cfunc('MemFree', [.voidPtr], .void)
-    ffi.cfunc('OpenURL', [.voidPtr], .void)
     ffi.cfunc('SetTraceLogCallback', [.voidPtr], .void)
     ffi.cfunc('SetLoadFileDataCallback', [.voidPtr], .void)
     ffi.cfunc('SetSaveFileDataCallback', [.voidPtr], .void)
@@ -1337,8 +1372,8 @@ func load():
     ffi.cfunc('SetSaveFileTextCallback', [.voidPtr], .void)
     ffi.cfunc('LoadFileData', [.voidPtr, .voidPtr], .voidPtr)
     ffi.cfunc('UnloadFileData', [.voidPtr], .void)
-    ffi.cfunc('SaveFileData', [.voidPtr, .voidPtr, .uint], .bool)
-    ffi.cfunc('ExportDataAsCode', [.voidPtr, .uint, .voidPtr], .bool)
+    ffi.cfunc('SaveFileData', [.voidPtr, .voidPtr, .int], .bool)
+    ffi.cfunc('ExportDataAsCode', [.voidPtr, .int, .voidPtr], .bool)
     ffi.cfunc('LoadFileText', [.voidPtr], .voidPtr)
     ffi.cfunc('UnloadFileText', [.voidPtr], .void)
     ffi.cfunc('SaveFileText', [.voidPtr, .voidPtr], .bool)
@@ -1366,13 +1401,22 @@ func load():
     ffi.cfunc('DecompressData', [.voidPtr, .int, .voidPtr], .voidPtr)
     ffi.cfunc('EncodeDataBase64', [.voidPtr, .int, .voidPtr], .voidPtr)
     ffi.cfunc('DecodeDataBase64', [.voidPtr, .voidPtr], .voidPtr)
+    ffi.cfunc('LoadAutomationEventList', [.voidPtr], AutomationEventList)
+    ffi.cfunc('UnloadAutomationEventList', [.voidPtr], .void)
+    ffi.cfunc('ExportAutomationEventList', [AutomationEventList, .voidPtr], .bool)
+    ffi.cfunc('SetAutomationEventList', [.voidPtr], .void)
+    ffi.cfunc('SetAutomationEventBaseFrame', [.int], .void)
+    ffi.cfunc('StartAutomationEventRecording', [], .void)
+    ffi.cfunc('StopAutomationEventRecording', [], .void)
+    ffi.cfunc('PlayAutomationEvent', [AutomationEvent], .void)
     ffi.cfunc('IsKeyPressed', [.int], .bool)
+    ffi.cfunc('IsKeyPressedRepeat', [.int], .bool)
     ffi.cfunc('IsKeyDown', [.int], .bool)
     ffi.cfunc('IsKeyReleased', [.int], .bool)
     ffi.cfunc('IsKeyUp', [.int], .bool)
-    ffi.cfunc('SetExitKey', [.int], .void)
     ffi.cfunc('GetKeyPressed', [], .int)
     ffi.cfunc('GetCharPressed', [], .int)
+    ffi.cfunc('SetExitKey', [.int], .void)
     ffi.cfunc('IsGamepadAvailable', [.int], .bool)
     ffi.cfunc('GetGamepadName', [.int], .voidPtr)
     ffi.cfunc('IsGamepadButtonPressed', [.int, .int], .bool)
@@ -1403,7 +1447,7 @@ func load():
     ffi.cfunc('GetTouchPointId', [.int], .int)
     ffi.cfunc('GetTouchPointCount', [], .int)
     ffi.cfunc('SetGesturesEnabled', [.uint], .void)
-    ffi.cfunc('IsGestureDetected', [.int], .bool)
+    ffi.cfunc('IsGestureDetected', [.uint], .bool)
     ffi.cfunc('GetGestureDetected', [], .int)
     ffi.cfunc('GetGestureHoldDuration', [], .float)
     ffi.cfunc('GetGestureDragVector', [], Vector2)
@@ -1418,16 +1462,15 @@ func load():
     ffi.cfunc('DrawLine', [.int, .int, .int, .int, Color], .void)
     ffi.cfunc('DrawLineV', [Vector2, Vector2, Color], .void)
     ffi.cfunc('DrawLineEx', [Vector2, Vector2, .float, Color], .void)
-    ffi.cfunc('DrawLineBezier', [Vector2, Vector2, .float, Color], .void)
-    ffi.cfunc('DrawLineBezierQuad', [Vector2, Vector2, Vector2, .float, Color], .void)
-    ffi.cfunc('DrawLineBezierCubic', [Vector2, Vector2, Vector2, Vector2, .float, Color], .void)
     ffi.cfunc('DrawLineStrip', [.voidPtr, .int, Color], .void)
+    ffi.cfunc('DrawLineBezier', [Vector2, Vector2, .float, Color], .void)
     ffi.cfunc('DrawCircle', [.int, .int, .float, Color], .void)
     ffi.cfunc('DrawCircleSector', [Vector2, .float, .float, .float, .int, Color], .void)
     ffi.cfunc('DrawCircleSectorLines', [Vector2, .float, .float, .float, .int, Color], .void)
     ffi.cfunc('DrawCircleGradient', [.int, .int, .float, Color, Color], .void)
     ffi.cfunc('DrawCircleV', [Vector2, .float, Color], .void)
     ffi.cfunc('DrawCircleLines', [.int, .int, .float, Color], .void)
+    ffi.cfunc('DrawCircleLinesV', [Vector2, .float, Color], .void)
     ffi.cfunc('DrawEllipse', [.int, .int, .float, .float, Color], .void)
     ffi.cfunc('DrawEllipseLines', [.int, .int, .float, .float, Color], .void)
     ffi.cfunc('DrawRing', [Vector2, .float, .float, .float, .float, .int, Color], .void)
@@ -1450,6 +1493,21 @@ func load():
     ffi.cfunc('DrawPoly', [Vector2, .int, .float, .float, Color], .void)
     ffi.cfunc('DrawPolyLines', [Vector2, .int, .float, .float, Color], .void)
     ffi.cfunc('DrawPolyLinesEx', [Vector2, .int, .float, .float, .float, Color], .void)
+    ffi.cfunc('DrawSplineLinear', [.voidPtr, .int, .float, Color], .void)
+    ffi.cfunc('DrawSplineBasis', [.voidPtr, .int, .float, Color], .void)
+    ffi.cfunc('DrawSplineCatmullRom', [.voidPtr, .int, .float, Color], .void)
+    ffi.cfunc('DrawSplineBezierQuadratic', [.voidPtr, .int, .float, Color], .void)
+    ffi.cfunc('DrawSplineBezierCubic', [.voidPtr, .int, .float, Color], .void)
+    ffi.cfunc('DrawSplineSegmentLinear', [Vector2, Vector2, .float, Color], .void)
+    ffi.cfunc('DrawSplineSegmentBasis', [Vector2, Vector2, Vector2, Vector2, .float, Color], .void)
+    ffi.cfunc('DrawSplineSegmentCatmullRom', [Vector2, Vector2, Vector2, Vector2, .float, Color], .void)
+    ffi.cfunc('DrawSplineSegmentBezierQuadratic', [Vector2, Vector2, Vector2, .float, Color], .void)
+    ffi.cfunc('DrawSplineSegmentBezierCubic', [Vector2, Vector2, Vector2, Vector2, .float, Color], .void)
+    ffi.cfunc('GetSplinePointLinear', [Vector2, Vector2, .float], Vector2)
+    ffi.cfunc('GetSplinePointBasis', [Vector2, Vector2, Vector2, Vector2, .float], Vector2)
+    ffi.cfunc('GetSplinePointCatmullRom', [Vector2, Vector2, Vector2, Vector2, .float], Vector2)
+    ffi.cfunc('GetSplinePointBezierQuad', [Vector2, Vector2, Vector2, .float], Vector2)
+    ffi.cfunc('GetSplinePointBezierCubic', [Vector2, Vector2, Vector2, Vector2, .float], Vector2)
     ffi.cfunc('CheckCollisionRecs', [Rectangle, Rectangle], .bool)
     ffi.cfunc('CheckCollisionCircles', [Vector2, .float, Vector2, .float], .bool)
     ffi.cfunc('CheckCollisionCircleRec', [Vector2, .float, Rectangle], .bool)
@@ -1462,6 +1520,7 @@ func load():
     ffi.cfunc('GetCollisionRec', [Rectangle, Rectangle], Rectangle)
     ffi.cfunc('LoadImage', [.voidPtr], Image)
     ffi.cfunc('LoadImageRaw', [.voidPtr, .int, .int, .int, .int], Image)
+    ffi.cfunc('LoadImageSvg', [.voidPtr, .int, .int], Image)
     ffi.cfunc('LoadImageAnim', [.voidPtr, .voidPtr], Image)
     ffi.cfunc('LoadImageFromMemory', [.voidPtr, .voidPtr, .int], Image)
     ffi.cfunc('LoadImageFromTexture', [Texture], Image)
@@ -1469,11 +1528,12 @@ func load():
     ffi.cfunc('IsImageReady', [Image], .bool)
     ffi.cfunc('UnloadImage', [Image], .void)
     ffi.cfunc('ExportImage', [Image, .voidPtr], .bool)
+    ffi.cfunc('ExportImageToMemory', [Image, .voidPtr, .voidPtr], .voidPtr)
     ffi.cfunc('ExportImageAsCode', [Image, .voidPtr], .bool)
     ffi.cfunc('GenImageColor', [.int, .int, Color], Image)
-    ffi.cfunc('GenImageGradientV', [.int, .int, Color, Color], Image)
-    ffi.cfunc('GenImageGradientH', [.int, .int, Color, Color], Image)
+    ffi.cfunc('GenImageGradientLinear', [.int, .int, .int, Color, Color], Image)
     ffi.cfunc('GenImageGradientRadial', [.int, .int, .float, Color, Color], Image)
+    ffi.cfunc('GenImageGradientSquare', [.int, .int, .float, Color, Color], Image)
     ffi.cfunc('GenImageChecked', [.int, .int, .int, .int, Color, Color], Image)
     ffi.cfunc('GenImageWhiteNoise', [.int, .int, .float], Image)
     ffi.cfunc('GenImagePerlinNoise', [.int, .int, .int, .int, .float], Image)
@@ -1498,6 +1558,7 @@ func load():
     ffi.cfunc('ImageDither', [.voidPtr, .int, .int, .int, .int], .void)
     ffi.cfunc('ImageFlipVertical', [.voidPtr], .void)
     ffi.cfunc('ImageFlipHorizontal', [.voidPtr], .void)
+    ffi.cfunc('ImageRotate', [.voidPtr, .int], .void)
     ffi.cfunc('ImageRotateCW', [.voidPtr], .void)
     ffi.cfunc('ImageRotateCCW', [.voidPtr], .void)
     ffi.cfunc('ImageColorTint', [.voidPtr, Color], .void)
@@ -1579,6 +1640,7 @@ func load():
     ffi.cfunc('DrawTextPro', [Font, .voidPtr, Vector2, Vector2, .float, .float, .float, Color], .void)
     ffi.cfunc('DrawTextCodepoint', [Font, .int, Vector2, .float, Color], .void)
     ffi.cfunc('DrawTextCodepoints', [Font, .voidPtr, .int, Vector2, .float, .float, Color], .void)
+    ffi.cfunc('SetTextLineSpacing', [.int], .void)
     ffi.cfunc('MeasureText', [.voidPtr, .int], .int)
     ffi.cfunc('MeasureTextEx', [Font, .voidPtr, .float, .float], Vector2)
     ffi.cfunc('GetGlyphIndex', [Font, .int], .int)
@@ -1670,7 +1732,7 @@ func load():
     ffi.cfunc('LoadModelAnimations', [.voidPtr, .voidPtr], .voidPtr)
     ffi.cfunc('UpdateModelAnimation', [Model, ModelAnimation, .int], .void)
     ffi.cfunc('UnloadModelAnimation', [ModelAnimation], .void)
-    ffi.cfunc('UnloadModelAnimations', [.voidPtr, .uint], .void)
+    ffi.cfunc('UnloadModelAnimations', [.voidPtr, .int], .void)
     ffi.cfunc('IsModelAnimationValid', [Model, ModelAnimation], .bool)
     ffi.cfunc('CheckCollisionSpheres', [Vector3, .float, Vector3, .float], .bool)
     ffi.cfunc('CheckCollisionBoxes', [BoundingBox, BoundingBox], .bool)
@@ -1684,15 +1746,18 @@ func load():
     ffi.cfunc('CloseAudioDevice', [], .void)
     ffi.cfunc('IsAudioDeviceReady', [], .bool)
     ffi.cfunc('SetMasterVolume', [.float], .void)
+    ffi.cfunc('GetMasterVolume', [], .float)
     ffi.cfunc('LoadWave', [.voidPtr], Wave)
     ffi.cfunc('LoadWaveFromMemory', [.voidPtr, .voidPtr, .int], Wave)
     ffi.cfunc('IsWaveReady', [Wave], .bool)
     ffi.cfunc('LoadSound', [.voidPtr], Sound)
     ffi.cfunc('LoadSoundFromWave', [Wave], Sound)
+    ffi.cfunc('LoadSoundAlias', [Sound], Sound)
     ffi.cfunc('IsSoundReady', [Sound], .bool)
     ffi.cfunc('UpdateSound', [Sound, .voidPtr, .int], .void)
     ffi.cfunc('UnloadWave', [Wave], .void)
     ffi.cfunc('UnloadSound', [Sound], .void)
+    ffi.cfunc('UnloadSoundAlias', [Sound], .void)
     ffi.cfunc('ExportWave', [Wave, .voidPtr], .bool)
     ffi.cfunc('ExportWaveAsCode', [Wave, .voidPtr], .bool)
     ffi.cfunc('PlaySound', [Sound], .void)
@@ -1745,9 +1810,8 @@ func load():
     ffi.cfunc('DetachAudioMixedProcessor', [.voidPtr], .void)
     my lib = ffi.bindLib(libPath, [genMap: true])
 --     InitWindow = lib.InitWindow
---     InitFoo = lib.InitFoo
-    WindowShouldClose = lib.WindowShouldClose
     CloseWindow = lib.CloseWindow
+    WindowShouldClose = lib.WindowShouldClose
     IsWindowReady = lib.IsWindowReady
     IsWindowFullscreen = lib.IsWindowFullscreen
     IsWindowHidden = lib.IsWindowHidden
@@ -1759,6 +1823,7 @@ func load():
     SetWindowState = lib.SetWindowState
     ClearWindowState = lib.ClearWindowState
     ToggleFullscreen = lib.ToggleFullscreen
+    ToggleBorderlessWindowed = lib.ToggleBorderlessWindowed
     MaximizeWindow = lib.MaximizeWindow
     MinimizeWindow = lib.MinimizeWindow
     RestoreWindow = lib.RestoreWindow
@@ -1768,8 +1833,10 @@ func load():
     SetWindowPosition = lib.SetWindowPosition
     SetWindowMonitor = lib.SetWindowMonitor
     SetWindowMinSize = lib.SetWindowMinSize
+    SetWindowMaxSize = lib.SetWindowMaxSize
     SetWindowSize = lib.SetWindowSize
     SetWindowOpacity = lib.SetWindowOpacity
+    SetWindowFocused = lib.SetWindowFocused
     GetWindowHandle = lib.GetWindowHandle
     GetScreenWidth = lib.GetScreenWidth
     GetScreenHeight = lib.GetScreenHeight
@@ -1790,9 +1857,6 @@ func load():
     GetClipboardText = lib.GetClipboardText
     EnableEventWaiting = lib.EnableEventWaiting
     DisableEventWaiting = lib.DisableEventWaiting
-    SwapScreenBuffer = lib.SwapScreenBuffer
-    PollInputEvents = lib.PollInputEvents
-    WaitTime = lib.WaitTime
     ShowCursor = lib.ShowCursor
     HideCursor = lib.HideCursor
     IsCursorHidden = lib.IsCursorHidden
@@ -1836,19 +1900,24 @@ func load():
     GetWorldToScreenEx = lib.GetWorldToScreenEx
     GetWorldToScreen2D = lib.GetWorldToScreen2D
     SetTargetFPS = lib.SetTargetFPS
-    GetFPS = lib.GetFPS
     GetFrameTime = lib.GetFrameTime
     GetTime = lib.GetTime
-    GetRandomValue = lib.GetRandomValue
+    GetFPS = lib.GetFPS
+    SwapScreenBuffer = lib.SwapScreenBuffer
+    PollInputEvents = lib.PollInputEvents
+    WaitTime = lib.WaitTime
     SetRandomSeed = lib.SetRandomSeed
+    GetRandomValue = lib.GetRandomValue
+    LoadRandomSequence = lib.LoadRandomSequence
+    UnloadRandomSequence = lib.UnloadRandomSequence
     TakeScreenshot = lib.TakeScreenshot
     SetConfigFlags = lib.SetConfigFlags
+    OpenURL = lib.OpenURL
     TraceLog = lib.TraceLog
     SetTraceLogLevel = lib.SetTraceLogLevel
     MemAlloc = lib.MemAlloc
     MemRealloc = lib.MemRealloc
     MemFree = lib.MemFree
-    OpenURL = lib.OpenURL
     SetTraceLogCallback = lib.SetTraceLogCallback
     SetLoadFileDataCallback = lib.SetLoadFileDataCallback
     SetSaveFileDataCallback = lib.SetSaveFileDataCallback
@@ -1885,13 +1954,22 @@ func load():
     DecompressData = lib.DecompressData
     EncodeDataBase64 = lib.EncodeDataBase64
     DecodeDataBase64 = lib.DecodeDataBase64
+    LoadAutomationEventList = lib.LoadAutomationEventList
+    UnloadAutomationEventList = lib.UnloadAutomationEventList
+    ExportAutomationEventList = lib.ExportAutomationEventList
+    SetAutomationEventList = lib.SetAutomationEventList
+    SetAutomationEventBaseFrame = lib.SetAutomationEventBaseFrame
+    StartAutomationEventRecording = lib.StartAutomationEventRecording
+    StopAutomationEventRecording = lib.StopAutomationEventRecording
+    PlayAutomationEvent = lib.PlayAutomationEvent
     IsKeyPressed = lib.IsKeyPressed
+    IsKeyPressedRepeat = lib.IsKeyPressedRepeat
     IsKeyDown = lib.IsKeyDown
     IsKeyReleased = lib.IsKeyReleased
     IsKeyUp = lib.IsKeyUp
-    SetExitKey = lib.SetExitKey
     GetKeyPressed = lib.GetKeyPressed
     GetCharPressed = lib.GetCharPressed
+    SetExitKey = lib.SetExitKey
     IsGamepadAvailable = lib.IsGamepadAvailable
     GetGamepadName = lib.GetGamepadName
     IsGamepadButtonPressed = lib.IsGamepadButtonPressed
@@ -1937,16 +2015,15 @@ func load():
     DrawLine = lib.DrawLine
     DrawLineV = lib.DrawLineV
     DrawLineEx = lib.DrawLineEx
-    DrawLineBezier = lib.DrawLineBezier
-    DrawLineBezierQuad = lib.DrawLineBezierQuad
-    DrawLineBezierCubic = lib.DrawLineBezierCubic
     DrawLineStrip = lib.DrawLineStrip
+    DrawLineBezier = lib.DrawLineBezier
     DrawCircle = lib.DrawCircle
     DrawCircleSector = lib.DrawCircleSector
     DrawCircleSectorLines = lib.DrawCircleSectorLines
     DrawCircleGradient = lib.DrawCircleGradient
     DrawCircleV = lib.DrawCircleV
     DrawCircleLines = lib.DrawCircleLines
+    DrawCircleLinesV = lib.DrawCircleLinesV
     DrawEllipse = lib.DrawEllipse
     DrawEllipseLines = lib.DrawEllipseLines
     DrawRing = lib.DrawRing
@@ -1969,6 +2046,21 @@ func load():
     DrawPoly = lib.DrawPoly
     DrawPolyLines = lib.DrawPolyLines
     DrawPolyLinesEx = lib.DrawPolyLinesEx
+    DrawSplineLinear = lib.DrawSplineLinear
+    DrawSplineBasis = lib.DrawSplineBasis
+    DrawSplineCatmullRom = lib.DrawSplineCatmullRom
+    DrawSplineBezierQuadratic = lib.DrawSplineBezierQuadratic
+    DrawSplineBezierCubic = lib.DrawSplineBezierCubic
+    DrawSplineSegmentLinear = lib.DrawSplineSegmentLinear
+    DrawSplineSegmentBasis = lib.DrawSplineSegmentBasis
+    DrawSplineSegmentCatmullRom = lib.DrawSplineSegmentCatmullRom
+    DrawSplineSegmentBezierQuadratic = lib.DrawSplineSegmentBezierQuadratic
+    DrawSplineSegmentBezierCubic = lib.DrawSplineSegmentBezierCubic
+    GetSplinePointLinear = lib.GetSplinePointLinear
+    GetSplinePointBasis = lib.GetSplinePointBasis
+    GetSplinePointCatmullRom = lib.GetSplinePointCatmullRom
+    GetSplinePointBezierQuad = lib.GetSplinePointBezierQuad
+    GetSplinePointBezierCubic = lib.GetSplinePointBezierCubic
     CheckCollisionRecs = lib.CheckCollisionRecs
     CheckCollisionCircles = lib.CheckCollisionCircles
     CheckCollisionCircleRec = lib.CheckCollisionCircleRec
@@ -1981,6 +2073,7 @@ func load():
     GetCollisionRec = lib.GetCollisionRec
     LoadImage = lib.LoadImage
     LoadImageRaw = lib.LoadImageRaw
+    LoadImageSvg = lib.LoadImageSvg
     LoadImageAnim = lib.LoadImageAnim
     LoadImageFromMemory = lib.LoadImageFromMemory
     LoadImageFromTexture = lib.LoadImageFromTexture
@@ -1988,11 +2081,12 @@ func load():
     IsImageReady = lib.IsImageReady
     UnloadImage = lib.UnloadImage
     ExportImage = lib.ExportImage
+    ExportImageToMemory = lib.ExportImageToMemory
     ExportImageAsCode = lib.ExportImageAsCode
     GenImageColor = lib.GenImageColor
-    GenImageGradientV = lib.GenImageGradientV
-    GenImageGradientH = lib.GenImageGradientH
+    GenImageGradientLinear = lib.GenImageGradientLinear
     GenImageGradientRadial = lib.GenImageGradientRadial
+    GenImageGradientSquare = lib.GenImageGradientSquare
     GenImageChecked = lib.GenImageChecked
     GenImageWhiteNoise = lib.GenImageWhiteNoise
     GenImagePerlinNoise = lib.GenImagePerlinNoise
@@ -2017,6 +2111,7 @@ func load():
     ImageDither = lib.ImageDither
     ImageFlipVertical = lib.ImageFlipVertical
     ImageFlipHorizontal = lib.ImageFlipHorizontal
+    ImageRotate = lib.ImageRotate
     ImageRotateCW = lib.ImageRotateCW
     ImageRotateCCW = lib.ImageRotateCCW
     ImageColorTint = lib.ImageColorTint
@@ -2098,6 +2193,7 @@ func load():
     DrawTextPro = lib.DrawTextPro
     DrawTextCodepoint = lib.DrawTextCodepoint
     DrawTextCodepoints = lib.DrawTextCodepoints
+    SetTextLineSpacing = lib.SetTextLineSpacing
 --     MeasureText = lib.MeasureText
     MeasureTextEx = lib.MeasureTextEx
     GetGlyphIndex = lib.GetGlyphIndex
@@ -2203,15 +2299,18 @@ func load():
     CloseAudioDevice = lib.CloseAudioDevice
     IsAudioDeviceReady = lib.IsAudioDeviceReady
     SetMasterVolume = lib.SetMasterVolume
+    GetMasterVolume = lib.GetMasterVolume
     LoadWave = lib.LoadWave
     LoadWaveFromMemory = lib.LoadWaveFromMemory
     IsWaveReady = lib.IsWaveReady
     LoadSound = lib.LoadSound
     LoadSoundFromWave = lib.LoadSoundFromWave
+    LoadSoundAlias = lib.LoadSoundAlias
     IsSoundReady = lib.IsSoundReady
     UpdateSound = lib.UpdateSound
     UnloadWave = lib.UnloadWave
     UnloadSound = lib.UnloadSound
+    UnloadSoundAlias = lib.UnloadSoundAlias
     ExportWave = lib.ExportWave
     ExportWaveAsCode = lib.ExportWaveAsCode
     PlaySound = lib.PlaySound
@@ -2266,10 +2365,10 @@ func load():
 
 -- Macros
 var Root.GCC_HAVE_DWARF2_CFI_ASM int = 1
-var Root.RAYLIB_VERSION_MAJOR int = 4
-var Root.RAYLIB_VERSION_MINOR int = 5
+var Root.RAYLIB_VERSION_MAJOR int = 5
+var Root.RAYLIB_VERSION_MINOR int = 0
 var Root.RAYLIB_VERSION_PATCH int = 0
-var Root.RAYLIB_VERSION string = "4.5"
+var Root.RAYLIB_VERSION string = "5.0"
 var Root.PI float = 3.1415927410125732
 var Root.DEG2RAD float = 0.01745329238474369
 var Root.RAD2DEG float = 57.2957763671875
@@ -2301,7 +2400,6 @@ var Root.MAGENTA Color = [Color r: 255, g: 0, b: 255, a: 255]
 var Root.RAYWHITE Color = [Color r: 245, g: 245, b: 245, a: 255]
 -- var Root.true int = 1
 -- var Root.false int = 0
-var Root.FooBlack Color = [Color r: 0, g: 0, b: 0, a: 255]
 var Root.MOUSE_LEFT_BUTTON int = 0
 var Root.MOUSE_RIGHT_BUTTON int = 1
 var Root.MOUSE_MIDDLE_BUTTON int = 2
@@ -2309,4 +2407,3 @@ var Root.MATERIAL_MAP_DIFFUSE int = 0
 var Root.MATERIAL_MAP_SPECULAR int = 1
 var Root.SHADER_LOC_MAP_DIFFUSE int = 15
 var Root.SHADER_LOC_MAP_SPECULAR int = 16
--- 

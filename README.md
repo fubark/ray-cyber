@@ -48,3 +48,9 @@ https://user-images.githubusercontent.com/94020660/219881427-1244fd8d-29da-4a72-
 cyber examples/clash.cy
 
 https://user-images.githubusercontent.com/94020660/219976051-ea658da6-e46b-4bbf-b191-f73151efa309.mp4
+
+# Troubleshooting.
+Cyber caches the Raylib dependencies into `~/.cyber`. After an upgrade to Cyber or Raylib, repull the dependencies with `-r`:
+```sh
+cyber -r game.cy
+```

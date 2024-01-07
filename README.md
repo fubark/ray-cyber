@@ -4,6 +4,9 @@ Bindings auto-generated from [cbindgen.cy](https://github.com/fubark/cyber/blob/
 
 Start using by importing the URL from your script.
 
+# Requirements.
+* [Cyber v0.3](https://github.com/fubark/cyber/releases/tag/0.3)
+
 # Instructions.
 1. [Install Cyber](https://github.com/fubark/cyber#install)
 2. Create a new cyber script `game.cy`:

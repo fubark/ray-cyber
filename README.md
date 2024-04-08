@@ -5,26 +5,26 @@ Bindings auto-generated from [cbindgen.cy](https://github.com/fubark/cyber/blob/
 Start using by importing the URL from your script.
 
 # Requirements.
-* [Cyber v0.3](https://github.com/fubark/cyber/releases/tag/0.3)
+* [Cyber v0.4-dev](https://github.com/fubark/cyber/releases/tag/latest)
 
 # Instructions.
 1. [Install Cyber](https://github.com/fubark/cyber#install)
 2. Create a new cyber script `game.cy`:
 ```text
-import ray 'https://github.com/fubark/ray-cyber'
+import rl 'https://github.com/fubark/ray-cyber'
 
-ray.InitWindow(800, 600, 'Hello')
-ray.SetTargetFPS(60)
+rl.InitWindow(800, 600, 'Hello')
+rl.SetTargetFPS(60)
 
 -- Main game loop
-while !ray.WindowShouldClose():
+while !rl.WindowShouldClose():
     -- Do game update...
-    ray.BeginDrawing()
-    ray.ClearBackground(ray.RAYWHITE)
-    ray.DrawText('Congrats! You created your first window!', 190, 200, 20, ray.LIGHTGRAY)
-    ray.EndDrawing()
+    rl.BeginDrawing()
+    rl.ClearBackground(rl.RAYWHITE)
+    rl.DrawText('Congrats! You created your first window!', 190, 200, 20, rl.LIGHTGRAY)
+    rl.EndDrawing()
 
-ray.CloseWindow()
+rl.CloseWindow()
 ```
 3. Run the game!
 ```sh

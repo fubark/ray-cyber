@@ -1,57 +1,59 @@
-import math
+use math
 
-var Root.libUrl = switch os.system:
-case 'linux' => 'https://raw.githubusercontent.com/fubark/ray-cyber/master/libraylib.so.5.0.0'
-case 'windows' => 'https://raw.githubusercontent.com/fubark/ray-cyber/master/raylib.5.0.0.dll'
-case 'macos' => 'https://raw.githubusercontent.com/fubark/ray-cyber/master/libraylib.5.0.0.dylib'
-else => throw error.Unsupported
+-- ./cbindgen.cy -o mod.cy raylib.h -I/opt/homebrew/Cellar/llvm/17.0.6/lib/clang/17/include
 
-var Root.libPath = os.cacheUrl(libUrl)
+var .libUrl = switch os.system:
+    case 'linux' => 'https://raw.githubusercontent.com/fubark/ray-cyber/master/libraylib.so.5.0.0'
+    case 'windows' => 'https://raw.githubusercontent.com/fubark/ray-cyber/master/raylib.5.0.0.dll'
+    case 'macos' => 'https://raw.githubusercontent.com/fubark/ray-cyber/master/libraylib.5.0.0.dylib'
+    else => throw error.Unsupported
 
-func InitFoo(width int, height int, title pointer) none: pass
+var .libPath = os.cacheUrl(libUrl)
 
-func InitWindow(width int, height int, title string) none:
+func InitFoo(width int, height int, title pointer): pass
+
+func InitWindow(width int, height int, title String):
     var cstr = os.cstr(title)
-    (lib.InitWindow)(width, height, cstr)
+    lib.InitWindow(width, height, cstr)
     os.free(cstr)
 
-func DrawText(text string, x int, y int, size int, color Color) none:
+func DrawText(text String, x int, y int, size int, color Color):
     var cstr = os.cstr(text)
-    (lib.DrawText)(cstr, x, y, size, color)
+    lib.DrawText(cstr, x, y, size, color)
     os.free(cstr)
 
-func MeasureText(text string, size int) int:
+func MeasureText(text String, size int) int:
     var cstr = os.cstr(text)
-    var res = (lib.MeasureText)(cstr, size)
+    var res = lib.MeasureText(cstr, size)
     os.free(cstr)
     return res as int
 
-func LoadTexture(fileName string) Texture2D:
+func LoadTexture(fileName String) Texture2D:
     var cstr = os.cstr(fileName)
-    var res = (lib.LoadTexture)(cstr)
+    var res = lib.LoadTexture(cstr)
     os.free(cstr)
     return res as Texture2D
 
 func Vector2.sub(self, o Vector2) Vector2:
-    return [Vector2
+    return Vector2{
         x: self.x - o.x,
         y: self.y - o.y,
-    ]
+    }
 
 func Vector2.add(self, o Vector2) Vector2:
-    return [Vector2
+    return Vector2{
         x: self.x + o.x,
         y: self.y + o.y,
-    ]
+    }
 
 func Vector2.scale(self, scale float) Vector2:
-    return [Vector2
+    return Vector2{
         x: self.x * scale,
         y: self.y * scale,
-    ]
+    }
 
 func Vector2.normalize(self) Vector2:
-    var res = [Vector2 x: 0, y: 0]
+    var res = Vector2{x: 0, y: 0}
     var len = self.len()
     if len > 0.0:
         var ilen = 1.0/len
@@ -68,1194 +70,1818 @@ func Vector2.len(self) float:
 
 -- typedef va_list
 
-type Vector2 object:
-    var x float
-    var y float
-
-type Vector3 object:
-    var x float
-    var y float
-    var z float
-
-type Vector4 object:
-    var x float
-    var y float
-    var z float
-    var w float
-
-type Quaternion Vector4
-
-type Matrix object:
-    var m0 float
-    var m4 float
-    var m8 float
-    var m12 float
-    var m1 float
-    var m5 float
-    var m9 float
-    var m13 float
-    var m2 float
-    var m6 float
-    var m10 float
-    var m14 float
-    var m3 float
-    var m7 float
-    var m11 float
-    var m15 float
-
-type Color object:
-    var r int
-    var g int
-    var b int
-    var a int
-
-type Rectangle object:
-    var x float
-    var y float
-    var width float
-    var height float
-
-type Image object:
-    var data any -- void *
-    var width int
-    var height int
-    var mipmaps int
-    var format int
-
-type Texture object:
-    var id int
-    var width int
-    var height int
-    var mipmaps int
-    var format int
-
-type Texture2D Texture
-
-type TextureCubemap Texture
-
-type RenderTexture object:
-    var id int
-    var texture Texture
-    var depth Texture
-
-type RenderTexture2D RenderTexture
-
-type NPatchInfo object:
-    var source Rectangle
-    var left int
-    var top int
-    var right int
-    var bottom int
-    var layout int
-
-type GlyphInfo object:
-    var value int
-    var offsetX int
-    var offsetY int
-    var advanceX int
-    var image Image
-
-type Font object:
-    var baseSize int
-    var glyphCount int
-    var glyphPadding int
-    var texture Texture
-    var recs any -- Rectangle *
-    var glyphs any -- GlyphInfo *
-
-type Camera3D object:
-    var position Vector3
-    var target Vector3
-    var up Vector3
-    var fovy float
-    var projection int
-
-type Camera Camera3D
-
-type Camera2D object:
-    var offset Vector2
-    var target Vector2
-    var rotation float
-    var zoom float
-
-type Mesh object:
-    var vertexCount int
-    var triangleCount int
-    var vertices any -- float *
-    var texcoords any -- float *
-    var texcoords2 any -- float *
-    var normals any -- float *
-    var tangents any -- float *
-    var colors any -- unsigned char *
-    var indices any -- unsigned short *
-    var animVertices any -- float *
-    var animNormals any -- float *
-    var boneIds any -- unsigned char *
-    var boneWeights any -- float *
-    var vaoId int
-    var vboId any -- unsigned int *
-
-type Shader object:
-    var id int
-    var locs any -- int *
-
-type MaterialMap object:
-    var texture Texture
-    var color Color
-    var value float
-
-type Material object:
-    var shader Shader
-    var maps any -- MaterialMap *
-    var params List -- float[4]
-
-type Transform object:
-    var translation Vector3
-    var rotation Vector4
-    var scale Vector3
-
-type BoneInfo object:
-    var name List -- char[32]
-    var parent int
-
-type Model object:
-    var transform Matrix
-    var meshCount int
-    var materialCount int
-    var meshes any -- Mesh *
-    var materials any -- Material *
-    var meshMaterial any -- int *
-    var boneCount int
-    var bones any -- BoneInfo *
-    var bindPose any -- Transform *
-
-type ModelAnimation object:
-    var boneCount int
-    var frameCount int
-    var bones any -- BoneInfo *
-    var framePoses any -- Transform **
-    var name List -- char[32]
-
-type Ray object:
-    var position Vector3
-    var direction Vector3
-
-type RayCollision object:
-    var hit bool
-    var distance float
-    var point Vector3
-    var normal Vector3
-
-type BoundingBox object:
-    var min Vector3
-    var max Vector3
-
-type Wave object:
-    var frameCount int
-    var sampleRate int
-    var sampleSize int
-    var channels int
-    var data any -- void *
-
-type AudioStream object:
-    var buffer any -- rAudioBuffer *
-    var processor any -- rAudioProcessor *
-    var sampleRate int
-    var sampleSize int
-    var channels int
-
-type Sound object:
-    var stream AudioStream
-    var frameCount int
-
-type Music object:
-    var stream AudioStream
-    var frameCount int
-    var looping bool
-    var ctxType int
-    var ctxData any -- void *
-
-type VrDeviceInfo object:
-    var hResolution int
-    var vResolution int
-    var hScreenSize float
-    var vScreenSize float
-    var vScreenCenter float
-    var eyeToScreenDistance float
-    var lensSeparationDistance float
-    var interpupillaryDistance float
-    var lensDistortionValues List -- float[4]
-    var chromaAbCorrection List -- float[4]
-
-type VrStereoConfig object:
-    var projection List -- Matrix[2]
-    var viewOffset List -- Matrix[2]
-    var leftLensCenter List -- float[2]
-    var rightLensCenter List -- float[2]
-    var leftScreenCenter List -- float[2]
-    var rightScreenCenter List -- float[2]
-    var scale List -- float[2]
-    var scaleIn List -- float[2]
-
-type FilePathList object:
-    var capacity int
-    var count int
-    var paths any -- char **
-
-type AutomationEvent object:
-    var frame int
-    var type int
-    var params List -- int[4]
-
-type AutomationEventList object:
-    var capacity int
-    var count int
-    var events any -- AutomationEvent *
-
-type ConfigFlags int
-var Root.FLAG_VSYNC_HINT int = 64
-var Root.FLAG_FULLSCREEN_MODE int = 2
-var Root.FLAG_WINDOW_RESIZABLE int = 4
-var Root.FLAG_WINDOW_UNDECORATED int = 8
-var Root.FLAG_WINDOW_HIDDEN int = 128
-var Root.FLAG_WINDOW_MINIMIZED int = 512
-var Root.FLAG_WINDOW_MAXIMIZED int = 1024
-var Root.FLAG_WINDOW_UNFOCUSED int = 2048
-var Root.FLAG_WINDOW_TOPMOST int = 4096
-var Root.FLAG_WINDOW_ALWAYS_RUN int = 256
-var Root.FLAG_WINDOW_TRANSPARENT int = 16
-var Root.FLAG_WINDOW_HIGHDPI int = 8192
-var Root.FLAG_WINDOW_MOUSE_PASSTHROUGH int = 16384
-var Root.FLAG_BORDERLESS_WINDOWED_MODE int = 32768
-var Root.FLAG_MSAA_4X_HINT int = 32
-var Root.FLAG_INTERLACED_HINT int = 65536
-
-type TraceLogLevel int
-var Root.LOG_ALL int = 0
-var Root.LOG_TRACE int = 1
-var Root.LOG_DEBUG int = 2
-var Root.LOG_INFO int = 3
-var Root.LOG_WARNING int = 4
-var Root.LOG_ERROR int = 5
-var Root.LOG_FATAL int = 6
-var Root.LOG_NONE int = 7
-
-type KeyboardKey int
-var Root.KEY_NULL int = 0
-var Root.KEY_APOSTROPHE int = 39
-var Root.KEY_COMMA int = 44
-var Root.KEY_MINUS int = 45
-var Root.KEY_PERIOD int = 46
-var Root.KEY_SLASH int = 47
-var Root.KEY_ZERO int = 48
-var Root.KEY_ONE int = 49
-var Root.KEY_TWO int = 50
-var Root.KEY_THREE int = 51
-var Root.KEY_FOUR int = 52
-var Root.KEY_FIVE int = 53
-var Root.KEY_SIX int = 54
-var Root.KEY_SEVEN int = 55
-var Root.KEY_EIGHT int = 56
-var Root.KEY_NINE int = 57
-var Root.KEY_SEMICOLON int = 59
-var Root.KEY_EQUAL int = 61
-var Root.KEY_A int = 65
-var Root.KEY_B int = 66
-var Root.KEY_C int = 67
-var Root.KEY_D int = 68
-var Root.KEY_E int = 69
-var Root.KEY_F int = 70
-var Root.KEY_G int = 71
-var Root.KEY_H int = 72
-var Root.KEY_I int = 73
-var Root.KEY_J int = 74
-var Root.KEY_K int = 75
-var Root.KEY_L int = 76
-var Root.KEY_M int = 77
-var Root.KEY_N int = 78
-var Root.KEY_O int = 79
-var Root.KEY_P int = 80
-var Root.KEY_Q int = 81
-var Root.KEY_R int = 82
-var Root.KEY_S int = 83
-var Root.KEY_T int = 84
-var Root.KEY_U int = 85
-var Root.KEY_V int = 86
-var Root.KEY_W int = 87
-var Root.KEY_X int = 88
-var Root.KEY_Y int = 89
-var Root.KEY_Z int = 90
-var Root.KEY_LEFT_BRACKET int = 91
-var Root.KEY_BACKSLASH int = 92
-var Root.KEY_RIGHT_BRACKET int = 93
-var Root.KEY_GRAVE int = 96
-var Root.KEY_SPACE int = 32
-var Root.KEY_ESCAPE int = 256
-var Root.KEY_ENTER int = 257
-var Root.KEY_TAB int = 258
-var Root.KEY_BACKSPACE int = 259
-var Root.KEY_INSERT int = 260
-var Root.KEY_DELETE int = 261
-var Root.KEY_RIGHT int = 262
-var Root.KEY_LEFT int = 263
-var Root.KEY_DOWN int = 264
-var Root.KEY_UP int = 265
-var Root.KEY_PAGE_UP int = 266
-var Root.KEY_PAGE_DOWN int = 267
-var Root.KEY_HOME int = 268
-var Root.KEY_END int = 269
-var Root.KEY_CAPS_LOCK int = 280
-var Root.KEY_SCROLL_LOCK int = 281
-var Root.KEY_NUM_LOCK int = 282
-var Root.KEY_PRINT_SCREEN int = 283
-var Root.KEY_PAUSE int = 284
-var Root.KEY_F1 int = 290
-var Root.KEY_F2 int = 291
-var Root.KEY_F3 int = 292
-var Root.KEY_F4 int = 293
-var Root.KEY_F5 int = 294
-var Root.KEY_F6 int = 295
-var Root.KEY_F7 int = 296
-var Root.KEY_F8 int = 297
-var Root.KEY_F9 int = 298
-var Root.KEY_F10 int = 299
-var Root.KEY_F11 int = 300
-var Root.KEY_F12 int = 301
-var Root.KEY_LEFT_SHIFT int = 340
-var Root.KEY_LEFT_CONTROL int = 341
-var Root.KEY_LEFT_ALT int = 342
-var Root.KEY_LEFT_SUPER int = 343
-var Root.KEY_RIGHT_SHIFT int = 344
-var Root.KEY_RIGHT_CONTROL int = 345
-var Root.KEY_RIGHT_ALT int = 346
-var Root.KEY_RIGHT_SUPER int = 347
-var Root.KEY_KB_MENU int = 348
-var Root.KEY_KP_0 int = 320
-var Root.KEY_KP_1 int = 321
-var Root.KEY_KP_2 int = 322
-var Root.KEY_KP_3 int = 323
-var Root.KEY_KP_4 int = 324
-var Root.KEY_KP_5 int = 325
-var Root.KEY_KP_6 int = 326
-var Root.KEY_KP_7 int = 327
-var Root.KEY_KP_8 int = 328
-var Root.KEY_KP_9 int = 329
-var Root.KEY_KP_DECIMAL int = 330
-var Root.KEY_KP_DIVIDE int = 331
-var Root.KEY_KP_MULTIPLY int = 332
-var Root.KEY_KP_SUBTRACT int = 333
-var Root.KEY_KP_ADD int = 334
-var Root.KEY_KP_ENTER int = 335
-var Root.KEY_KP_EQUAL int = 336
-var Root.KEY_BACK int = 4
-var Root.KEY_MENU int = 82
-var Root.KEY_VOLUME_UP int = 24
-var Root.KEY_VOLUME_DOWN int = 25
-
-type MouseButton int
-var Root.MOUSE_BUTTON_LEFT int = 0
-var Root.MOUSE_BUTTON_RIGHT int = 1
-var Root.MOUSE_BUTTON_MIDDLE int = 2
-var Root.MOUSE_BUTTON_SIDE int = 3
-var Root.MOUSE_BUTTON_EXTRA int = 4
-var Root.MOUSE_BUTTON_FORWARD int = 5
-var Root.MOUSE_BUTTON_BACK int = 6
-
-type MouseCursor int
-var Root.MOUSE_CURSOR_DEFAULT int = 0
-var Root.MOUSE_CURSOR_ARROW int = 1
-var Root.MOUSE_CURSOR_IBEAM int = 2
-var Root.MOUSE_CURSOR_CROSSHAIR int = 3
-var Root.MOUSE_CURSOR_POINTING_HAND int = 4
-var Root.MOUSE_CURSOR_RESIZE_EW int = 5
-var Root.MOUSE_CURSOR_RESIZE_NS int = 6
-var Root.MOUSE_CURSOR_RESIZE_NWSE int = 7
-var Root.MOUSE_CURSOR_RESIZE_NESW int = 8
-var Root.MOUSE_CURSOR_RESIZE_ALL int = 9
-var Root.MOUSE_CURSOR_NOT_ALLOWED int = 10
-
-type GamepadButton int
-var Root.GAMEPAD_BUTTON_UNKNOWN int = 0
-var Root.GAMEPAD_BUTTON_LEFT_FACE_UP int = 1
-var Root.GAMEPAD_BUTTON_LEFT_FACE_RIGHT int = 2
-var Root.GAMEPAD_BUTTON_LEFT_FACE_DOWN int = 3
-var Root.GAMEPAD_BUTTON_LEFT_FACE_LEFT int = 4
-var Root.GAMEPAD_BUTTON_RIGHT_FACE_UP int = 5
-var Root.GAMEPAD_BUTTON_RIGHT_FACE_RIGHT int = 6
-var Root.GAMEPAD_BUTTON_RIGHT_FACE_DOWN int = 7
-var Root.GAMEPAD_BUTTON_RIGHT_FACE_LEFT int = 8
-var Root.GAMEPAD_BUTTON_LEFT_TRIGGER_1 int = 9
-var Root.GAMEPAD_BUTTON_LEFT_TRIGGER_2 int = 10
-var Root.GAMEPAD_BUTTON_RIGHT_TRIGGER_1 int = 11
-var Root.GAMEPAD_BUTTON_RIGHT_TRIGGER_2 int = 12
-var Root.GAMEPAD_BUTTON_MIDDLE_LEFT int = 13
-var Root.GAMEPAD_BUTTON_MIDDLE int = 14
-var Root.GAMEPAD_BUTTON_MIDDLE_RIGHT int = 15
-var Root.GAMEPAD_BUTTON_LEFT_THUMB int = 16
-var Root.GAMEPAD_BUTTON_RIGHT_THUMB int = 17
-
-type GamepadAxis int
-var Root.GAMEPAD_AXIS_LEFT_X int = 0
-var Root.GAMEPAD_AXIS_LEFT_Y int = 1
-var Root.GAMEPAD_AXIS_RIGHT_X int = 2
-var Root.GAMEPAD_AXIS_RIGHT_Y int = 3
-var Root.GAMEPAD_AXIS_LEFT_TRIGGER int = 4
-var Root.GAMEPAD_AXIS_RIGHT_TRIGGER int = 5
-
-type MaterialMapIndex int
-var Root.MATERIAL_MAP_ALBEDO int = 0
-var Root.MATERIAL_MAP_METALNESS int = 1
-var Root.MATERIAL_MAP_NORMAL int = 2
-var Root.MATERIAL_MAP_ROUGHNESS int = 3
-var Root.MATERIAL_MAP_OCCLUSION int = 4
-var Root.MATERIAL_MAP_EMISSION int = 5
-var Root.MATERIAL_MAP_HEIGHT int = 6
-var Root.MATERIAL_MAP_CUBEMAP int = 7
-var Root.MATERIAL_MAP_IRRADIANCE int = 8
-var Root.MATERIAL_MAP_PREFILTER int = 9
-var Root.MATERIAL_MAP_BRDF int = 10
-
-type ShaderLocationIndex int
-var Root.SHADER_LOC_VERTEX_POSITION int = 0
-var Root.SHADER_LOC_VERTEX_TEXCOORD01 int = 1
-var Root.SHADER_LOC_VERTEX_TEXCOORD02 int = 2
-var Root.SHADER_LOC_VERTEX_NORMAL int = 3
-var Root.SHADER_LOC_VERTEX_TANGENT int = 4
-var Root.SHADER_LOC_VERTEX_COLOR int = 5
-var Root.SHADER_LOC_MATRIX_MVP int = 6
-var Root.SHADER_LOC_MATRIX_VIEW int = 7
-var Root.SHADER_LOC_MATRIX_PROJECTION int = 8
-var Root.SHADER_LOC_MATRIX_MODEL int = 9
-var Root.SHADER_LOC_MATRIX_NORMAL int = 10
-var Root.SHADER_LOC_VECTOR_VIEW int = 11
-var Root.SHADER_LOC_COLOR_DIFFUSE int = 12
-var Root.SHADER_LOC_COLOR_SPECULAR int = 13
-var Root.SHADER_LOC_COLOR_AMBIENT int = 14
-var Root.SHADER_LOC_MAP_ALBEDO int = 15
-var Root.SHADER_LOC_MAP_METALNESS int = 16
-var Root.SHADER_LOC_MAP_NORMAL int = 17
-var Root.SHADER_LOC_MAP_ROUGHNESS int = 18
-var Root.SHADER_LOC_MAP_OCCLUSION int = 19
-var Root.SHADER_LOC_MAP_EMISSION int = 20
-var Root.SHADER_LOC_MAP_HEIGHT int = 21
-var Root.SHADER_LOC_MAP_CUBEMAP int = 22
-var Root.SHADER_LOC_MAP_IRRADIANCE int = 23
-var Root.SHADER_LOC_MAP_PREFILTER int = 24
-var Root.SHADER_LOC_MAP_BRDF int = 25
-
-type ShaderUniformDataType int
-var Root.SHADER_UNIFORM_FLOAT int = 0
-var Root.SHADER_UNIFORM_VEC2 int = 1
-var Root.SHADER_UNIFORM_VEC3 int = 2
-var Root.SHADER_UNIFORM_VEC4 int = 3
-var Root.SHADER_UNIFORM_INT int = 4
-var Root.SHADER_UNIFORM_IVEC2 int = 5
-var Root.SHADER_UNIFORM_IVEC3 int = 6
-var Root.SHADER_UNIFORM_IVEC4 int = 7
-var Root.SHADER_UNIFORM_SAMPLER2D int = 8
-
-type ShaderAttributeDataType int
-var Root.SHADER_ATTRIB_FLOAT int = 0
-var Root.SHADER_ATTRIB_VEC2 int = 1
-var Root.SHADER_ATTRIB_VEC3 int = 2
-var Root.SHADER_ATTRIB_VEC4 int = 3
-
-type PixelFormat int
-var Root.PIXELFORMAT_UNCOMPRESSED_GRAYSCALE int = 1
-var Root.PIXELFORMAT_UNCOMPRESSED_GRAY_ALPHA int = 2
-var Root.PIXELFORMAT_UNCOMPRESSED_R5G6B5 int = 3
-var Root.PIXELFORMAT_UNCOMPRESSED_R8G8B8 int = 4
-var Root.PIXELFORMAT_UNCOMPRESSED_R5G5B5A1 int = 5
-var Root.PIXELFORMAT_UNCOMPRESSED_R4G4B4A4 int = 6
-var Root.PIXELFORMAT_UNCOMPRESSED_R8G8B8A8 int = 7
-var Root.PIXELFORMAT_UNCOMPRESSED_R32 int = 8
-var Root.PIXELFORMAT_UNCOMPRESSED_R32G32B32 int = 9
-var Root.PIXELFORMAT_UNCOMPRESSED_R32G32B32A32 int = 10
-var Root.PIXELFORMAT_UNCOMPRESSED_R16 int = 11
-var Root.PIXELFORMAT_UNCOMPRESSED_R16G16B16 int = 12
-var Root.PIXELFORMAT_UNCOMPRESSED_R16G16B16A16 int = 13
-var Root.PIXELFORMAT_COMPRESSED_DXT1_RGB int = 14
-var Root.PIXELFORMAT_COMPRESSED_DXT1_RGBA int = 15
-var Root.PIXELFORMAT_COMPRESSED_DXT3_RGBA int = 16
-var Root.PIXELFORMAT_COMPRESSED_DXT5_RGBA int = 17
-var Root.PIXELFORMAT_COMPRESSED_ETC1_RGB int = 18
-var Root.PIXELFORMAT_COMPRESSED_ETC2_RGB int = 19
-var Root.PIXELFORMAT_COMPRESSED_ETC2_EAC_RGBA int = 20
-var Root.PIXELFORMAT_COMPRESSED_PVRT_RGB int = 21
-var Root.PIXELFORMAT_COMPRESSED_PVRT_RGBA int = 22
-var Root.PIXELFORMAT_COMPRESSED_ASTC_4x4_RGBA int = 23
-var Root.PIXELFORMAT_COMPRESSED_ASTC_8x8_RGBA int = 24
-
-type TextureFilter int
-var Root.TEXTURE_FILTER_POINT int = 0
-var Root.TEXTURE_FILTER_BILINEAR int = 1
-var Root.TEXTURE_FILTER_TRILINEAR int = 2
-var Root.TEXTURE_FILTER_ANISOTROPIC_4X int = 3
-var Root.TEXTURE_FILTER_ANISOTROPIC_8X int = 4
-var Root.TEXTURE_FILTER_ANISOTROPIC_16X int = 5
-
-type TextureWrap int
-var Root.TEXTURE_WRAP_REPEAT int = 0
-var Root.TEXTURE_WRAP_CLAMP int = 1
-var Root.TEXTURE_WRAP_MIRROR_REPEAT int = 2
-var Root.TEXTURE_WRAP_MIRROR_CLAMP int = 3
-
-type CubemapLayout int
-var Root.CUBEMAP_LAYOUT_AUTO_DETECT int = 0
-var Root.CUBEMAP_LAYOUT_LINE_VERTICAL int = 1
-var Root.CUBEMAP_LAYOUT_LINE_HORIZONTAL int = 2
-var Root.CUBEMAP_LAYOUT_CROSS_THREE_BY_FOUR int = 3
-var Root.CUBEMAP_LAYOUT_CROSS_FOUR_BY_THREE int = 4
-var Root.CUBEMAP_LAYOUT_PANORAMA int = 5
-
-type FontType int
-var Root.FONT_DEFAULT int = 0
-var Root.FONT_BITMAP int = 1
-var Root.FONT_SDF int = 2
-
-type BlendMode int
-var Root.BLEND_ALPHA int = 0
-var Root.BLEND_ADDITIVE int = 1
-var Root.BLEND_MULTIPLIED int = 2
-var Root.BLEND_ADD_COLORS int = 3
-var Root.BLEND_SUBTRACT_COLORS int = 4
-var Root.BLEND_ALPHA_PREMULTIPLY int = 5
-var Root.BLEND_CUSTOM int = 6
-var Root.BLEND_CUSTOM_SEPARATE int = 7
-
-type Gesture int
-var Root.GESTURE_NONE int = 0
-var Root.GESTURE_TAP int = 1
-var Root.GESTURE_DOUBLETAP int = 2
-var Root.GESTURE_HOLD int = 4
-var Root.GESTURE_DRAG int = 8
-var Root.GESTURE_SWIPE_RIGHT int = 16
-var Root.GESTURE_SWIPE_LEFT int = 32
-var Root.GESTURE_SWIPE_UP int = 64
-var Root.GESTURE_SWIPE_DOWN int = 128
-var Root.GESTURE_PINCH_IN int = 256
-var Root.GESTURE_PINCH_OUT int = 512
-
-type CameraMode int
-var Root.CAMERA_CUSTOM int = 0
-var Root.CAMERA_FREE int = 1
-var Root.CAMERA_ORBITAL int = 2
-var Root.CAMERA_FIRST_PERSON int = 3
-var Root.CAMERA_THIRD_PERSON int = 4
-
-type CameraProjection int
-var Root.CAMERA_PERSPECTIVE int = 0
-var Root.CAMERA_ORTHOGRAPHIC int = 1
-
-type NPatchLayout int
-var Root.NPATCH_NINE_PATCH int = 0
-var Root.NPATCH_THREE_PATCH_VERTICAL int = 1
-var Root.NPATCH_THREE_PATCH_HORIZONTAL int = 2
-
-type TraceLogCallback pointer
-
-type LoadFileDataCallback pointer
-
-type SaveFileDataCallback pointer
-
-type LoadFileTextCallback pointer
-
-type SaveFileTextCallback pointer
-
--- func InitWindow(width int, height int, title any) none: pass
-func CloseWindow() none: pass
-func WindowShouldClose() bool: pass
-func IsWindowReady() bool: pass
-func IsWindowFullscreen() bool: pass
-func IsWindowHidden() bool: pass
-func IsWindowMinimized() bool: pass
-func IsWindowMaximized() bool: pass
-func IsWindowFocused() bool: pass
-func IsWindowResized() bool: pass
-func IsWindowState(flag int) bool: pass
-func SetWindowState(flags int) none: pass
-func ClearWindowState(flags int) none: pass
-func ToggleFullscreen() none: pass
-func ToggleBorderlessWindowed() none: pass
-func MaximizeWindow() none: pass
-func MinimizeWindow() none: pass
-func RestoreWindow() none: pass
-func SetWindowIcon(image Image) none: pass
-func SetWindowIcons(images any, count int) none: pass
-func SetWindowTitle(title any) none: pass
-func SetWindowPosition(x int, y int) none: pass
-func SetWindowMonitor(monitor int) none: pass
-func SetWindowMinSize(width int, height int) none: pass
-func SetWindowMaxSize(width int, height int) none: pass
-func SetWindowSize(width int, height int) none: pass
-func SetWindowOpacity(opacity float) none: pass
-func SetWindowFocused() none: pass
-func GetWindowHandle() pointer: pass
-func GetScreenWidth() int: pass
-func GetScreenHeight() int: pass
-func GetRenderWidth() int: pass
-func GetRenderHeight() int: pass
-func GetMonitorCount() int: pass
-func GetCurrentMonitor() int: pass
-func GetMonitorPosition(monitor int) Vector2: pass
-func GetMonitorWidth(monitor int) int: pass
-func GetMonitorHeight(monitor int) int: pass
-func GetMonitorPhysicalWidth(monitor int) int: pass
-func GetMonitorPhysicalHeight(monitor int) int: pass
-func GetMonitorRefreshRate(monitor int) int: pass
-func GetWindowPosition() Vector2: pass
-func GetWindowScaleDPI() Vector2: pass
-func GetMonitorName(monitor int) pointer: pass
-func SetClipboardText(text any) none: pass
-func GetClipboardText() pointer: pass
-func EnableEventWaiting() none: pass
-func DisableEventWaiting() none: pass
-func ShowCursor() none: pass
-func HideCursor() none: pass
-func IsCursorHidden() bool: pass
-func EnableCursor() none: pass
-func DisableCursor() none: pass
-func IsCursorOnScreen() bool: pass
-func ClearBackground(color Color) none: pass
-func BeginDrawing() none: pass
-func EndDrawing() none: pass
-func BeginMode2D(camera Camera2D) none: pass
-func EndMode2D() none: pass
-func BeginMode3D(camera Camera3D) none: pass
-func EndMode3D() none: pass
-func BeginTextureMode(target RenderTexture) none: pass
-func EndTextureMode() none: pass
-func BeginShaderMode(shader Shader) none: pass
-func EndShaderMode() none: pass
-func BeginBlendMode(mode int) none: pass
-func EndBlendMode() none: pass
-func BeginScissorMode(x int, y int, width int, height int) none: pass
-func EndScissorMode() none: pass
-func BeginVrStereoMode(config VrStereoConfig) none: pass
-func EndVrStereoMode() none: pass
-func LoadVrStereoConfig(device VrDeviceInfo) VrStereoConfig: pass
-func UnloadVrStereoConfig(config VrStereoConfig) none: pass
-func LoadShader(vsFileName any, fsFileName any) Shader: pass
-func LoadShaderFromMemory(vsCode any, fsCode any) Shader: pass
-func IsShaderReady(shader Shader) bool: pass
-func GetShaderLocation(shader Shader, uniformName any) int: pass
-func GetShaderLocationAttrib(shader Shader, attribName any) int: pass
-func SetShaderValue(shader Shader, locIndex int, value any, uniformType int) none: pass
-func SetShaderValueV(shader Shader, locIndex int, value any, uniformType int, count int) none: pass
-func SetShaderValueMatrix(shader Shader, locIndex int, mat Matrix) none: pass
-func SetShaderValueTexture(shader Shader, locIndex int, texture Texture) none: pass
-func UnloadShader(shader Shader) none: pass
-func GetMouseRay(mousePosition Vector2, camera Camera3D) Ray: pass
-func GetCameraMatrix(camera Camera3D) Matrix: pass
-func GetCameraMatrix2D(camera Camera2D) Matrix: pass
-func GetWorldToScreen(position Vector3, camera Camera3D) Vector2: pass
-func GetScreenToWorld2D(position Vector2, camera Camera2D) Vector2: pass
-func GetWorldToScreenEx(position Vector3, camera Camera3D, width int, height int) Vector2: pass
-func GetWorldToScreen2D(position Vector2, camera Camera2D) Vector2: pass
-func SetTargetFPS(fps int) none: pass
-func GetFrameTime() float: pass
-func GetTime() float: pass
-func GetFPS() int: pass
-func SwapScreenBuffer() none: pass
-func PollInputEvents() none: pass
-func WaitTime(seconds float) none: pass
-func SetRandomSeed(seed int) none: pass
-func GetRandomValue(min int, max int) int: pass
-func LoadRandomSequence(count int, min int, max int) pointer: pass
-func UnloadRandomSequence(sequence any) none: pass
-func TakeScreenshot(fileName any) none: pass
-func SetConfigFlags(flags int) none: pass
-func OpenURL(url any) none: pass
-func TraceLog(logLevel int, text any) none: pass
-func SetTraceLogLevel(logLevel int) none: pass
-func MemAlloc(size int) pointer: pass
-func MemRealloc(ptr any, size int) pointer: pass
-func MemFree(ptr any) none: pass
-func SetTraceLogCallback(callback any) none: pass
-func SetLoadFileDataCallback(callback any) none: pass
-func SetSaveFileDataCallback(callback any) none: pass
-func SetLoadFileTextCallback(callback any) none: pass
-func SetSaveFileTextCallback(callback any) none: pass
-func LoadFileData(fileName any, dataSize any) pointer: pass
-func UnloadFileData(data any) none: pass
-func SaveFileData(fileName any, data any, dataSize int) bool: pass
-func ExportDataAsCode(data any, dataSize int, fileName any) bool: pass
-func LoadFileText(fileName any) pointer: pass
-func UnloadFileText(text any) none: pass
-func SaveFileText(fileName any, text any) bool: pass
-func FileExists(fileName any) bool: pass
-func DirectoryExists(dirPath any) bool: pass
-func IsFileExtension(fileName any, ext any) bool: pass
-func GetFileLength(fileName any) int: pass
-func GetFileExtension(fileName any) pointer: pass
-func GetFileName(filePath any) pointer: pass
-func GetFileNameWithoutExt(filePath any) pointer: pass
-func GetDirectoryPath(filePath any) pointer: pass
-func GetPrevDirectoryPath(dirPath any) pointer: pass
-func GetWorkingDirectory() pointer: pass
-func GetApplicationDirectory() pointer: pass
-func ChangeDirectory(dir any) bool: pass
-func IsPathFile(path any) bool: pass
-func LoadDirectoryFiles(dirPath any) FilePathList: pass
-func LoadDirectoryFilesEx(basePath any, filter any, scanSubdirs bool) FilePathList: pass
-func UnloadDirectoryFiles(files FilePathList) none: pass
-func IsFileDropped() bool: pass
-func LoadDroppedFiles() FilePathList: pass
-func UnloadDroppedFiles(files FilePathList) none: pass
-func GetFileModTime(fileName any) int: pass
-func CompressData(data any, dataSize int, compDataSize any) pointer: pass
-func DecompressData(compData any, compDataSize int, dataSize any) pointer: pass
-func EncodeDataBase64(data any, dataSize int, outputSize any) pointer: pass
-func DecodeDataBase64(data any, outputSize any) pointer: pass
-func LoadAutomationEventList(fileName any) AutomationEventList: pass
-func UnloadAutomationEventList(list any) none: pass
-func ExportAutomationEventList(list AutomationEventList, fileName any) bool: pass
-func SetAutomationEventList(list any) none: pass
-func SetAutomationEventBaseFrame(frame int) none: pass
-func StartAutomationEventRecording() none: pass
-func StopAutomationEventRecording() none: pass
-func PlayAutomationEvent(event AutomationEvent) none: pass
-func IsKeyPressed(key int) bool: pass
-func IsKeyPressedRepeat(key int) bool: pass
-func IsKeyDown(key int) bool: pass
-func IsKeyReleased(key int) bool: pass
-func IsKeyUp(key int) bool: pass
-func GetKeyPressed() int: pass
-func GetCharPressed() int: pass
-func SetExitKey(key int) none: pass
-func IsGamepadAvailable(gamepad int) bool: pass
-func GetGamepadName(gamepad int) pointer: pass
-func IsGamepadButtonPressed(gamepad int, button int) bool: pass
-func IsGamepadButtonDown(gamepad int, button int) bool: pass
-func IsGamepadButtonReleased(gamepad int, button int) bool: pass
-func IsGamepadButtonUp(gamepad int, button int) bool: pass
-func GetGamepadButtonPressed() int: pass
-func GetGamepadAxisCount(gamepad int) int: pass
-func GetGamepadAxisMovement(gamepad int, axis int) float: pass
-func SetGamepadMappings(mappings any) int: pass
-func IsMouseButtonPressed(button int) bool: pass
-func IsMouseButtonDown(button int) bool: pass
-func IsMouseButtonReleased(button int) bool: pass
-func IsMouseButtonUp(button int) bool: pass
-func GetMouseX() int: pass
-func GetMouseY() int: pass
-func GetMousePosition() Vector2: pass
-func GetMouseDelta() Vector2: pass
-func SetMousePosition(x int, y int) none: pass
-func SetMouseOffset(offsetX int, offsetY int) none: pass
-func SetMouseScale(scaleX float, scaleY float) none: pass
-func GetMouseWheelMove() float: pass
-func GetMouseWheelMoveV() Vector2: pass
-func SetMouseCursor(cursor int) none: pass
-func GetTouchX() int: pass
-func GetTouchY() int: pass
-func GetTouchPosition(index int) Vector2: pass
-func GetTouchPointId(index int) int: pass
-func GetTouchPointCount() int: pass
-func SetGesturesEnabled(flags int) none: pass
-func IsGestureDetected(gesture int) bool: pass
-func GetGestureDetected() int: pass
-func GetGestureHoldDuration() float: pass
-func GetGestureDragVector() Vector2: pass
-func GetGestureDragAngle() float: pass
-func GetGesturePinchVector() Vector2: pass
-func GetGesturePinchAngle() float: pass
-func UpdateCamera(camera any, mode int) none: pass
-func UpdateCameraPro(camera any, movement Vector3, rotation Vector3, zoom float) none: pass
-func SetShapesTexture(texture Texture, source Rectangle) none: pass
-func DrawPixel(posX int, posY int, color Color) none: pass
-func DrawPixelV(position Vector2, color Color) none: pass
-func DrawLine(startPosX int, startPosY int, endPosX int, endPosY int, color Color) none: pass
-func DrawLineV(startPos Vector2, endPos Vector2, color Color) none: pass
-func DrawLineEx(startPos Vector2, endPos Vector2, thick float, color Color) none: pass
-func DrawLineStrip(points any, pointCount int, color Color) none: pass
-func DrawLineBezier(startPos Vector2, endPos Vector2, thick float, color Color) none: pass
-func DrawCircle(centerX int, centerY int, radius float, color Color) none: pass
-func DrawCircleSector(center Vector2, radius float, startAngle float, endAngle float, segments int, color Color) none: pass
-func DrawCircleSectorLines(center Vector2, radius float, startAngle float, endAngle float, segments int, color Color) none: pass
-func DrawCircleGradient(centerX int, centerY int, radius float, color1 Color, color2 Color) none: pass
-func DrawCircleV(center Vector2, radius float, color Color) none: pass
-func DrawCircleLines(centerX int, centerY int, radius float, color Color) none: pass
-func DrawCircleLinesV(center Vector2, radius float, color Color) none: pass
-func DrawEllipse(centerX int, centerY int, radiusH float, radiusV float, color Color) none: pass
-func DrawEllipseLines(centerX int, centerY int, radiusH float, radiusV float, color Color) none: pass
-func DrawRing(center Vector2, innerRadius float, outerRadius float, startAngle float, endAngle float, segments int, color Color) none: pass
-func DrawRingLines(center Vector2, innerRadius float, outerRadius float, startAngle float, endAngle float, segments int, color Color) none: pass
-func DrawRectangle(posX int, posY int, width int, height int, color Color) none: pass
-func DrawRectangleV(position Vector2, size Vector2, color Color) none: pass
-func DrawRectangleRec(rec Rectangle, color Color) none: pass
-func DrawRectanglePro(rec Rectangle, origin Vector2, rotation float, color Color) none: pass
-func DrawRectangleGradientV(posX int, posY int, width int, height int, color1 Color, color2 Color) none: pass
-func DrawRectangleGradientH(posX int, posY int, width int, height int, color1 Color, color2 Color) none: pass
-func DrawRectangleGradientEx(rec Rectangle, col1 Color, col2 Color, col3 Color, col4 Color) none: pass
-func DrawRectangleLines(posX int, posY int, width int, height int, color Color) none: pass
-func DrawRectangleLinesEx(rec Rectangle, lineThick float, color Color) none: pass
-func DrawRectangleRounded(rec Rectangle, roundness float, segments int, color Color) none: pass
-func DrawRectangleRoundedLines(rec Rectangle, roundness float, segments int, lineThick float, color Color) none: pass
-func DrawTriangle(v1 Vector2, v2 Vector2, v3 Vector2, color Color) none: pass
-func DrawTriangleLines(v1 Vector2, v2 Vector2, v3 Vector2, color Color) none: pass
-func DrawTriangleFan(points any, pointCount int, color Color) none: pass
-func DrawTriangleStrip(points any, pointCount int, color Color) none: pass
-func DrawPoly(center Vector2, sides int, radius float, rotation float, color Color) none: pass
-func DrawPolyLines(center Vector2, sides int, radius float, rotation float, color Color) none: pass
-func DrawPolyLinesEx(center Vector2, sides int, radius float, rotation float, lineThick float, color Color) none: pass
-func DrawSplineLinear(points any, pointCount int, thick float, color Color) none: pass
-func DrawSplineBasis(points any, pointCount int, thick float, color Color) none: pass
-func DrawSplineCatmullRom(points any, pointCount int, thick float, color Color) none: pass
-func DrawSplineBezierQuadratic(points any, pointCount int, thick float, color Color) none: pass
-func DrawSplineBezierCubic(points any, pointCount int, thick float, color Color) none: pass
-func DrawSplineSegmentLinear(p1 Vector2, p2 Vector2, thick float, color Color) none: pass
-func DrawSplineSegmentBasis(p1 Vector2, p2 Vector2, p3 Vector2, p4 Vector2, thick float, color Color) none: pass
-func DrawSplineSegmentCatmullRom(p1 Vector2, p2 Vector2, p3 Vector2, p4 Vector2, thick float, color Color) none: pass
-func DrawSplineSegmentBezierQuadratic(p1 Vector2, c2 Vector2, p3 Vector2, thick float, color Color) none: pass
-func DrawSplineSegmentBezierCubic(p1 Vector2, c2 Vector2, c3 Vector2, p4 Vector2, thick float, color Color) none: pass
-func GetSplinePointLinear(startPos Vector2, endPos Vector2, t float) Vector2: pass
-func GetSplinePointBasis(p1 Vector2, p2 Vector2, p3 Vector2, p4 Vector2, t float) Vector2: pass
-func GetSplinePointCatmullRom(p1 Vector2, p2 Vector2, p3 Vector2, p4 Vector2, t float) Vector2: pass
-func GetSplinePointBezierQuad(p1 Vector2, c2 Vector2, p3 Vector2, t float) Vector2: pass
-func GetSplinePointBezierCubic(p1 Vector2, c2 Vector2, c3 Vector2, p4 Vector2, t float) Vector2: pass
-func CheckCollisionRecs(rec1 Rectangle, rec2 Rectangle) bool: pass
-func CheckCollisionCircles(center1 Vector2, radius1 float, center2 Vector2, radius2 float) bool: pass
-func CheckCollisionCircleRec(center Vector2, radius float, rec Rectangle) bool: pass
-func CheckCollisionPointRec(point Vector2, rec Rectangle) bool: pass
-func CheckCollisionPointCircle(point Vector2, center Vector2, radius float) bool: pass
-func CheckCollisionPointTriangle(point Vector2, p1 Vector2, p2 Vector2, p3 Vector2) bool: pass
-func CheckCollisionPointPoly(point Vector2, points any, pointCount int) bool: pass
-func CheckCollisionLines(startPos1 Vector2, endPos1 Vector2, startPos2 Vector2, endPos2 Vector2, collisionPoint any) bool: pass
-func CheckCollisionPointLine(point Vector2, p1 Vector2, p2 Vector2, threshold int) bool: pass
-func GetCollisionRec(rec1 Rectangle, rec2 Rectangle) Rectangle: pass
-func LoadImage(fileName any) Image: pass
-func LoadImageRaw(fileName any, width int, height int, format int, headerSize int) Image: pass
-func LoadImageSvg(fileNameOrString any, width int, height int) Image: pass
-func LoadImageAnim(fileName any, frames any) Image: pass
-func LoadImageFromMemory(fileType any, fileData any, dataSize int) Image: pass
-func LoadImageFromTexture(texture Texture) Image: pass
-func LoadImageFromScreen() Image: pass
-func IsImageReady(image Image) bool: pass
-func UnloadImage(image Image) none: pass
-func ExportImage(image Image, fileName any) bool: pass
-func ExportImageToMemory(image Image, fileType any, fileSize any) pointer: pass
-func ExportImageAsCode(image Image, fileName any) bool: pass
-func GenImageColor(width int, height int, color Color) Image: pass
-func GenImageGradientLinear(width int, height int, direction int, start Color, end Color) Image: pass
-func GenImageGradientRadial(width int, height int, density float, inner Color, outer Color) Image: pass
-func GenImageGradientSquare(width int, height int, density float, inner Color, outer Color) Image: pass
-func GenImageChecked(width int, height int, checksX int, checksY int, col1 Color, col2 Color) Image: pass
-func GenImageWhiteNoise(width int, height int, factor float) Image: pass
-func GenImagePerlinNoise(width int, height int, offsetX int, offsetY int, scale float) Image: pass
-func GenImageCellular(width int, height int, tileSize int) Image: pass
-func GenImageText(width int, height int, text any) Image: pass
-func ImageCopy(image Image) Image: pass
-func ImageFromImage(image Image, rec Rectangle) Image: pass
-func ImageText(text any, fontSize int, color Color) Image: pass
-func ImageTextEx(font Font, text any, fontSize float, spacing float, tint Color) Image: pass
-func ImageFormat(image any, newFormat int) none: pass
-func ImageToPOT(image any, fill Color) none: pass
-func ImageCrop(image any, crop Rectangle) none: pass
-func ImageAlphaCrop(image any, threshold float) none: pass
-func ImageAlphaClear(image any, color Color, threshold float) none: pass
-func ImageAlphaMask(image any, alphaMask Image) none: pass
-func ImageAlphaPremultiply(image any) none: pass
-func ImageBlurGaussian(image any, blurSize int) none: pass
-func ImageResize(image any, newWidth int, newHeight int) none: pass
-func ImageResizeNN(image any, newWidth int, newHeight int) none: pass
-func ImageResizeCanvas(image any, newWidth int, newHeight int, offsetX int, offsetY int, fill Color) none: pass
-func ImageMipmaps(image any) none: pass
-func ImageDither(image any, rBpp int, gBpp int, bBpp int, aBpp int) none: pass
-func ImageFlipVertical(image any) none: pass
-func ImageFlipHorizontal(image any) none: pass
-func ImageRotate(image any, degrees int) none: pass
-func ImageRotateCW(image any) none: pass
-func ImageRotateCCW(image any) none: pass
-func ImageColorTint(image any, color Color) none: pass
-func ImageColorInvert(image any) none: pass
-func ImageColorGrayscale(image any) none: pass
-func ImageColorContrast(image any, contrast float) none: pass
-func ImageColorBrightness(image any, brightness int) none: pass
-func ImageColorReplace(image any, color Color, replace Color) none: pass
-func LoadImageColors(image Image) pointer: pass
-func LoadImagePalette(image Image, maxPaletteSize int, colorCount any) pointer: pass
-func UnloadImageColors(colors any) none: pass
-func UnloadImagePalette(colors any) none: pass
-func GetImageAlphaBorder(image Image, threshold float) Rectangle: pass
-func GetImageColor(image Image, x int, y int) Color: pass
-func ImageClearBackground(dst any, color Color) none: pass
-func ImageDrawPixel(dst any, posX int, posY int, color Color) none: pass
-func ImageDrawPixelV(dst any, position Vector2, color Color) none: pass
-func ImageDrawLine(dst any, startPosX int, startPosY int, endPosX int, endPosY int, color Color) none: pass
-func ImageDrawLineV(dst any, start Vector2, end Vector2, color Color) none: pass
-func ImageDrawCircle(dst any, centerX int, centerY int, radius int, color Color) none: pass
-func ImageDrawCircleV(dst any, center Vector2, radius int, color Color) none: pass
-func ImageDrawCircleLines(dst any, centerX int, centerY int, radius int, color Color) none: pass
-func ImageDrawCircleLinesV(dst any, center Vector2, radius int, color Color) none: pass
-func ImageDrawRectangle(dst any, posX int, posY int, width int, height int, color Color) none: pass
-func ImageDrawRectangleV(dst any, position Vector2, size Vector2, color Color) none: pass
-func ImageDrawRectangleRec(dst any, rec Rectangle, color Color) none: pass
-func ImageDrawRectangleLines(dst any, rec Rectangle, thick int, color Color) none: pass
-func ImageDraw(dst any, src Image, srcRec Rectangle, dstRec Rectangle, tint Color) none: pass
-func ImageDrawText(dst any, text any, posX int, posY int, fontSize int, color Color) none: pass
-func ImageDrawTextEx(dst any, font Font, text any, position Vector2, fontSize float, spacing float, tint Color) none: pass
--- func LoadTexture(fileName any) Texture: pass
-func LoadTextureFromImage(image Image) Texture: pass
-func LoadTextureCubemap(image Image, layout int) Texture: pass
-func LoadRenderTexture(width int, height int) RenderTexture: pass
-func IsTextureReady(texture Texture) bool: pass
-func UnloadTexture(texture Texture) none: pass
-func IsRenderTextureReady(target RenderTexture) bool: pass
-func UnloadRenderTexture(target RenderTexture) none: pass
-func UpdateTexture(texture Texture, pixels any) none: pass
-func UpdateTextureRec(texture Texture, rec Rectangle, pixels any) none: pass
-func GenTextureMipmaps(texture any) none: pass
-func SetTextureFilter(texture Texture, filter int) none: pass
-func SetTextureWrap(texture Texture, wrap int) none: pass
-func DrawTexture(texture Texture, posX int, posY int, tint Color) none: pass
-func DrawTextureV(texture Texture, position Vector2, tint Color) none: pass
-func DrawTextureEx(texture Texture, position Vector2, rotation float, scale float, tint Color) none: pass
-func DrawTextureRec(texture Texture, source Rectangle, position Vector2, tint Color) none: pass
-func DrawTexturePro(texture Texture, source Rectangle, dest Rectangle, origin Vector2, rotation float, tint Color) none: pass
-func DrawTextureNPatch(texture Texture, nPatchInfo NPatchInfo, dest Rectangle, origin Vector2, rotation float, tint Color) none: pass
-func Fade(color Color, alpha float) Color: pass
-func ColorToInt(color Color) int: pass
-func ColorNormalize(color Color) Vector4: pass
-func ColorFromNormalized(normalized Vector4) Color: pass
-func ColorToHSV(color Color) Vector3: pass
-func ColorFromHSV(hue float, saturation float, value float) Color: pass
-func ColorTint(color Color, tint Color) Color: pass
-func ColorBrightness(color Color, factor float) Color: pass
-func ColorContrast(color Color, contrast float) Color: pass
-func ColorAlpha(color Color, alpha float) Color: pass
-func ColorAlphaBlend(dst Color, src Color, tint Color) Color: pass
-func GetColor(hexValue int) Color: pass
-func GetPixelColor(srcPtr any, format int) Color: pass
-func SetPixelColor(dstPtr any, color Color, format int) none: pass
-func GetPixelDataSize(width int, height int, format int) int: pass
-func GetFontDefault() Font: pass
-func LoadFont(fileName any) Font: pass
-func LoadFontEx(fileName any, fontSize int, codepoints any, codepointCount int) Font: pass
-func LoadFontFromImage(image Image, key Color, firstChar int) Font: pass
-func LoadFontFromMemory(fileType any, fileData any, dataSize int, fontSize int, codepoints any, codepointCount int) Font: pass
-func IsFontReady(font Font) bool: pass
-func LoadFontData(fileData any, dataSize int, fontSize int, codepoints any, codepointCount int, type int) pointer: pass
-func GenImageFontAtlas(glyphs any, glyphRecs any, glyphCount int, fontSize int, padding int, packMethod int) Image: pass
-func UnloadFontData(glyphs any, glyphCount int) none: pass
-func UnloadFont(font Font) none: pass
-func ExportFontAsCode(font Font, fileName any) bool: pass
-func DrawFPS(posX int, posY int) none: pass
--- func DrawText(text any, posX int, posY int, fontSize int, color Color) none: pass
-func DrawTextEx(font Font, text any, position Vector2, fontSize float, spacing float, tint Color) none: pass
-func DrawTextPro(font Font, text any, position Vector2, origin Vector2, rotation float, fontSize float, spacing float, tint Color) none: pass
-func DrawTextCodepoint(font Font, codepoint int, position Vector2, fontSize float, tint Color) none: pass
-func DrawTextCodepoints(font Font, codepoints any, codepointCount int, position Vector2, fontSize float, spacing float, tint Color) none: pass
-func SetTextLineSpacing(spacing int) none: pass
--- func MeasureText(text any, fontSize int) int: pass
-func MeasureTextEx(font Font, text any, fontSize float, spacing float) Vector2: pass
-func GetGlyphIndex(font Font, codepoint int) int: pass
-func GetGlyphInfo(font Font, codepoint int) GlyphInfo: pass
-func GetGlyphAtlasRec(font Font, codepoint int) Rectangle: pass
-func LoadUTF8(codepoints any, length int) pointer: pass
-func UnloadUTF8(text any) none: pass
-func LoadCodepoints(text any, count any) pointer: pass
-func UnloadCodepoints(codepoints any) none: pass
-func GetCodepointCount(text any) int: pass
-func GetCodepoint(text any, codepointSize any) int: pass
-func GetCodepointNext(text any, codepointSize any) int: pass
-func GetCodepointPrevious(text any, codepointSize any) int: pass
-func CodepointToUTF8(codepoint int, utf8Size any) pointer: pass
-func TextCopy(dst any, src any) int: pass
-func TextIsEqual(text1 any, text2 any) bool: pass
-func TextLength(text any) int: pass
-func TextFormat(text any) pointer: pass
-func TextSubtext(text any, position int, length int) pointer: pass
-func TextReplace(text any, replace any, by any) pointer: pass
-func TextInsert(text any, insert any, position int) pointer: pass
-func TextJoin(textList any, count int, delimiter any) pointer: pass
-func TextSplit(text any, delimiter int, count any) pointer: pass
-func TextAppend(text any, append any, position any) none: pass
-func TextFindIndex(text any, find any) int: pass
-func TextToUpper(text any) pointer: pass
-func TextToLower(text any) pointer: pass
-func TextToPascal(text any) pointer: pass
-func TextToInteger(text any) int: pass
-func DrawLine3D(startPos Vector3, endPos Vector3, color Color) none: pass
-func DrawPoint3D(position Vector3, color Color) none: pass
-func DrawCircle3D(center Vector3, radius float, rotationAxis Vector3, rotationAngle float, color Color) none: pass
-func DrawTriangle3D(v1 Vector3, v2 Vector3, v3 Vector3, color Color) none: pass
-func DrawTriangleStrip3D(points any, pointCount int, color Color) none: pass
-func DrawCube(position Vector3, width float, height float, length float, color Color) none: pass
-func DrawCubeV(position Vector3, size Vector3, color Color) none: pass
-func DrawCubeWires(position Vector3, width float, height float, length float, color Color) none: pass
-func DrawCubeWiresV(position Vector3, size Vector3, color Color) none: pass
-func DrawSphere(centerPos Vector3, radius float, color Color) none: pass
-func DrawSphereEx(centerPos Vector3, radius float, rings int, slices int, color Color) none: pass
-func DrawSphereWires(centerPos Vector3, radius float, rings int, slices int, color Color) none: pass
-func DrawCylinder(position Vector3, radiusTop float, radiusBottom float, height float, slices int, color Color) none: pass
-func DrawCylinderEx(startPos Vector3, endPos Vector3, startRadius float, endRadius float, sides int, color Color) none: pass
-func DrawCylinderWires(position Vector3, radiusTop float, radiusBottom float, height float, slices int, color Color) none: pass
-func DrawCylinderWiresEx(startPos Vector3, endPos Vector3, startRadius float, endRadius float, sides int, color Color) none: pass
-func DrawCapsule(startPos Vector3, endPos Vector3, radius float, slices int, rings int, color Color) none: pass
-func DrawCapsuleWires(startPos Vector3, endPos Vector3, radius float, slices int, rings int, color Color) none: pass
-func DrawPlane(centerPos Vector3, size Vector2, color Color) none: pass
-func DrawRay(ray Ray, color Color) none: pass
-func DrawGrid(slices int, spacing float) none: pass
-func LoadModel(fileName any) Model: pass
-func LoadModelFromMesh(mesh Mesh) Model: pass
-func IsModelReady(model Model) bool: pass
-func UnloadModel(model Model) none: pass
-func GetModelBoundingBox(model Model) BoundingBox: pass
-func DrawModel(model Model, position Vector3, scale float, tint Color) none: pass
-func DrawModelEx(model Model, position Vector3, rotationAxis Vector3, rotationAngle float, scale Vector3, tint Color) none: pass
-func DrawModelWires(model Model, position Vector3, scale float, tint Color) none: pass
-func DrawModelWiresEx(model Model, position Vector3, rotationAxis Vector3, rotationAngle float, scale Vector3, tint Color) none: pass
-func DrawBoundingBox(box BoundingBox, color Color) none: pass
-func DrawBillboard(camera Camera3D, texture Texture, position Vector3, size float, tint Color) none: pass
-func DrawBillboardRec(camera Camera3D, texture Texture, source Rectangle, position Vector3, size Vector2, tint Color) none: pass
-func DrawBillboardPro(camera Camera3D, texture Texture, source Rectangle, position Vector3, up Vector3, size Vector2, origin Vector2, rotation float, tint Color) none: pass
-func UploadMesh(mesh any, dynamic bool) none: pass
-func UpdateMeshBuffer(mesh Mesh, index int, data any, dataSize int, offset int) none: pass
-func UnloadMesh(mesh Mesh) none: pass
-func DrawMesh(mesh Mesh, material Material, transform Matrix) none: pass
-func DrawMeshInstanced(mesh Mesh, material Material, transforms any, instances int) none: pass
-func ExportMesh(mesh Mesh, fileName any) bool: pass
-func GetMeshBoundingBox(mesh Mesh) BoundingBox: pass
-func GenMeshTangents(mesh any) none: pass
-func GenMeshPoly(sides int, radius float) Mesh: pass
-func GenMeshPlane(width float, length float, resX int, resZ int) Mesh: pass
-func GenMeshCube(width float, height float, length float) Mesh: pass
-func GenMeshSphere(radius float, rings int, slices int) Mesh: pass
-func GenMeshHemiSphere(radius float, rings int, slices int) Mesh: pass
-func GenMeshCylinder(radius float, height float, slices int) Mesh: pass
-func GenMeshCone(radius float, height float, slices int) Mesh: pass
-func GenMeshTorus(radius float, size float, radSeg int, sides int) Mesh: pass
-func GenMeshKnot(radius float, size float, radSeg int, sides int) Mesh: pass
-func GenMeshHeightmap(heightmap Image, size Vector3) Mesh: pass
-func GenMeshCubicmap(cubicmap Image, cubeSize Vector3) Mesh: pass
-func LoadMaterials(fileName any, materialCount any) pointer: pass
-func LoadMaterialDefault() Material: pass
-func IsMaterialReady(material Material) bool: pass
-func UnloadMaterial(material Material) none: pass
-func SetMaterialTexture(material any, mapType int, texture Texture) none: pass
-func SetModelMeshMaterial(model any, meshId int, materialId int) none: pass
-func LoadModelAnimations(fileName any, animCount any) pointer: pass
-func UpdateModelAnimation(model Model, anim ModelAnimation, frame int) none: pass
-func UnloadModelAnimation(anim ModelAnimation) none: pass
-func UnloadModelAnimations(animations any, animCount int) none: pass
-func IsModelAnimationValid(model Model, anim ModelAnimation) bool: pass
-func CheckCollisionSpheres(center1 Vector3, radius1 float, center2 Vector3, radius2 float) bool: pass
-func CheckCollisionBoxes(box1 BoundingBox, box2 BoundingBox) bool: pass
-func CheckCollisionBoxSphere(box BoundingBox, center Vector3, radius float) bool: pass
-func GetRayCollisionSphere(ray Ray, center Vector3, radius float) RayCollision: pass
-func GetRayCollisionBox(ray Ray, box BoundingBox) RayCollision: pass
-func GetRayCollisionMesh(ray Ray, mesh Mesh, transform Matrix) RayCollision: pass
-func GetRayCollisionTriangle(ray Ray, p1 Vector3, p2 Vector3, p3 Vector3) RayCollision: pass
-func GetRayCollisionQuad(ray Ray, p1 Vector3, p2 Vector3, p3 Vector3, p4 Vector3) RayCollision: pass
-type AudioCallback pointer
-
-func InitAudioDevice() none: pass
-func CloseAudioDevice() none: pass
-func IsAudioDeviceReady() bool: pass
-func SetMasterVolume(volume float) none: pass
-func GetMasterVolume() float: pass
-func LoadWave(fileName any) Wave: pass
-func LoadWaveFromMemory(fileType any, fileData any, dataSize int) Wave: pass
-func IsWaveReady(wave Wave) bool: pass
-func LoadSound(fileName any) Sound: pass
-func LoadSoundFromWave(wave Wave) Sound: pass
-func LoadSoundAlias(source Sound) Sound: pass
-func IsSoundReady(sound Sound) bool: pass
-func UpdateSound(sound Sound, data any, sampleCount int) none: pass
-func UnloadWave(wave Wave) none: pass
-func UnloadSound(sound Sound) none: pass
-func UnloadSoundAlias(alias Sound) none: pass
-func ExportWave(wave Wave, fileName any) bool: pass
-func ExportWaveAsCode(wave Wave, fileName any) bool: pass
-func PlaySound(sound Sound) none: pass
-func StopSound(sound Sound) none: pass
-func PauseSound(sound Sound) none: pass
-func ResumeSound(sound Sound) none: pass
-func IsSoundPlaying(sound Sound) bool: pass
-func SetSoundVolume(sound Sound, volume float) none: pass
-func SetSoundPitch(sound Sound, pitch float) none: pass
-func SetSoundPan(sound Sound, pan float) none: pass
-func WaveCopy(wave Wave) Wave: pass
-func WaveCrop(wave any, initSample int, finalSample int) none: pass
-func WaveFormat(wave any, sampleRate int, sampleSize int, channels int) none: pass
-func LoadWaveSamples(wave Wave) pointer: pass
-func UnloadWaveSamples(samples any) none: pass
-func LoadMusicStream(fileName any) Music: pass
-func LoadMusicStreamFromMemory(fileType any, data any, dataSize int) Music: pass
-func IsMusicReady(music Music) bool: pass
-func UnloadMusicStream(music Music) none: pass
-func PlayMusicStream(music Music) none: pass
-func IsMusicStreamPlaying(music Music) bool: pass
-func UpdateMusicStream(music Music) none: pass
-func StopMusicStream(music Music) none: pass
-func PauseMusicStream(music Music) none: pass
-func ResumeMusicStream(music Music) none: pass
-func SeekMusicStream(music Music, position float) none: pass
-func SetMusicVolume(music Music, volume float) none: pass
-func SetMusicPitch(music Music, pitch float) none: pass
-func SetMusicPan(music Music, pan float) none: pass
-func GetMusicTimeLength(music Music) float: pass
-func GetMusicTimePlayed(music Music) float: pass
-func LoadAudioStream(sampleRate int, sampleSize int, channels int) AudioStream: pass
-func IsAudioStreamReady(stream AudioStream) bool: pass
-func UnloadAudioStream(stream AudioStream) none: pass
-func UpdateAudioStream(stream AudioStream, data any, frameCount int) none: pass
-func IsAudioStreamProcessed(stream AudioStream) bool: pass
-func PlayAudioStream(stream AudioStream) none: pass
-func PauseAudioStream(stream AudioStream) none: pass
-func ResumeAudioStream(stream AudioStream) none: pass
-func IsAudioStreamPlaying(stream AudioStream) bool: pass
-func StopAudioStream(stream AudioStream) none: pass
-func SetAudioStreamVolume(stream AudioStream, volume float) none: pass
-func SetAudioStreamPitch(stream AudioStream, pitch float) none: pass
-func SetAudioStreamPan(stream AudioStream, pan float) none: pass
-func SetAudioStreamBufferSizeDefault(size int) none: pass
-func SetAudioStreamCallback(stream AudioStream, callback any) none: pass
-func AttachAudioStreamProcessor(stream AudioStream, processor any) none: pass
-func DetachAudioStreamProcessor(stream AudioStream, processor any) none: pass
-func AttachAudioMixedProcessor(processor any) none: pass
-func DetachAudioMixedProcessor(processor any) none: pass
-
-import os
-my Root.ffi = none
-my Root.lib = load()
+type Vector2_S:
+    x float
+    y float
+
+type Vector2 = Vector2_S
+
+type Vector3_S:
+    x float
+    y float
+    z float
+
+type Vector3 = Vector3_S
+
+type Vector4_S:
+    x float
+    y float
+    z float
+    w float
+
+type Vector4 = Vector4_S
+
+type Quaternion = Vector4
+
+type Matrix_S:
+    m0 float
+    m4 float
+    m8 float
+    m12 float
+    m1 float
+    m5 float
+    m9 float
+    m13 float
+    m2 float
+    m6 float
+    m10 float
+    m14 float
+    m3 float
+    m7 float
+    m11 float
+    m15 float
+
+type Matrix = Matrix_S
+
+type Color_S:
+    r int
+    g int
+    b int
+    a int
+
+type Color = Color_S
+
+type Rectangle_S:
+    x float
+    y float
+    width float
+    height float
+
+type Rectangle = Rectangle_S
+
+type Image_S:
+    data any -- void *
+    width int
+    height int
+    mipmaps int
+    format int
+
+type Image = Image_S
+
+type Texture_S:
+    id int
+    width int
+    height int
+    mipmaps int
+    format int
+
+type Texture = Texture_S
+
+type Texture2D = Texture
+
+type TextureCubemap = Texture
+
+type RenderTexture_S:
+    id int
+    texture Texture
+    depth Texture
+
+type RenderTexture = RenderTexture_S
+
+type RenderTexture2D = RenderTexture
+
+type NPatchInfo_S:
+    source Rectangle
+    left int
+    top int
+    right int
+    bottom int
+    layout int
+
+type NPatchInfo = NPatchInfo_S
+
+type GlyphInfo_S:
+    value int
+    offsetX int
+    offsetY int
+    advanceX int
+    image Image
+
+type GlyphInfo = GlyphInfo_S
+
+type Font_S:
+    baseSize int
+    glyphCount int
+    glyphPadding int
+    texture Texture2D
+    recs any -- Rectangle *
+    glyphs any -- GlyphInfo *
+
+type Font = Font_S
+
+type Camera3D_S:
+    position Vector3
+    target Vector3
+    up Vector3
+    fovy float
+    projection int
+
+type Camera3D = Camera3D_S
+
+type Camera = Camera3D
+
+type Camera2D_S:
+    offset Vector2
+    target Vector2
+    rotation float
+    zoom float
+
+type Camera2D = Camera2D_S
+
+type Mesh_S:
+    vertexCount int
+    triangleCount int
+    vertices any -- float *
+    texcoords any -- float *
+    texcoords2 any -- float *
+    normals any -- float *
+    tangents any -- float *
+    colors any -- unsigned char *
+    indices any -- unsigned short *
+    animVertices any -- float *
+    animNormals any -- float *
+    boneIds any -- unsigned char *
+    boneWeights any -- float *
+    vaoId int
+    vboId any -- unsigned int *
+
+type Mesh = Mesh_S
+
+type Shader_S:
+    id int
+    locs any -- int *
+
+type Shader = Shader_S
+
+type MaterialMap_S:
+    texture Texture2D
+    color Color
+    value float
+
+type MaterialMap = MaterialMap_S
+
+type Material_S:
+    shader Shader
+    maps any -- MaterialMap *
+    params List -- float[4]
+
+type Material = Material_S
+
+type Transform_S:
+    translation Vector3
+    rotation Quaternion
+    scale Vector3
+
+type Transform = Transform_S
+
+type BoneInfo_S:
+    name List -- char[32]
+    parent int
+
+type BoneInfo = BoneInfo_S
+
+type Model_S:
+    transform Matrix
+    meshCount int
+    materialCount int
+    meshes any -- Mesh *
+    materials any -- Material *
+    meshMaterial any -- int *
+    boneCount int
+    bones any -- BoneInfo *
+    bindPose any -- Transform *
+
+type Model = Model_S
+
+type ModelAnimation_S:
+    boneCount int
+    frameCount int
+    bones any -- BoneInfo *
+    framePoses any -- Transform **
+    name List -- char[32]
+
+type ModelAnimation = ModelAnimation_S
+
+type Ray_S:
+    position Vector3
+    direction Vector3
+
+type Ray = Ray_S
+
+type RayCollision_S:
+    hit bool
+    distance float
+    point Vector3
+    normal Vector3
+
+type RayCollision = RayCollision_S
+
+type BoundingBox_S:
+    min Vector3
+    max Vector3
+
+type BoundingBox = BoundingBox_S
+
+type Wave_S:
+    frameCount int
+    sampleRate int
+    sampleSize int
+    channels int
+    data any -- void *
+
+type Wave = Wave_S
+
+type rAudioBuffer_S #int64_t
+type rAudioBuffer = rAudioBuffer_S
+
+type rAudioProcessor_S #int64_t
+type rAudioProcessor = rAudioProcessor_S
+
+type AudioStream_S:
+    buffer any -- rAudioBuffer *
+    processor any -- rAudioProcessor *
+    sampleRate int
+    sampleSize int
+    channels int
+
+type AudioStream = AudioStream_S
+
+type Sound_S:
+    stream AudioStream
+    frameCount int
+
+type Sound = Sound_S
+
+type Music_S:
+    stream AudioStream
+    frameCount int
+    looping bool
+    ctxType int
+    ctxData any -- void *
+
+type Music = Music_S
+
+type VrDeviceInfo_S:
+    hResolution int
+    vResolution int
+    hScreenSize float
+    vScreenSize float
+    vScreenCenter float
+    eyeToScreenDistance float
+    lensSeparationDistance float
+    interpupillaryDistance float
+    lensDistortionValues List -- float[4]
+    chromaAbCorrection List -- float[4]
+
+type VrDeviceInfo = VrDeviceInfo_S
+
+type VrStereoConfig_S:
+    projection List -- Matrix[2]
+    viewOffset List -- Matrix[2]
+    leftLensCenter List -- float[2]
+    rightLensCenter List -- float[2]
+    leftScreenCenter List -- float[2]
+    rightScreenCenter List -- float[2]
+    scale List -- float[2]
+    scaleIn List -- float[2]
+
+type VrStereoConfig = VrStereoConfig_S
+
+type FilePathList_S:
+    capacity int
+    count int
+    paths any -- char **
+
+type FilePathList = FilePathList_S
+
+type AutomationEvent_S:
+    frame int
+    type int
+    params List -- int[4]
+
+type AutomationEvent = AutomationEvent_S
+
+type AutomationEventList_S:
+    capacity int
+    count int
+    events any -- AutomationEvent *
+
+type AutomationEventList = AutomationEventList_S
+
+type ConfigFlags = int
+var .FLAG_VSYNC_HINT int = 64
+var .FLAG_FULLSCREEN_MODE int = 2
+var .FLAG_WINDOW_RESIZABLE int = 4
+var .FLAG_WINDOW_UNDECORATED int = 8
+var .FLAG_WINDOW_HIDDEN int = 128
+var .FLAG_WINDOW_MINIMIZED int = 512
+var .FLAG_WINDOW_MAXIMIZED int = 1024
+var .FLAG_WINDOW_UNFOCUSED int = 2048
+var .FLAG_WINDOW_TOPMOST int = 4096
+var .FLAG_WINDOW_ALWAYS_RUN int = 256
+var .FLAG_WINDOW_TRANSPARENT int = 16
+var .FLAG_WINDOW_HIGHDPI int = 8192
+var .FLAG_WINDOW_MOUSE_PASSTHROUGH int = 16384
+var .FLAG_BORDERLESS_WINDOWED_MODE int = 32768
+var .FLAG_MSAA_4X_HINT int = 32
+var .FLAG_INTERLACED_HINT int = 65536
+
+type TraceLogLevel = int
+var .LOG_ALL int = 0
+var .LOG_TRACE int = 1
+var .LOG_DEBUG int = 2
+var .LOG_INFO int = 3
+var .LOG_WARNING int = 4
+var .LOG_ERROR int = 5
+var .LOG_FATAL int = 6
+var .LOG_NONE int = 7
+
+type KeyboardKey = int
+var .KEY_NULL int = 0
+var .KEY_APOSTROPHE int = 39
+var .KEY_COMMA int = 44
+var .KEY_MINUS int = 45
+var .KEY_PERIOD int = 46
+var .KEY_SLASH int = 47
+var .KEY_ZERO int = 48
+var .KEY_ONE int = 49
+var .KEY_TWO int = 50
+var .KEY_THREE int = 51
+var .KEY_FOUR int = 52
+var .KEY_FIVE int = 53
+var .KEY_SIX int = 54
+var .KEY_SEVEN int = 55
+var .KEY_EIGHT int = 56
+var .KEY_NINE int = 57
+var .KEY_SEMICOLON int = 59
+var .KEY_EQUAL int = 61
+var .KEY_A int = 65
+var .KEY_B int = 66
+var .KEY_C int = 67
+var .KEY_D int = 68
+var .KEY_E int = 69
+var .KEY_F int = 70
+var .KEY_G int = 71
+var .KEY_H int = 72
+var .KEY_I int = 73
+var .KEY_J int = 74
+var .KEY_K int = 75
+var .KEY_L int = 76
+var .KEY_M int = 77
+var .KEY_N int = 78
+var .KEY_O int = 79
+var .KEY_P int = 80
+var .KEY_Q int = 81
+var .KEY_R int = 82
+var .KEY_S int = 83
+var .KEY_T int = 84
+var .KEY_U int = 85
+var .KEY_V int = 86
+var .KEY_W int = 87
+var .KEY_X int = 88
+var .KEY_Y int = 89
+var .KEY_Z int = 90
+var .KEY_LEFT_BRACKET int = 91
+var .KEY_BACKSLASH int = 92
+var .KEY_RIGHT_BRACKET int = 93
+var .KEY_GRAVE int = 96
+var .KEY_SPACE int = 32
+var .KEY_ESCAPE int = 256
+var .KEY_ENTER int = 257
+var .KEY_TAB int = 258
+var .KEY_BACKSPACE int = 259
+var .KEY_INSERT int = 260
+var .KEY_DELETE int = 261
+var .KEY_RIGHT int = 262
+var .KEY_LEFT int = 263
+var .KEY_DOWN int = 264
+var .KEY_UP int = 265
+var .KEY_PAGE_UP int = 266
+var .KEY_PAGE_DOWN int = 267
+var .KEY_HOME int = 268
+var .KEY_END int = 269
+var .KEY_CAPS_LOCK int = 280
+var .KEY_SCROLL_LOCK int = 281
+var .KEY_NUM_LOCK int = 282
+var .KEY_PRINT_SCREEN int = 283
+var .KEY_PAUSE int = 284
+var .KEY_F1 int = 290
+var .KEY_F2 int = 291
+var .KEY_F3 int = 292
+var .KEY_F4 int = 293
+var .KEY_F5 int = 294
+var .KEY_F6 int = 295
+var .KEY_F7 int = 296
+var .KEY_F8 int = 297
+var .KEY_F9 int = 298
+var .KEY_F10 int = 299
+var .KEY_F11 int = 300
+var .KEY_F12 int = 301
+var .KEY_LEFT_SHIFT int = 340
+var .KEY_LEFT_CONTROL int = 341
+var .KEY_LEFT_ALT int = 342
+var .KEY_LEFT_SUPER int = 343
+var .KEY_RIGHT_SHIFT int = 344
+var .KEY_RIGHT_CONTROL int = 345
+var .KEY_RIGHT_ALT int = 346
+var .KEY_RIGHT_SUPER int = 347
+var .KEY_KB_MENU int = 348
+var .KEY_KP_0 int = 320
+var .KEY_KP_1 int = 321
+var .KEY_KP_2 int = 322
+var .KEY_KP_3 int = 323
+var .KEY_KP_4 int = 324
+var .KEY_KP_5 int = 325
+var .KEY_KP_6 int = 326
+var .KEY_KP_7 int = 327
+var .KEY_KP_8 int = 328
+var .KEY_KP_9 int = 329
+var .KEY_KP_DECIMAL int = 330
+var .KEY_KP_DIVIDE int = 331
+var .KEY_KP_MULTIPLY int = 332
+var .KEY_KP_SUBTRACT int = 333
+var .KEY_KP_ADD int = 334
+var .KEY_KP_ENTER int = 335
+var .KEY_KP_EQUAL int = 336
+var .KEY_BACK int = 4
+var .KEY_MENU int = 82
+var .KEY_VOLUME_UP int = 24
+var .KEY_VOLUME_DOWN int = 25
+
+type MouseButton = int
+var .MOUSE_BUTTON_LEFT int = 0
+var .MOUSE_BUTTON_RIGHT int = 1
+var .MOUSE_BUTTON_MIDDLE int = 2
+var .MOUSE_BUTTON_SIDE int = 3
+var .MOUSE_BUTTON_EXTRA int = 4
+var .MOUSE_BUTTON_FORWARD int = 5
+var .MOUSE_BUTTON_BACK int = 6
+
+type MouseCursor = int
+var .MOUSE_CURSOR_DEFAULT int = 0
+var .MOUSE_CURSOR_ARROW int = 1
+var .MOUSE_CURSOR_IBEAM int = 2
+var .MOUSE_CURSOR_CROSSHAIR int = 3
+var .MOUSE_CURSOR_POINTING_HAND int = 4
+var .MOUSE_CURSOR_RESIZE_EW int = 5
+var .MOUSE_CURSOR_RESIZE_NS int = 6
+var .MOUSE_CURSOR_RESIZE_NWSE int = 7
+var .MOUSE_CURSOR_RESIZE_NESW int = 8
+var .MOUSE_CURSOR_RESIZE_ALL int = 9
+var .MOUSE_CURSOR_NOT_ALLOWED int = 10
+
+type GamepadButton = int
+var .GAMEPAD_BUTTON_UNKNOWN int = 0
+var .GAMEPAD_BUTTON_LEFT_FACE_UP int = 1
+var .GAMEPAD_BUTTON_LEFT_FACE_RIGHT int = 2
+var .GAMEPAD_BUTTON_LEFT_FACE_DOWN int = 3
+var .GAMEPAD_BUTTON_LEFT_FACE_LEFT int = 4
+var .GAMEPAD_BUTTON_RIGHT_FACE_UP int = 5
+var .GAMEPAD_BUTTON_RIGHT_FACE_RIGHT int = 6
+var .GAMEPAD_BUTTON_RIGHT_FACE_DOWN int = 7
+var .GAMEPAD_BUTTON_RIGHT_FACE_LEFT int = 8
+var .GAMEPAD_BUTTON_LEFT_TRIGGER_1 int = 9
+var .GAMEPAD_BUTTON_LEFT_TRIGGER_2 int = 10
+var .GAMEPAD_BUTTON_RIGHT_TRIGGER_1 int = 11
+var .GAMEPAD_BUTTON_RIGHT_TRIGGER_2 int = 12
+var .GAMEPAD_BUTTON_MIDDLE_LEFT int = 13
+var .GAMEPAD_BUTTON_MIDDLE int = 14
+var .GAMEPAD_BUTTON_MIDDLE_RIGHT int = 15
+var .GAMEPAD_BUTTON_LEFT_THUMB int = 16
+var .GAMEPAD_BUTTON_RIGHT_THUMB int = 17
+
+type GamepadAxis = int
+var .GAMEPAD_AXIS_LEFT_X int = 0
+var .GAMEPAD_AXIS_LEFT_Y int = 1
+var .GAMEPAD_AXIS_RIGHT_X int = 2
+var .GAMEPAD_AXIS_RIGHT_Y int = 3
+var .GAMEPAD_AXIS_LEFT_TRIGGER int = 4
+var .GAMEPAD_AXIS_RIGHT_TRIGGER int = 5
+
+type MaterialMapIndex = int
+var .MATERIAL_MAP_ALBEDO int = 0
+var .MATERIAL_MAP_METALNESS int = 1
+var .MATERIAL_MAP_NORMAL int = 2
+var .MATERIAL_MAP_ROUGHNESS int = 3
+var .MATERIAL_MAP_OCCLUSION int = 4
+var .MATERIAL_MAP_EMISSION int = 5
+var .MATERIAL_MAP_HEIGHT int = 6
+var .MATERIAL_MAP_CUBEMAP int = 7
+var .MATERIAL_MAP_IRRADIANCE int = 8
+var .MATERIAL_MAP_PREFILTER int = 9
+var .MATERIAL_MAP_BRDF int = 10
+
+type ShaderLocationIndex = int
+var .SHADER_LOC_VERTEX_POSITION int = 0
+var .SHADER_LOC_VERTEX_TEXCOORD01 int = 1
+var .SHADER_LOC_VERTEX_TEXCOORD02 int = 2
+var .SHADER_LOC_VERTEX_NORMAL int = 3
+var .SHADER_LOC_VERTEX_TANGENT int = 4
+var .SHADER_LOC_VERTEX_COLOR int = 5
+var .SHADER_LOC_MATRIX_MVP int = 6
+var .SHADER_LOC_MATRIX_VIEW int = 7
+var .SHADER_LOC_MATRIX_PROJECTION int = 8
+var .SHADER_LOC_MATRIX_MODEL int = 9
+var .SHADER_LOC_MATRIX_NORMAL int = 10
+var .SHADER_LOC_VECTOR_VIEW int = 11
+var .SHADER_LOC_COLOR_DIFFUSE int = 12
+var .SHADER_LOC_COLOR_SPECULAR int = 13
+var .SHADER_LOC_COLOR_AMBIENT int = 14
+var .SHADER_LOC_MAP_ALBEDO int = 15
+var .SHADER_LOC_MAP_METALNESS int = 16
+var .SHADER_LOC_MAP_NORMAL int = 17
+var .SHADER_LOC_MAP_ROUGHNESS int = 18
+var .SHADER_LOC_MAP_OCCLUSION int = 19
+var .SHADER_LOC_MAP_EMISSION int = 20
+var .SHADER_LOC_MAP_HEIGHT int = 21
+var .SHADER_LOC_MAP_CUBEMAP int = 22
+var .SHADER_LOC_MAP_IRRADIANCE int = 23
+var .SHADER_LOC_MAP_PREFILTER int = 24
+var .SHADER_LOC_MAP_BRDF int = 25
+
+type ShaderUniformDataType = int
+var .SHADER_UNIFORM_FLOAT int = 0
+var .SHADER_UNIFORM_VEC2 int = 1
+var .SHADER_UNIFORM_VEC3 int = 2
+var .SHADER_UNIFORM_VEC4 int = 3
+var .SHADER_UNIFORM_INT int = 4
+var .SHADER_UNIFORM_IVEC2 int = 5
+var .SHADER_UNIFORM_IVEC3 int = 6
+var .SHADER_UNIFORM_IVEC4 int = 7
+var .SHADER_UNIFORM_SAMPLER2D int = 8
+
+type ShaderAttributeDataType = int
+var .SHADER_ATTRIB_FLOAT int = 0
+var .SHADER_ATTRIB_VEC2 int = 1
+var .SHADER_ATTRIB_VEC3 int = 2
+var .SHADER_ATTRIB_VEC4 int = 3
+
+type PixelFormat = int
+var .PIXELFORMAT_UNCOMPRESSED_GRAYSCALE int = 1
+var .PIXELFORMAT_UNCOMPRESSED_GRAY_ALPHA int = 2
+var .PIXELFORMAT_UNCOMPRESSED_R5G6B5 int = 3
+var .PIXELFORMAT_UNCOMPRESSED_R8G8B8 int = 4
+var .PIXELFORMAT_UNCOMPRESSED_R5G5B5A1 int = 5
+var .PIXELFORMAT_UNCOMPRESSED_R4G4B4A4 int = 6
+var .PIXELFORMAT_UNCOMPRESSED_R8G8B8A8 int = 7
+var .PIXELFORMAT_UNCOMPRESSED_R32 int = 8
+var .PIXELFORMAT_UNCOMPRESSED_R32G32B32 int = 9
+var .PIXELFORMAT_UNCOMPRESSED_R32G32B32A32 int = 10
+var .PIXELFORMAT_UNCOMPRESSED_R16 int = 11
+var .PIXELFORMAT_UNCOMPRESSED_R16G16B16 int = 12
+var .PIXELFORMAT_UNCOMPRESSED_R16G16B16A16 int = 13
+var .PIXELFORMAT_COMPRESSED_DXT1_RGB int = 14
+var .PIXELFORMAT_COMPRESSED_DXT1_RGBA int = 15
+var .PIXELFORMAT_COMPRESSED_DXT3_RGBA int = 16
+var .PIXELFORMAT_COMPRESSED_DXT5_RGBA int = 17
+var .PIXELFORMAT_COMPRESSED_ETC1_RGB int = 18
+var .PIXELFORMAT_COMPRESSED_ETC2_RGB int = 19
+var .PIXELFORMAT_COMPRESSED_ETC2_EAC_RGBA int = 20
+var .PIXELFORMAT_COMPRESSED_PVRT_RGB int = 21
+var .PIXELFORMAT_COMPRESSED_PVRT_RGBA int = 22
+var .PIXELFORMAT_COMPRESSED_ASTC_4x4_RGBA int = 23
+var .PIXELFORMAT_COMPRESSED_ASTC_8x8_RGBA int = 24
+
+type TextureFilter = int
+var .TEXTURE_FILTER_POINT int = 0
+var .TEXTURE_FILTER_BILINEAR int = 1
+var .TEXTURE_FILTER_TRILINEAR int = 2
+var .TEXTURE_FILTER_ANISOTROPIC_4X int = 3
+var .TEXTURE_FILTER_ANISOTROPIC_8X int = 4
+var .TEXTURE_FILTER_ANISOTROPIC_16X int = 5
+
+type TextureWrap = int
+var .TEXTURE_WRAP_REPEAT int = 0
+var .TEXTURE_WRAP_CLAMP int = 1
+var .TEXTURE_WRAP_MIRROR_REPEAT int = 2
+var .TEXTURE_WRAP_MIRROR_CLAMP int = 3
+
+type CubemapLayout = int
+var .CUBEMAP_LAYOUT_AUTO_DETECT int = 0
+var .CUBEMAP_LAYOUT_LINE_VERTICAL int = 1
+var .CUBEMAP_LAYOUT_LINE_HORIZONTAL int = 2
+var .CUBEMAP_LAYOUT_CROSS_THREE_BY_FOUR int = 3
+var .CUBEMAP_LAYOUT_CROSS_FOUR_BY_THREE int = 4
+var .CUBEMAP_LAYOUT_PANORAMA int = 5
+
+type FontType = int
+var .FONT_DEFAULT int = 0
+var .FONT_BITMAP int = 1
+var .FONT_SDF int = 2
+
+type BlendMode = int
+var .BLEND_ALPHA int = 0
+var .BLEND_ADDITIVE int = 1
+var .BLEND_MULTIPLIED int = 2
+var .BLEND_ADD_COLORS int = 3
+var .BLEND_SUBTRACT_COLORS int = 4
+var .BLEND_ALPHA_PREMULTIPLY int = 5
+var .BLEND_CUSTOM int = 6
+var .BLEND_CUSTOM_SEPARATE int = 7
+
+type Gesture = int
+var .GESTURE_NONE int = 0
+var .GESTURE_TAP int = 1
+var .GESTURE_DOUBLETAP int = 2
+var .GESTURE_HOLD int = 4
+var .GESTURE_DRAG int = 8
+var .GESTURE_SWIPE_RIGHT int = 16
+var .GESTURE_SWIPE_LEFT int = 32
+var .GESTURE_SWIPE_UP int = 64
+var .GESTURE_SWIPE_DOWN int = 128
+var .GESTURE_PINCH_IN int = 256
+var .GESTURE_PINCH_OUT int = 512
+
+type CameraMode = int
+var .CAMERA_CUSTOM int = 0
+var .CAMERA_FREE int = 1
+var .CAMERA_ORBITAL int = 2
+var .CAMERA_FIRST_PERSON int = 3
+var .CAMERA_THIRD_PERSON int = 4
+
+type CameraProjection = int
+var .CAMERA_PERSPECTIVE int = 0
+var .CAMERA_ORTHOGRAPHIC int = 1
+
+type NPatchLayout = int
+var .NPATCH_NINE_PATCH int = 0
+var .NPATCH_THREE_PATCH_VERTICAL int = 1
+var .NPATCH_THREE_PATCH_HORIZONTAL int = 2
+
+type TraceLogCallback = pointer
+
+type LoadFileDataCallback = pointer
+
+type SaveFileDataCallback = pointer
+
+type LoadFileTextCallback = pointer
+
+type SaveFileTextCallback = pointer
+
+--func InitWindow(width int, height int, title any) void
+func CloseWindow() void:
+    return lib.CloseWindow()
+func WindowShouldClose() bool:
+    return lib.WindowShouldClose()
+func IsWindowReady() bool:
+    return lib.IsWindowReady()
+func IsWindowFullscreen() bool:
+    return lib.IsWindowFullscreen()
+func IsWindowHidden() bool:
+    return lib.IsWindowHidden()
+func IsWindowMinimized() bool:
+    return lib.IsWindowMinimized()
+func IsWindowMaximized() bool:
+    return lib.IsWindowMaximized()
+func IsWindowFocused() bool:
+    return lib.IsWindowFocused()
+func IsWindowResized() bool:
+    return lib.IsWindowResized()
+func IsWindowState(flag int) bool:
+    return lib.IsWindowState(flag)
+func SetWindowState(flags int) void:
+    return lib.SetWindowState(flags)
+func ClearWindowState(flags int) void:
+    return lib.ClearWindowState(flags)
+func ToggleFullscreen() void:
+    return lib.ToggleFullscreen()
+func ToggleBorderlessWindowed() void:
+    return lib.ToggleBorderlessWindowed()
+func MaximizeWindow() void:
+    return lib.MaximizeWindow()
+func MinimizeWindow() void:
+    return lib.MinimizeWindow()
+func RestoreWindow() void:
+    return lib.RestoreWindow()
+func SetWindowIcon(image Image) void:
+    return lib.SetWindowIcon(image)
+func SetWindowIcons(images any, count int) void:
+    return lib.SetWindowIcons(images, count)
+func SetWindowTitle(title any) void:
+    return lib.SetWindowTitle(title)
+func SetWindowPosition(x int, y int) void:
+    return lib.SetWindowPosition(x, y)
+func SetWindowMonitor(monitor int) void:
+    return lib.SetWindowMonitor(monitor)
+func SetWindowMinSize(width int, height int) void:
+    return lib.SetWindowMinSize(width, height)
+func SetWindowMaxSize(width int, height int) void:
+    return lib.SetWindowMaxSize(width, height)
+func SetWindowSize(width int, height int) void:
+    return lib.SetWindowSize(width, height)
+func SetWindowOpacity(opacity float) void:
+    return lib.SetWindowOpacity(opacity)
+func SetWindowFocused() void:
+    return lib.SetWindowFocused()
+func GetWindowHandle() pointer:
+    return lib.GetWindowHandle()
+func GetScreenWidth() int:
+    return lib.GetScreenWidth()
+func GetScreenHeight() int:
+    return lib.GetScreenHeight()
+func GetRenderWidth() int:
+    return lib.GetRenderWidth()
+func GetRenderHeight() int:
+    return lib.GetRenderHeight()
+func GetMonitorCount() int:
+    return lib.GetMonitorCount()
+func GetCurrentMonitor() int:
+    return lib.GetCurrentMonitor()
+func GetMonitorPosition(monitor int) Vector2:
+    return lib.GetMonitorPosition(monitor)
+func GetMonitorWidth(monitor int) int:
+    return lib.GetMonitorWidth(monitor)
+func GetMonitorHeight(monitor int) int:
+    return lib.GetMonitorHeight(monitor)
+func GetMonitorPhysicalWidth(monitor int) int:
+    return lib.GetMonitorPhysicalWidth(monitor)
+func GetMonitorPhysicalHeight(monitor int) int:
+    return lib.GetMonitorPhysicalHeight(monitor)
+func GetMonitorRefreshRate(monitor int) int:
+    return lib.GetMonitorRefreshRate(monitor)
+func GetWindowPosition() Vector2:
+    return lib.GetWindowPosition()
+func GetWindowScaleDPI() Vector2:
+    return lib.GetWindowScaleDPI()
+func GetMonitorName(monitor int) pointer:
+    return lib.GetMonitorName(monitor)
+func SetClipboardText(text any) void:
+    return lib.SetClipboardText(text)
+func GetClipboardText() pointer:
+    return lib.GetClipboardText()
+func EnableEventWaiting() void:
+    return lib.EnableEventWaiting()
+func DisableEventWaiting() void:
+    return lib.DisableEventWaiting()
+func ShowCursor() void:
+    return lib.ShowCursor()
+func HideCursor() void:
+    return lib.HideCursor()
+func IsCursorHidden() bool:
+    return lib.IsCursorHidden()
+func EnableCursor() void:
+    return lib.EnableCursor()
+func DisableCursor() void:
+    return lib.DisableCursor()
+func IsCursorOnScreen() bool:
+    return lib.IsCursorOnScreen()
+func ClearBackground(color Color) void:
+    return lib.ClearBackground(color)
+func BeginDrawing() void:
+    return lib.BeginDrawing()
+func EndDrawing() void:
+    return lib.EndDrawing()
+func BeginMode2D(camera Camera2D) void:
+    return lib.BeginMode2D(camera)
+func EndMode2D() void:
+    return lib.EndMode2D()
+func BeginMode3D(camera Camera3D) void:
+    return lib.BeginMode3D(camera)
+func EndMode3D() void:
+    return lib.EndMode3D()
+func BeginTextureMode(target RenderTexture2D) void:
+    return lib.BeginTextureMode(target)
+func EndTextureMode() void:
+    return lib.EndTextureMode()
+func BeginShaderMode(shader Shader) void:
+    return lib.BeginShaderMode(shader)
+func EndShaderMode() void:
+    return lib.EndShaderMode()
+func BeginBlendMode(mode int) void:
+    return lib.BeginBlendMode(mode)
+func EndBlendMode() void:
+    return lib.EndBlendMode()
+func BeginScissorMode(x int, y int, width int, height int) void:
+    return lib.BeginScissorMode(x, y, width, height)
+func EndScissorMode() void:
+    return lib.EndScissorMode()
+func BeginVrStereoMode(config VrStereoConfig) void:
+    return lib.BeginVrStereoMode(config)
+func EndVrStereoMode() void:
+    return lib.EndVrStereoMode()
+func LoadVrStereoConfig(device VrDeviceInfo) VrStereoConfig:
+    return lib.LoadVrStereoConfig(device)
+func UnloadVrStereoConfig(config VrStereoConfig) void:
+    return lib.UnloadVrStereoConfig(config)
+func LoadShader(vsFileName any, fsFileName any) Shader:
+    return lib.LoadShader(vsFileName, fsFileName)
+func LoadShaderFromMemory(vsCode any, fsCode any) Shader:
+    return lib.LoadShaderFromMemory(vsCode, fsCode)
+func IsShaderReady(shader Shader) bool:
+    return lib.IsShaderReady(shader)
+func GetShaderLocation(shader Shader, uniformName any) int:
+    return lib.GetShaderLocation(shader, uniformName)
+func GetShaderLocationAttrib(shader Shader, attribName any) int:
+    return lib.GetShaderLocationAttrib(shader, attribName)
+func SetShaderValue(shader Shader, locIndex int, value any, uniformType int) void:
+    return lib.SetShaderValue(shader, locIndex, value, uniformType)
+func SetShaderValueV(shader Shader, locIndex int, value any, uniformType int, count int) void:
+    return lib.SetShaderValueV(shader, locIndex, value, uniformType, count)
+func SetShaderValueMatrix(shader Shader, locIndex int, mat Matrix) void:
+    return lib.SetShaderValueMatrix(shader, locIndex, mat)
+func SetShaderValueTexture(shader Shader, locIndex int, texture Texture2D) void:
+    return lib.SetShaderValueTexture(shader, locIndex, texture)
+func UnloadShader(shader Shader) void:
+    return lib.UnloadShader(shader)
+func GetMouseRay(mousePosition Vector2, camera Camera) Ray:
+    return lib.GetMouseRay(mousePosition, camera)
+func GetCameraMatrix(camera Camera) Matrix:
+    return lib.GetCameraMatrix(camera)
+func GetCameraMatrix2D(camera Camera2D) Matrix:
+    return lib.GetCameraMatrix2D(camera)
+func GetWorldToScreen(position Vector3, camera Camera) Vector2:
+    return lib.GetWorldToScreen(position, camera)
+func GetScreenToWorld2D(position Vector2, camera Camera2D) Vector2:
+    return lib.GetScreenToWorld2D(position, camera)
+func GetWorldToScreenEx(position Vector3, camera Camera, width int, height int) Vector2:
+    return lib.GetWorldToScreenEx(position, camera, width, height)
+func GetWorldToScreen2D(position Vector2, camera Camera2D) Vector2:
+    return lib.GetWorldToScreen2D(position, camera)
+func SetTargetFPS(fps int) void:
+    return lib.SetTargetFPS(fps)
+func GetFrameTime() float:
+    return lib.GetFrameTime()
+func GetTime() float:
+    return lib.GetTime()
+func GetFPS() int:
+    return lib.GetFPS()
+func SwapScreenBuffer() void:
+    return lib.SwapScreenBuffer()
+func PollInputEvents() void:
+    return lib.PollInputEvents()
+func WaitTime(seconds float) void:
+    return lib.WaitTime(seconds)
+func SetRandomSeed(seed int) void:
+    return lib.SetRandomSeed(seed)
+func GetRandomValue(min int, max int) int:
+    return lib.GetRandomValue(min, max)
+func LoadRandomSequence(count int, min int, max int) pointer:
+    return lib.LoadRandomSequence(count, min, max)
+func UnloadRandomSequence(sequence any) void:
+    return lib.UnloadRandomSequence(sequence)
+func TakeScreenshot(fileName any) void:
+    return lib.TakeScreenshot(fileName)
+func SetConfigFlags(flags int) void:
+    return lib.SetConfigFlags(flags)
+func OpenURL(url any) void:
+    return lib.OpenURL(url)
+func TraceLog(logLevel int, text any) void:
+    return lib.TraceLog(logLevel, text)
+func SetTraceLogLevel(logLevel int) void:
+    return lib.SetTraceLogLevel(logLevel)
+func MemAlloc(size int) pointer:
+    return lib.MemAlloc(size)
+func MemRealloc(ptr any, size int) pointer:
+    return lib.MemRealloc(ptr, size)
+func MemFree(ptr any) void:
+    return lib.MemFree(ptr)
+func SetTraceLogCallback(callback any) void:
+    return lib.SetTraceLogCallback(callback)
+func SetLoadFileDataCallback(callback any) void:
+    return lib.SetLoadFileDataCallback(callback)
+func SetSaveFileDataCallback(callback any) void:
+    return lib.SetSaveFileDataCallback(callback)
+func SetLoadFileTextCallback(callback any) void:
+    return lib.SetLoadFileTextCallback(callback)
+func SetSaveFileTextCallback(callback any) void:
+    return lib.SetSaveFileTextCallback(callback)
+func LoadFileData(fileName any, dataSize any) pointer:
+    return lib.LoadFileData(fileName, dataSize)
+func UnloadFileData(data any) void:
+    return lib.UnloadFileData(data)
+func SaveFileData(fileName any, data any, dataSize int) bool:
+    return lib.SaveFileData(fileName, data, dataSize)
+func ExportDataAsCode(data any, dataSize int, fileName any) bool:
+    return lib.ExportDataAsCode(data, dataSize, fileName)
+func LoadFileText(fileName any) pointer:
+    return lib.LoadFileText(fileName)
+func UnloadFileText(text any) void:
+    return lib.UnloadFileText(text)
+func SaveFileText(fileName any, text any) bool:
+    return lib.SaveFileText(fileName, text)
+func FileExists(fileName any) bool:
+    return lib.FileExists(fileName)
+func DirectoryExists(dirPath any) bool:
+    return lib.DirectoryExists(dirPath)
+func IsFileExtension(fileName any, ext any) bool:
+    return lib.IsFileExtension(fileName, ext)
+func GetFileLength(fileName any) int:
+    return lib.GetFileLength(fileName)
+func GetFileExtension(fileName any) pointer:
+    return lib.GetFileExtension(fileName)
+func GetFileName(filePath any) pointer:
+    return lib.GetFileName(filePath)
+func GetFileNameWithoutExt(filePath any) pointer:
+    return lib.GetFileNameWithoutExt(filePath)
+func GetDirectoryPath(filePath any) pointer:
+    return lib.GetDirectoryPath(filePath)
+func GetPrevDirectoryPath(dirPath any) pointer:
+    return lib.GetPrevDirectoryPath(dirPath)
+func GetWorkingDirectory() pointer:
+    return lib.GetWorkingDirectory()
+func GetApplicationDirectory() pointer:
+    return lib.GetApplicationDirectory()
+func ChangeDirectory(dir any) bool:
+    return lib.ChangeDirectory(dir)
+func IsPathFile(path any) bool:
+    return lib.IsPathFile(path)
+func LoadDirectoryFiles(dirPath any) FilePathList:
+    return lib.LoadDirectoryFiles(dirPath)
+func LoadDirectoryFilesEx(basePath any, filter any, scanSubdirs bool) FilePathList:
+    return lib.LoadDirectoryFilesEx(basePath, filter, scanSubdirs)
+func UnloadDirectoryFiles(files FilePathList) void:
+    return lib.UnloadDirectoryFiles(files)
+func IsFileDropped() bool:
+    return lib.IsFileDropped()
+func LoadDroppedFiles() FilePathList:
+    return lib.LoadDroppedFiles()
+func UnloadDroppedFiles(files FilePathList) void:
+    return lib.UnloadDroppedFiles(files)
+func GetFileModTime(fileName any) int:
+    return lib.GetFileModTime(fileName)
+func CompressData(data any, dataSize int, compDataSize any) pointer:
+    return lib.CompressData(data, dataSize, compDataSize)
+func DecompressData(compData any, compDataSize int, dataSize any) pointer:
+    return lib.DecompressData(compData, compDataSize, dataSize)
+func EncodeDataBase64(data any, dataSize int, outputSize any) pointer:
+    return lib.EncodeDataBase64(data, dataSize, outputSize)
+func DecodeDataBase64(data any, outputSize any) pointer:
+    return lib.DecodeDataBase64(data, outputSize)
+func LoadAutomationEventList(fileName any) AutomationEventList:
+    return lib.LoadAutomationEventList(fileName)
+func UnloadAutomationEventList(list any) void:
+    return lib.UnloadAutomationEventList(list)
+func ExportAutomationEventList(list AutomationEventList, fileName any) bool:
+    return lib.ExportAutomationEventList(list, fileName)
+func SetAutomationEventList(list any) void:
+    return lib.SetAutomationEventList(list)
+func SetAutomationEventBaseFrame(frame int) void:
+    return lib.SetAutomationEventBaseFrame(frame)
+func StartAutomationEventRecording() void:
+    return lib.StartAutomationEventRecording()
+func StopAutomationEventRecording() void:
+    return lib.StopAutomationEventRecording()
+func PlayAutomationEvent(event AutomationEvent) void:
+    return lib.PlayAutomationEvent(event)
+func IsKeyPressed(key int) bool:
+    return lib.IsKeyPressed(key)
+func IsKeyPressedRepeat(key int) bool:
+    return lib.IsKeyPressedRepeat(key)
+func IsKeyDown(key int) bool:
+    return lib.IsKeyDown(key)
+func IsKeyReleased(key int) bool:
+    return lib.IsKeyReleased(key)
+func IsKeyUp(key int) bool:
+    return lib.IsKeyUp(key)
+func GetKeyPressed() int:
+    return lib.GetKeyPressed()
+func GetCharPressed() int:
+    return lib.GetCharPressed()
+func SetExitKey(key int) void:
+    return lib.SetExitKey(key)
+func IsGamepadAvailable(gamepad int) bool:
+    return lib.IsGamepadAvailable(gamepad)
+func GetGamepadName(gamepad int) pointer:
+    return lib.GetGamepadName(gamepad)
+func IsGamepadButtonPressed(gamepad int, button int) bool:
+    return lib.IsGamepadButtonPressed(gamepad, button)
+func IsGamepadButtonDown(gamepad int, button int) bool:
+    return lib.IsGamepadButtonDown(gamepad, button)
+func IsGamepadButtonReleased(gamepad int, button int) bool:
+    return lib.IsGamepadButtonReleased(gamepad, button)
+func IsGamepadButtonUp(gamepad int, button int) bool:
+    return lib.IsGamepadButtonUp(gamepad, button)
+func GetGamepadButtonPressed() int:
+    return lib.GetGamepadButtonPressed()
+func GetGamepadAxisCount(gamepad int) int:
+    return lib.GetGamepadAxisCount(gamepad)
+func GetGamepadAxisMovement(gamepad int, axis int) float:
+    return lib.GetGamepadAxisMovement(gamepad, axis)
+func SetGamepadMappings(mappings any) int:
+    return lib.SetGamepadMappings(mappings)
+func IsMouseButtonPressed(button int) bool:
+    return lib.IsMouseButtonPressed(button)
+func IsMouseButtonDown(button int) bool:
+    return lib.IsMouseButtonDown(button)
+func IsMouseButtonReleased(button int) bool:
+    return lib.IsMouseButtonReleased(button)
+func IsMouseButtonUp(button int) bool:
+    return lib.IsMouseButtonUp(button)
+func GetMouseX() int:
+    return lib.GetMouseX()
+func GetMouseY() int:
+    return lib.GetMouseY()
+func GetMousePosition() Vector2:
+    return lib.GetMousePosition()
+func GetMouseDelta() Vector2:
+    return lib.GetMouseDelta()
+func SetMousePosition(x int, y int) void:
+    return lib.SetMousePosition(x, y)
+func SetMouseOffset(offsetX int, offsetY int) void:
+    return lib.SetMouseOffset(offsetX, offsetY)
+func SetMouseScale(scaleX float, scaleY float) void:
+    return lib.SetMouseScale(scaleX, scaleY)
+func GetMouseWheelMove() float:
+    return lib.GetMouseWheelMove()
+func GetMouseWheelMoveV() Vector2:
+    return lib.GetMouseWheelMoveV()
+func SetMouseCursor(cursor int) void:
+    return lib.SetMouseCursor(cursor)
+func GetTouchX() int:
+    return lib.GetTouchX()
+func GetTouchY() int:
+    return lib.GetTouchY()
+func GetTouchPosition(index int) Vector2:
+    return lib.GetTouchPosition(index)
+func GetTouchPointId(index int) int:
+    return lib.GetTouchPointId(index)
+func GetTouchPointCount() int:
+    return lib.GetTouchPointCount()
+func SetGesturesEnabled(flags int) void:
+    return lib.SetGesturesEnabled(flags)
+func IsGestureDetected(gesture int) bool:
+    return lib.IsGestureDetected(gesture)
+func GetGestureDetected() int:
+    return lib.GetGestureDetected()
+func GetGestureHoldDuration() float:
+    return lib.GetGestureHoldDuration()
+func GetGestureDragVector() Vector2:
+    return lib.GetGestureDragVector()
+func GetGestureDragAngle() float:
+    return lib.GetGestureDragAngle()
+func GetGesturePinchVector() Vector2:
+    return lib.GetGesturePinchVector()
+func GetGesturePinchAngle() float:
+    return lib.GetGesturePinchAngle()
+func UpdateCamera(camera any, mode int) void:
+    return lib.UpdateCamera(camera, mode)
+func UpdateCameraPro(camera any, movement Vector3, rotation Vector3, zoom float) void:
+    return lib.UpdateCameraPro(camera, movement, rotation, zoom)
+func SetShapesTexture(texture Texture2D, source Rectangle) void:
+    return lib.SetShapesTexture(texture, source)
+func DrawPixel(posX int, posY int, color Color) void:
+    return lib.DrawPixel(posX, posY, color)
+func DrawPixelV(position Vector2, color Color) void:
+    return lib.DrawPixelV(position, color)
+func DrawLine(startPosX int, startPosY int, endPosX int, endPosY int, color Color) void:
+    return lib.DrawLine(startPosX, startPosY, endPosX, endPosY, color)
+func DrawLineV(startPos Vector2, endPos Vector2, color Color) void:
+    return lib.DrawLineV(startPos, endPos, color)
+func DrawLineEx(startPos Vector2, endPos Vector2, thick float, color Color) void:
+    return lib.DrawLineEx(startPos, endPos, thick, color)
+func DrawLineStrip(points any, pointCount int, color Color) void:
+    return lib.DrawLineStrip(points, pointCount, color)
+func DrawLineBezier(startPos Vector2, endPos Vector2, thick float, color Color) void:
+    return lib.DrawLineBezier(startPos, endPos, thick, color)
+func DrawCircle(centerX int, centerY int, radius float, color Color) void:
+    return lib.DrawCircle(centerX, centerY, radius, color)
+func DrawCircleSector(center Vector2, radius float, startAngle float, endAngle float, segments int, color Color) void:
+    return lib.DrawCircleSector(center, radius, startAngle, endAngle, segments, color)
+func DrawCircleSectorLines(center Vector2, radius float, startAngle float, endAngle float, segments int, color Color) void:
+    return lib.DrawCircleSectorLines(center, radius, startAngle, endAngle, segments, color)
+func DrawCircleGradient(centerX int, centerY int, radius float, color1 Color, color2 Color) void:
+    return lib.DrawCircleGradient(centerX, centerY, radius, color1, color2)
+func DrawCircleV(center Vector2, radius float, color Color) void:
+    return lib.DrawCircleV(center, radius, color)
+func DrawCircleLines(centerX int, centerY int, radius float, color Color) void:
+    return lib.DrawCircleLines(centerX, centerY, radius, color)
+func DrawCircleLinesV(center Vector2, radius float, color Color) void:
+    return lib.DrawCircleLinesV(center, radius, color)
+func DrawEllipse(centerX int, centerY int, radiusH float, radiusV float, color Color) void:
+    return lib.DrawEllipse(centerX, centerY, radiusH, radiusV, color)
+func DrawEllipseLines(centerX int, centerY int, radiusH float, radiusV float, color Color) void:
+    return lib.DrawEllipseLines(centerX, centerY, radiusH, radiusV, color)
+func DrawRing(center Vector2, innerRadius float, outerRadius float, startAngle float, endAngle float, segments int, color Color) void:
+    return lib.DrawRing(center, innerRadius, outerRadius, startAngle, endAngle, segments, color)
+func DrawRingLines(center Vector2, innerRadius float, outerRadius float, startAngle float, endAngle float, segments int, color Color) void:
+    return lib.DrawRingLines(center, innerRadius, outerRadius, startAngle, endAngle, segments, color)
+func DrawRectangle(posX int, posY int, width int, height int, color Color) void:
+    return lib.DrawRectangle(posX, posY, width, height, color)
+func DrawRectangleV(position Vector2, size Vector2, color Color) void:
+    return lib.DrawRectangleV(position, size, color)
+func DrawRectangleRec(rec Rectangle, color Color) void:
+    return lib.DrawRectangleRec(rec, color)
+func DrawRectanglePro(rec Rectangle, origin Vector2, rotation float, color Color) void:
+    return lib.DrawRectanglePro(rec, origin, rotation, color)
+func DrawRectangleGradientV(posX int, posY int, width int, height int, color1 Color, color2 Color) void:
+    return lib.DrawRectangleGradientV(posX, posY, width, height, color1, color2)
+func DrawRectangleGradientH(posX int, posY int, width int, height int, color1 Color, color2 Color) void:
+    return lib.DrawRectangleGradientH(posX, posY, width, height, color1, color2)
+func DrawRectangleGradientEx(rec Rectangle, col1 Color, col2 Color, col3 Color, col4 Color) void:
+    return lib.DrawRectangleGradientEx(rec, col1, col2, col3, col4)
+func DrawRectangleLines(posX int, posY int, width int, height int, color Color) void:
+    return lib.DrawRectangleLines(posX, posY, width, height, color)
+func DrawRectangleLinesEx(rec Rectangle, lineThick float, color Color) void:
+    return lib.DrawRectangleLinesEx(rec, lineThick, color)
+func DrawRectangleRounded(rec Rectangle, roundness float, segments int, color Color) void:
+    return lib.DrawRectangleRounded(rec, roundness, segments, color)
+func DrawRectangleRoundedLines(rec Rectangle, roundness float, segments int, lineThick float, color Color) void:
+    return lib.DrawRectangleRoundedLines(rec, roundness, segments, lineThick, color)
+func DrawTriangle(v1 Vector2, v2 Vector2, v3 Vector2, color Color) void:
+    return lib.DrawTriangle(v1, v2, v3, color)
+func DrawTriangleLines(v1 Vector2, v2 Vector2, v3 Vector2, color Color) void:
+    return lib.DrawTriangleLines(v1, v2, v3, color)
+func DrawTriangleFan(points any, pointCount int, color Color) void:
+    return lib.DrawTriangleFan(points, pointCount, color)
+func DrawTriangleStrip(points any, pointCount int, color Color) void:
+    return lib.DrawTriangleStrip(points, pointCount, color)
+func DrawPoly(center Vector2, sides int, radius float, rotation float, color Color) void:
+    return lib.DrawPoly(center, sides, radius, rotation, color)
+func DrawPolyLines(center Vector2, sides int, radius float, rotation float, color Color) void:
+    return lib.DrawPolyLines(center, sides, radius, rotation, color)
+func DrawPolyLinesEx(center Vector2, sides int, radius float, rotation float, lineThick float, color Color) void:
+    return lib.DrawPolyLinesEx(center, sides, radius, rotation, lineThick, color)
+func DrawSplineLinear(points any, pointCount int, thick float, color Color) void:
+    return lib.DrawSplineLinear(points, pointCount, thick, color)
+func DrawSplineBasis(points any, pointCount int, thick float, color Color) void:
+    return lib.DrawSplineBasis(points, pointCount, thick, color)
+func DrawSplineCatmullRom(points any, pointCount int, thick float, color Color) void:
+    return lib.DrawSplineCatmullRom(points, pointCount, thick, color)
+func DrawSplineBezierQuadratic(points any, pointCount int, thick float, color Color) void:
+    return lib.DrawSplineBezierQuadratic(points, pointCount, thick, color)
+func DrawSplineBezierCubic(points any, pointCount int, thick float, color Color) void:
+    return lib.DrawSplineBezierCubic(points, pointCount, thick, color)
+func DrawSplineSegmentLinear(p1 Vector2, p2 Vector2, thick float, color Color) void:
+    return lib.DrawSplineSegmentLinear(p1, p2, thick, color)
+func DrawSplineSegmentBasis(p1 Vector2, p2 Vector2, p3 Vector2, p4 Vector2, thick float, color Color) void:
+    return lib.DrawSplineSegmentBasis(p1, p2, p3, p4, thick, color)
+func DrawSplineSegmentCatmullRom(p1 Vector2, p2 Vector2, p3 Vector2, p4 Vector2, thick float, color Color) void:
+    return lib.DrawSplineSegmentCatmullRom(p1, p2, p3, p4, thick, color)
+func DrawSplineSegmentBezierQuadratic(p1 Vector2, c2 Vector2, p3 Vector2, thick float, color Color) void:
+    return lib.DrawSplineSegmentBezierQuadratic(p1, c2, p3, thick, color)
+func DrawSplineSegmentBezierCubic(p1 Vector2, c2 Vector2, c3 Vector2, p4 Vector2, thick float, color Color) void:
+    return lib.DrawSplineSegmentBezierCubic(p1, c2, c3, p4, thick, color)
+func GetSplinePointLinear(startPos Vector2, endPos Vector2, t float) Vector2:
+    return lib.GetSplinePointLinear(startPos, endPos, t)
+func GetSplinePointBasis(p1 Vector2, p2 Vector2, p3 Vector2, p4 Vector2, t float) Vector2:
+    return lib.GetSplinePointBasis(p1, p2, p3, p4, t)
+func GetSplinePointCatmullRom(p1 Vector2, p2 Vector2, p3 Vector2, p4 Vector2, t float) Vector2:
+    return lib.GetSplinePointCatmullRom(p1, p2, p3, p4, t)
+func GetSplinePointBezierQuad(p1 Vector2, c2 Vector2, p3 Vector2, t float) Vector2:
+    return lib.GetSplinePointBezierQuad(p1, c2, p3, t)
+func GetSplinePointBezierCubic(p1 Vector2, c2 Vector2, c3 Vector2, p4 Vector2, t float) Vector2:
+    return lib.GetSplinePointBezierCubic(p1, c2, c3, p4, t)
+func CheckCollisionRecs(rec1 Rectangle, rec2 Rectangle) bool:
+    return lib.CheckCollisionRecs(rec1, rec2)
+func CheckCollisionCircles(center1 Vector2, radius1 float, center2 Vector2, radius2 float) bool:
+    return lib.CheckCollisionCircles(center1, radius1, center2, radius2)
+func CheckCollisionCircleRec(center Vector2, radius float, rec Rectangle) bool:
+    return lib.CheckCollisionCircleRec(center, radius, rec)
+func CheckCollisionPointRec(point Vector2, rec Rectangle) bool:
+    return lib.CheckCollisionPointRec(point, rec)
+func CheckCollisionPointCircle(point Vector2, center Vector2, radius float) bool:
+    return lib.CheckCollisionPointCircle(point, center, radius)
+func CheckCollisionPointTriangle(point Vector2, p1 Vector2, p2 Vector2, p3 Vector2) bool:
+    return lib.CheckCollisionPointTriangle(point, p1, p2, p3)
+func CheckCollisionPointPoly(point Vector2, points any, pointCount int) bool:
+    return lib.CheckCollisionPointPoly(point, points, pointCount)
+func CheckCollisionLines(startPos1 Vector2, endPos1 Vector2, startPos2 Vector2, endPos2 Vector2, collisionPoint any) bool:
+    return lib.CheckCollisionLines(startPos1, endPos1, startPos2, endPos2, collisionPoint)
+func CheckCollisionPointLine(point Vector2, p1 Vector2, p2 Vector2, threshold int) bool:
+    return lib.CheckCollisionPointLine(point, p1, p2, threshold)
+func GetCollisionRec(rec1 Rectangle, rec2 Rectangle) Rectangle:
+    return lib.GetCollisionRec(rec1, rec2)
+func LoadImage(fileName any) Image:
+    return lib.LoadImage(fileName)
+func LoadImageRaw(fileName any, width int, height int, format int, headerSize int) Image:
+    return lib.LoadImageRaw(fileName, width, height, format, headerSize)
+func LoadImageSvg(fileNameOrString any, width int, height int) Image:
+    return lib.LoadImageSvg(fileNameOrString, width, height)
+func LoadImageAnim(fileName any, frames any) Image:
+    return lib.LoadImageAnim(fileName, frames)
+func LoadImageFromMemory(fileType any, fileData any, dataSize int) Image:
+    return lib.LoadImageFromMemory(fileType, fileData, dataSize)
+func LoadImageFromTexture(texture Texture2D) Image:
+    return lib.LoadImageFromTexture(texture)
+func LoadImageFromScreen() Image:
+    return lib.LoadImageFromScreen()
+func IsImageReady(image Image) bool:
+    return lib.IsImageReady(image)
+func UnloadImage(image Image) void:
+    return lib.UnloadImage(image)
+func ExportImage(image Image, fileName any) bool:
+    return lib.ExportImage(image, fileName)
+func ExportImageToMemory(image Image, fileType any, fileSize any) pointer:
+    return lib.ExportImageToMemory(image, fileType, fileSize)
+func ExportImageAsCode(image Image, fileName any) bool:
+    return lib.ExportImageAsCode(image, fileName)
+func GenImageColor(width int, height int, color Color) Image:
+    return lib.GenImageColor(width, height, color)
+func GenImageGradientLinear(width int, height int, direction int, start Color, end Color) Image:
+    return lib.GenImageGradientLinear(width, height, direction, start, end)
+func GenImageGradientRadial(width int, height int, density float, inner Color, outer Color) Image:
+    return lib.GenImageGradientRadial(width, height, density, inner, outer)
+func GenImageGradientSquare(width int, height int, density float, inner Color, outer Color) Image:
+    return lib.GenImageGradientSquare(width, height, density, inner, outer)
+func GenImageChecked(width int, height int, checksX int, checksY int, col1 Color, col2 Color) Image:
+    return lib.GenImageChecked(width, height, checksX, checksY, col1, col2)
+func GenImageWhiteNoise(width int, height int, factor float) Image:
+    return lib.GenImageWhiteNoise(width, height, factor)
+func GenImagePerlinNoise(width int, height int, offsetX int, offsetY int, scale float) Image:
+    return lib.GenImagePerlinNoise(width, height, offsetX, offsetY, scale)
+func GenImageCellular(width int, height int, tileSize int) Image:
+    return lib.GenImageCellular(width, height, tileSize)
+func GenImageText(width int, height int, text any) Image:
+    return lib.GenImageText(width, height, text)
+func ImageCopy(image Image) Image:
+    return lib.ImageCopy(image)
+func ImageFromImage(image Image, rec Rectangle) Image:
+    return lib.ImageFromImage(image, rec)
+func ImageText(text any, fontSize int, color Color) Image:
+    return lib.ImageText(text, fontSize, color)
+func ImageTextEx(font Font, text any, fontSize float, spacing float, tint Color) Image:
+    return lib.ImageTextEx(font, text, fontSize, spacing, tint)
+func ImageFormat(image any, newFormat int) void:
+    return lib.ImageFormat(image, newFormat)
+func ImageToPOT(image any, fill Color) void:
+    return lib.ImageToPOT(image, fill)
+func ImageCrop(image any, crop Rectangle) void:
+    return lib.ImageCrop(image, crop)
+func ImageAlphaCrop(image any, threshold float) void:
+    return lib.ImageAlphaCrop(image, threshold)
+func ImageAlphaClear(image any, color Color, threshold float) void:
+    return lib.ImageAlphaClear(image, color, threshold)
+func ImageAlphaMask(image any, alphaMask Image) void:
+    return lib.ImageAlphaMask(image, alphaMask)
+func ImageAlphaPremultiply(image any) void:
+    return lib.ImageAlphaPremultiply(image)
+func ImageBlurGaussian(image any, blurSize int) void:
+    return lib.ImageBlurGaussian(image, blurSize)
+func ImageResize(image any, newWidth int, newHeight int) void:
+    return lib.ImageResize(image, newWidth, newHeight)
+func ImageResizeNN(image any, newWidth int, newHeight int) void:
+    return lib.ImageResizeNN(image, newWidth, newHeight)
+func ImageResizeCanvas(image any, newWidth int, newHeight int, offsetX int, offsetY int, fill Color) void:
+    return lib.ImageResizeCanvas(image, newWidth, newHeight, offsetX, offsetY, fill)
+func ImageMipmaps(image any) void:
+    return lib.ImageMipmaps(image)
+func ImageDither(image any, rBpp int, gBpp int, bBpp int, aBpp int) void:
+    return lib.ImageDither(image, rBpp, gBpp, bBpp, aBpp)
+func ImageFlipVertical(image any) void:
+    return lib.ImageFlipVertical(image)
+func ImageFlipHorizontal(image any) void:
+    return lib.ImageFlipHorizontal(image)
+func ImageRotate(image any, degrees int) void:
+    return lib.ImageRotate(image, degrees)
+func ImageRotateCW(image any) void:
+    return lib.ImageRotateCW(image)
+func ImageRotateCCW(image any) void:
+    return lib.ImageRotateCCW(image)
+func ImageColorTint(image any, color Color) void:
+    return lib.ImageColorTint(image, color)
+func ImageColorInvert(image any) void:
+    return lib.ImageColorInvert(image)
+func ImageColorGrayscale(image any) void:
+    return lib.ImageColorGrayscale(image)
+func ImageColorContrast(image any, contrast float) void:
+    return lib.ImageColorContrast(image, contrast)
+func ImageColorBrightness(image any, brightness int) void:
+    return lib.ImageColorBrightness(image, brightness)
+func ImageColorReplace(image any, color Color, replace Color) void:
+    return lib.ImageColorReplace(image, color, replace)
+func LoadImageColors(image Image) pointer:
+    return lib.LoadImageColors(image)
+func LoadImagePalette(image Image, maxPaletteSize int, colorCount any) pointer:
+    return lib.LoadImagePalette(image, maxPaletteSize, colorCount)
+func UnloadImageColors(colors any) void:
+    return lib.UnloadImageColors(colors)
+func UnloadImagePalette(colors any) void:
+    return lib.UnloadImagePalette(colors)
+func GetImageAlphaBorder(image Image, threshold float) Rectangle:
+    return lib.GetImageAlphaBorder(image, threshold)
+func GetImageColor(image Image, x int, y int) Color:
+    return lib.GetImageColor(image, x, y)
+func ImageClearBackground(dst any, color Color) void:
+    return lib.ImageClearBackground(dst, color)
+func ImageDrawPixel(dst any, posX int, posY int, color Color) void:
+    return lib.ImageDrawPixel(dst, posX, posY, color)
+func ImageDrawPixelV(dst any, position Vector2, color Color) void:
+    return lib.ImageDrawPixelV(dst, position, color)
+func ImageDrawLine(dst any, startPosX int, startPosY int, endPosX int, endPosY int, color Color) void:
+    return lib.ImageDrawLine(dst, startPosX, startPosY, endPosX, endPosY, color)
+func ImageDrawLineV(dst any, start Vector2, end Vector2, color Color) void:
+    return lib.ImageDrawLineV(dst, start, end, color)
+func ImageDrawCircle(dst any, centerX int, centerY int, radius int, color Color) void:
+    return lib.ImageDrawCircle(dst, centerX, centerY, radius, color)
+func ImageDrawCircleV(dst any, center Vector2, radius int, color Color) void:
+    return lib.ImageDrawCircleV(dst, center, radius, color)
+func ImageDrawCircleLines(dst any, centerX int, centerY int, radius int, color Color) void:
+    return lib.ImageDrawCircleLines(dst, centerX, centerY, radius, color)
+func ImageDrawCircleLinesV(dst any, center Vector2, radius int, color Color) void:
+    return lib.ImageDrawCircleLinesV(dst, center, radius, color)
+func ImageDrawRectangle(dst any, posX int, posY int, width int, height int, color Color) void:
+    return lib.ImageDrawRectangle(dst, posX, posY, width, height, color)
+func ImageDrawRectangleV(dst any, position Vector2, size Vector2, color Color) void:
+    return lib.ImageDrawRectangleV(dst, position, size, color)
+func ImageDrawRectangleRec(dst any, rec Rectangle, color Color) void:
+    return lib.ImageDrawRectangleRec(dst, rec, color)
+func ImageDrawRectangleLines(dst any, rec Rectangle, thick int, color Color) void:
+    return lib.ImageDrawRectangleLines(dst, rec, thick, color)
+func ImageDraw(dst any, src Image, srcRec Rectangle, dstRec Rectangle, tint Color) void:
+    return lib.ImageDraw(dst, src, srcRec, dstRec, tint)
+func ImageDrawText(dst any, text any, posX int, posY int, fontSize int, color Color) void:
+    return lib.ImageDrawText(dst, text, posX, posY, fontSize, color)
+func ImageDrawTextEx(dst any, font Font, text any, position Vector2, fontSize float, spacing float, tint Color) void:
+    return lib.ImageDrawTextEx(dst, font, text, position, fontSize, spacing, tint)
+--func LoadTexture(fileName any) Texture2D
+func LoadTextureFromImage(image Image) Texture2D:
+    return lib.LoadTextureFromImage(image)
+func LoadTextureCubemap(image Image, layout int) TextureCubemap:
+    return lib.LoadTextureCubemap(image, layout)
+func LoadRenderTexture(width int, height int) RenderTexture2D:
+    return lib.LoadRenderTexture(width, height)
+func IsTextureReady(texture Texture2D) bool:
+    return lib.IsTextureReady(texture)
+func UnloadTexture(texture Texture2D) void:
+    return lib.UnloadTexture(texture)
+func IsRenderTextureReady(target RenderTexture2D) bool:
+    return lib.IsRenderTextureReady(target)
+func UnloadRenderTexture(target RenderTexture2D) void:
+    return lib.UnloadRenderTexture(target)
+func UpdateTexture(texture Texture2D, pixels any) void:
+    return lib.UpdateTexture(texture, pixels)
+func UpdateTextureRec(texture Texture2D, rec Rectangle, pixels any) void:
+    return lib.UpdateTextureRec(texture, rec, pixels)
+func GenTextureMipmaps(texture any) void:
+    return lib.GenTextureMipmaps(texture)
+func SetTextureFilter(texture Texture2D, filter int) void:
+    return lib.SetTextureFilter(texture, filter)
+func SetTextureWrap(texture Texture2D, wrap int) void:
+    return lib.SetTextureWrap(texture, wrap)
+func DrawTexture(texture Texture2D, posX int, posY int, tint Color) void:
+    return lib.DrawTexture(texture, posX, posY, tint)
+func DrawTextureV(texture Texture2D, position Vector2, tint Color) void:
+    return lib.DrawTextureV(texture, position, tint)
+func DrawTextureEx(texture Texture2D, position Vector2, rotation float, scale float, tint Color) void:
+    return lib.DrawTextureEx(texture, position, rotation, scale, tint)
+func DrawTextureRec(texture Texture2D, source Rectangle, position Vector2, tint Color) void:
+    return lib.DrawTextureRec(texture, source, position, tint)
+func DrawTexturePro(texture Texture2D, source Rectangle, dest Rectangle, origin Vector2, rotation float, tint Color) void:
+    return lib.DrawTexturePro(texture, source, dest, origin, rotation, tint)
+func DrawTextureNPatch(texture Texture2D, nPatchInfo NPatchInfo, dest Rectangle, origin Vector2, rotation float, tint Color) void:
+    return lib.DrawTextureNPatch(texture, nPatchInfo, dest, origin, rotation, tint)
+func Fade(color Color, alpha float) Color:
+    return lib.Fade(color, alpha)
+func ColorToInt(color Color) int:
+    return lib.ColorToInt(color)
+func ColorNormalize(color Color) Vector4:
+    return lib.ColorNormalize(color)
+func ColorFromNormalized(normalized Vector4) Color:
+    return lib.ColorFromNormalized(normalized)
+func ColorToHSV(color Color) Vector3:
+    return lib.ColorToHSV(color)
+func ColorFromHSV(hue float, saturation float, value float) Color:
+    return lib.ColorFromHSV(hue, saturation, value)
+func ColorTint(color Color, tint Color) Color:
+    return lib.ColorTint(color, tint)
+func ColorBrightness(color Color, factor float) Color:
+    return lib.ColorBrightness(color, factor)
+func ColorContrast(color Color, contrast float) Color:
+    return lib.ColorContrast(color, contrast)
+func ColorAlpha(color Color, alpha float) Color:
+    return lib.ColorAlpha(color, alpha)
+func ColorAlphaBlend(dst Color, src Color, tint Color) Color:
+    return lib.ColorAlphaBlend(dst, src, tint)
+func GetColor(hexValue int) Color:
+    return lib.GetColor(hexValue)
+func GetPixelColor(srcPtr any, format int) Color:
+    return lib.GetPixelColor(srcPtr, format)
+func SetPixelColor(dstPtr any, color Color, format int) void:
+    return lib.SetPixelColor(dstPtr, color, format)
+func GetPixelDataSize(width int, height int, format int) int:
+    return lib.GetPixelDataSize(width, height, format)
+func GetFontDefault() Font:
+    return lib.GetFontDefault()
+func LoadFont(fileName any) Font:
+    return lib.LoadFont(fileName)
+func LoadFontEx(fileName any, fontSize int, codepoints any, codepointCount int) Font:
+    return lib.LoadFontEx(fileName, fontSize, codepoints, codepointCount)
+func LoadFontFromImage(image Image, key Color, firstChar int) Font:
+    return lib.LoadFontFromImage(image, key, firstChar)
+func LoadFontFromMemory(fileType any, fileData any, dataSize int, fontSize int, codepoints any, codepointCount int) Font:
+    return lib.LoadFontFromMemory(fileType, fileData, dataSize, fontSize, codepoints, codepointCount)
+func IsFontReady(font Font) bool:
+    return lib.IsFontReady(font)
+func LoadFontData(fileData any, dataSize int, fontSize int, codepoints any, codepointCount int, param5 int) pointer:
+    return lib.LoadFontData(fileData, dataSize, fontSize, codepoints, codepointCount, param5)
+func GenImageFontAtlas(glyphs any, glyphRecs any, glyphCount int, fontSize int, padding int, packMethod int) Image:
+    return lib.GenImageFontAtlas(glyphs, glyphRecs, glyphCount, fontSize, padding, packMethod)
+func UnloadFontData(glyphs any, glyphCount int) void:
+    return lib.UnloadFontData(glyphs, glyphCount)
+func UnloadFont(font Font) void:
+    return lib.UnloadFont(font)
+func ExportFontAsCode(font Font, fileName any) bool:
+    return lib.ExportFontAsCode(font, fileName)
+func DrawFPS(posX int, posY int) void:
+    return lib.DrawFPS(posX, posY)
+--func DrawText(text any, posX int, posY int, fontSize int, color Color) void
+func DrawTextEx(font Font, text any, position Vector2, fontSize float, spacing float, tint Color) void:
+    return lib.DrawTextEx(font, text, position, fontSize, spacing, tint)
+func DrawTextPro(font Font, text any, position Vector2, origin Vector2, rotation float, fontSize float, spacing float, tint Color) void:
+    return lib.DrawTextPro(font, text, position, origin, rotation, fontSize, spacing, tint)
+func DrawTextCodepoint(font Font, codepoint int, position Vector2, fontSize float, tint Color) void:
+    return lib.DrawTextCodepoint(font, codepoint, position, fontSize, tint)
+func DrawTextCodepoints(font Font, codepoints any, codepointCount int, position Vector2, fontSize float, spacing float, tint Color) void:
+    return lib.DrawTextCodepoints(font, codepoints, codepointCount, position, fontSize, spacing, tint)
+func SetTextLineSpacing(spacing int) void:
+    return lib.SetTextLineSpacing(spacing)
+--func MeasureText(text any, fontSize int) int
+func MeasureTextEx(font Font, text any, fontSize float, spacing float) Vector2:
+    return lib.MeasureTextEx(font, text, fontSize, spacing)
+func GetGlyphIndex(font Font, codepoint int) int:
+    return lib.GetGlyphIndex(font, codepoint)
+func GetGlyphInfo(font Font, codepoint int) GlyphInfo:
+    return lib.GetGlyphInfo(font, codepoint)
+func GetGlyphAtlasRec(font Font, codepoint int) Rectangle:
+    return lib.GetGlyphAtlasRec(font, codepoint)
+func LoadUTF8(codepoints any, length int) pointer:
+    return lib.LoadUTF8(codepoints, length)
+func UnloadUTF8(text any) void:
+    return lib.UnloadUTF8(text)
+func LoadCodepoints(text any, count any) pointer:
+    return lib.LoadCodepoints(text, count)
+func UnloadCodepoints(codepoints any) void:
+    return lib.UnloadCodepoints(codepoints)
+func GetCodepointCount(text any) int:
+    return lib.GetCodepointCount(text)
+func GetCodepoint(text any, codepointSize any) int:
+    return lib.GetCodepoint(text, codepointSize)
+func GetCodepointNext(text any, codepointSize any) int:
+    return lib.GetCodepointNext(text, codepointSize)
+func GetCodepointPrevious(text any, codepointSize any) int:
+    return lib.GetCodepointPrevious(text, codepointSize)
+func CodepointToUTF8(codepoint int, utf8Size any) pointer:
+    return lib.CodepointToUTF8(codepoint, utf8Size)
+func TextCopy(dst any, src any) int:
+    return lib.TextCopy(dst, src)
+func TextIsEqual(text1 any, text2 any) bool:
+    return lib.TextIsEqual(text1, text2)
+func TextLength(text any) int:
+    return lib.TextLength(text)
+func TextFormat(text any) pointer:
+    return lib.TextFormat(text)
+func TextSubtext(text any, position int, length int) pointer:
+    return lib.TextSubtext(text, position, length)
+func TextReplace(text any, replace any, by any) pointer:
+    return lib.TextReplace(text, replace, by)
+func TextInsert(text any, insert any, position int) pointer:
+    return lib.TextInsert(text, insert, position)
+func TextJoin(textList any, count int, delimiter any) pointer:
+    return lib.TextJoin(textList, count, delimiter)
+func TextSplit(text any, delimiter int, count any) pointer:
+    return lib.TextSplit(text, delimiter, count)
+func TextAppend(text any, append any, position any) void:
+    return lib.TextAppend(text, append, position)
+func TextFindIndex(text any, find any) int:
+    return lib.TextFindIndex(text, find)
+func TextToUpper(text any) pointer:
+    return lib.TextToUpper(text)
+func TextToLower(text any) pointer:
+    return lib.TextToLower(text)
+func TextToPascal(text any) pointer:
+    return lib.TextToPascal(text)
+func TextToInteger(text any) int:
+    return lib.TextToInteger(text)
+func DrawLine3D(startPos Vector3, endPos Vector3, color Color) void:
+    return lib.DrawLine3D(startPos, endPos, color)
+func DrawPoint3D(position Vector3, color Color) void:
+    return lib.DrawPoint3D(position, color)
+func DrawCircle3D(center Vector3, radius float, rotationAxis Vector3, rotationAngle float, color Color) void:
+    return lib.DrawCircle3D(center, radius, rotationAxis, rotationAngle, color)
+func DrawTriangle3D(v1 Vector3, v2 Vector3, v3 Vector3, color Color) void:
+    return lib.DrawTriangle3D(v1, v2, v3, color)
+func DrawTriangleStrip3D(points any, pointCount int, color Color) void:
+    return lib.DrawTriangleStrip3D(points, pointCount, color)
+func DrawCube(position Vector3, width float, height float, length float, color Color) void:
+    return lib.DrawCube(position, width, height, length, color)
+func DrawCubeV(position Vector3, size Vector3, color Color) void:
+    return lib.DrawCubeV(position, size, color)
+func DrawCubeWires(position Vector3, width float, height float, length float, color Color) void:
+    return lib.DrawCubeWires(position, width, height, length, color)
+func DrawCubeWiresV(position Vector3, size Vector3, color Color) void:
+    return lib.DrawCubeWiresV(position, size, color)
+func DrawSphere(centerPos Vector3, radius float, color Color) void:
+    return lib.DrawSphere(centerPos, radius, color)
+func DrawSphereEx(centerPos Vector3, radius float, rings int, slices int, color Color) void:
+    return lib.DrawSphereEx(centerPos, radius, rings, slices, color)
+func DrawSphereWires(centerPos Vector3, radius float, rings int, slices int, color Color) void:
+    return lib.DrawSphereWires(centerPos, radius, rings, slices, color)
+func DrawCylinder(position Vector3, radiusTop float, radiusBottom float, height float, slices int, color Color) void:
+    return lib.DrawCylinder(position, radiusTop, radiusBottom, height, slices, color)
+func DrawCylinderEx(startPos Vector3, endPos Vector3, startRadius float, endRadius float, sides int, color Color) void:
+    return lib.DrawCylinderEx(startPos, endPos, startRadius, endRadius, sides, color)
+func DrawCylinderWires(position Vector3, radiusTop float, radiusBottom float, height float, slices int, color Color) void:
+    return lib.DrawCylinderWires(position, radiusTop, radiusBottom, height, slices, color)
+func DrawCylinderWiresEx(startPos Vector3, endPos Vector3, startRadius float, endRadius float, sides int, color Color) void:
+    return lib.DrawCylinderWiresEx(startPos, endPos, startRadius, endRadius, sides, color)
+func DrawCapsule(startPos Vector3, endPos Vector3, radius float, slices int, rings int, color Color) void:
+    return lib.DrawCapsule(startPos, endPos, radius, slices, rings, color)
+func DrawCapsuleWires(startPos Vector3, endPos Vector3, radius float, slices int, rings int, color Color) void:
+    return lib.DrawCapsuleWires(startPos, endPos, radius, slices, rings, color)
+func DrawPlane(centerPos Vector3, size Vector2, color Color) void:
+    return lib.DrawPlane(centerPos, size, color)
+func DrawRay(ray Ray, color Color) void:
+    return lib.DrawRay(ray, color)
+func DrawGrid(slices int, spacing float) void:
+    return lib.DrawGrid(slices, spacing)
+func LoadModel(fileName any) Model:
+    return lib.LoadModel(fileName)
+func LoadModelFromMesh(mesh Mesh) Model:
+    return lib.LoadModelFromMesh(mesh)
+func IsModelReady(model Model) bool:
+    return lib.IsModelReady(model)
+func UnloadModel(model Model) void:
+    return lib.UnloadModel(model)
+func GetModelBoundingBox(model Model) BoundingBox:
+    return lib.GetModelBoundingBox(model)
+func DrawModel(model Model, position Vector3, scale float, tint Color) void:
+    return lib.DrawModel(model, position, scale, tint)
+func DrawModelEx(model Model, position Vector3, rotationAxis Vector3, rotationAngle float, scale Vector3, tint Color) void:
+    return lib.DrawModelEx(model, position, rotationAxis, rotationAngle, scale, tint)
+func DrawModelWires(model Model, position Vector3, scale float, tint Color) void:
+    return lib.DrawModelWires(model, position, scale, tint)
+func DrawModelWiresEx(model Model, position Vector3, rotationAxis Vector3, rotationAngle float, scale Vector3, tint Color) void:
+    return lib.DrawModelWiresEx(model, position, rotationAxis, rotationAngle, scale, tint)
+func DrawBoundingBox(box BoundingBox, color Color) void:
+    return lib.DrawBoundingBox(box, color)
+func DrawBillboard(camera Camera, texture Texture2D, position Vector3, size float, tint Color) void:
+    return lib.DrawBillboard(camera, texture, position, size, tint)
+func DrawBillboardRec(camera Camera, texture Texture2D, source Rectangle, position Vector3, size Vector2, tint Color) void:
+    return lib.DrawBillboardRec(camera, texture, source, position, size, tint)
+func DrawBillboardPro(camera Camera, texture Texture2D, source Rectangle, position Vector3, up Vector3, size Vector2, origin Vector2, rotation float, tint Color) void:
+    return lib.DrawBillboardPro(camera, texture, source, position, up, size, origin, rotation, tint)
+func UploadMesh(mesh any, dynamic bool) void:
+    return lib.UploadMesh(mesh, dynamic)
+func UpdateMeshBuffer(mesh Mesh, index int, data any, dataSize int, offset int) void:
+    return lib.UpdateMeshBuffer(mesh, index, data, dataSize, offset)
+func UnloadMesh(mesh Mesh) void:
+    return lib.UnloadMesh(mesh)
+func DrawMesh(mesh Mesh, material Material, transform Matrix) void:
+    return lib.DrawMesh(mesh, material, transform)
+func DrawMeshInstanced(mesh Mesh, material Material, transforms any, instances int) void:
+    return lib.DrawMeshInstanced(mesh, material, transforms, instances)
+func ExportMesh(mesh Mesh, fileName any) bool:
+    return lib.ExportMesh(mesh, fileName)
+func GetMeshBoundingBox(mesh Mesh) BoundingBox:
+    return lib.GetMeshBoundingBox(mesh)
+func GenMeshTangents(mesh any) void:
+    return lib.GenMeshTangents(mesh)
+func GenMeshPoly(sides int, radius float) Mesh:
+    return lib.GenMeshPoly(sides, radius)
+func GenMeshPlane(width float, length float, resX int, resZ int) Mesh:
+    return lib.GenMeshPlane(width, length, resX, resZ)
+func GenMeshCube(width float, height float, length float) Mesh:
+    return lib.GenMeshCube(width, height, length)
+func GenMeshSphere(radius float, rings int, slices int) Mesh:
+    return lib.GenMeshSphere(radius, rings, slices)
+func GenMeshHemiSphere(radius float, rings int, slices int) Mesh:
+    return lib.GenMeshHemiSphere(radius, rings, slices)
+func GenMeshCylinder(radius float, height float, slices int) Mesh:
+    return lib.GenMeshCylinder(radius, height, slices)
+func GenMeshCone(radius float, height float, slices int) Mesh:
+    return lib.GenMeshCone(radius, height, slices)
+func GenMeshTorus(radius float, size float, radSeg int, sides int) Mesh:
+    return lib.GenMeshTorus(radius, size, radSeg, sides)
+func GenMeshKnot(radius float, size float, radSeg int, sides int) Mesh:
+    return lib.GenMeshKnot(radius, size, radSeg, sides)
+func GenMeshHeightmap(heightmap Image, size Vector3) Mesh:
+    return lib.GenMeshHeightmap(heightmap, size)
+func GenMeshCubicmap(cubicmap Image, cubeSize Vector3) Mesh:
+    return lib.GenMeshCubicmap(cubicmap, cubeSize)
+func LoadMaterials(fileName any, materialCount any) pointer:
+    return lib.LoadMaterials(fileName, materialCount)
+func LoadMaterialDefault() Material:
+    return lib.LoadMaterialDefault()
+func IsMaterialReady(material Material) bool:
+    return lib.IsMaterialReady(material)
+func UnloadMaterial(material Material) void:
+    return lib.UnloadMaterial(material)
+func SetMaterialTexture(material any, mapType int, texture Texture2D) void:
+    return lib.SetMaterialTexture(material, mapType, texture)
+func SetModelMeshMaterial(model any, meshId int, materialId int) void:
+    return lib.SetModelMeshMaterial(model, meshId, materialId)
+func LoadModelAnimations(fileName any, animCount any) pointer:
+    return lib.LoadModelAnimations(fileName, animCount)
+func UpdateModelAnimation(model Model, anim ModelAnimation, frame int) void:
+    return lib.UpdateModelAnimation(model, anim, frame)
+func UnloadModelAnimation(anim ModelAnimation) void:
+    return lib.UnloadModelAnimation(anim)
+func UnloadModelAnimations(animations any, animCount int) void:
+    return lib.UnloadModelAnimations(animations, animCount)
+func IsModelAnimationValid(model Model, anim ModelAnimation) bool:
+    return lib.IsModelAnimationValid(model, anim)
+func CheckCollisionSpheres(center1 Vector3, radius1 float, center2 Vector3, radius2 float) bool:
+    return lib.CheckCollisionSpheres(center1, radius1, center2, radius2)
+func CheckCollisionBoxes(box1 BoundingBox, box2 BoundingBox) bool:
+    return lib.CheckCollisionBoxes(box1, box2)
+func CheckCollisionBoxSphere(box BoundingBox, center Vector3, radius float) bool:
+    return lib.CheckCollisionBoxSphere(box, center, radius)
+func GetRayCollisionSphere(ray Ray, center Vector3, radius float) RayCollision:
+    return lib.GetRayCollisionSphere(ray, center, radius)
+func GetRayCollisionBox(ray Ray, box BoundingBox) RayCollision:
+    return lib.GetRayCollisionBox(ray, box)
+func GetRayCollisionMesh(ray Ray, mesh Mesh, transform Matrix) RayCollision:
+    return lib.GetRayCollisionMesh(ray, mesh, transform)
+func GetRayCollisionTriangle(ray Ray, p1 Vector3, p2 Vector3, p3 Vector3) RayCollision:
+    return lib.GetRayCollisionTriangle(ray, p1, p2, p3)
+func GetRayCollisionQuad(ray Ray, p1 Vector3, p2 Vector3, p3 Vector3, p4 Vector3) RayCollision:
+    return lib.GetRayCollisionQuad(ray, p1, p2, p3, p4)
+type AudioCallback = pointer
+
+func InitAudioDevice() void:
+    return lib.InitAudioDevice()
+func CloseAudioDevice() void:
+    return lib.CloseAudioDevice()
+func IsAudioDeviceReady() bool:
+    return lib.IsAudioDeviceReady()
+func SetMasterVolume(volume float) void:
+    return lib.SetMasterVolume(volume)
+func GetMasterVolume() float:
+    return lib.GetMasterVolume()
+func LoadWave(fileName any) Wave:
+    return lib.LoadWave(fileName)
+func LoadWaveFromMemory(fileType any, fileData any, dataSize int) Wave:
+    return lib.LoadWaveFromMemory(fileType, fileData, dataSize)
+func IsWaveReady(wave Wave) bool:
+    return lib.IsWaveReady(wave)
+func LoadSound(fileName any) Sound:
+    return lib.LoadSound(fileName)
+func LoadSoundFromWave(wave Wave) Sound:
+    return lib.LoadSoundFromWave(wave)
+func LoadSoundAlias(source Sound) Sound:
+    return lib.LoadSoundAlias(source)
+func IsSoundReady(sound Sound) bool:
+    return lib.IsSoundReady(sound)
+func UpdateSound(sound Sound, data any, sampleCount int) void:
+    return lib.UpdateSound(sound, data, sampleCount)
+func UnloadWave(wave Wave) void:
+    return lib.UnloadWave(wave)
+func UnloadSound(sound Sound) void:
+    return lib.UnloadSound(sound)
+func UnloadSoundAlias(alias Sound) void:
+    return lib.UnloadSoundAlias(alias)
+func ExportWave(wave Wave, fileName any) bool:
+    return lib.ExportWave(wave, fileName)
+func ExportWaveAsCode(wave Wave, fileName any) bool:
+    return lib.ExportWaveAsCode(wave, fileName)
+func PlaySound(sound Sound) void:
+    return lib.PlaySound(sound)
+func StopSound(sound Sound) void:
+    return lib.StopSound(sound)
+func PauseSound(sound Sound) void:
+    return lib.PauseSound(sound)
+func ResumeSound(sound Sound) void:
+    return lib.ResumeSound(sound)
+func IsSoundPlaying(sound Sound) bool:
+    return lib.IsSoundPlaying(sound)
+func SetSoundVolume(sound Sound, volume float) void:
+    return lib.SetSoundVolume(sound, volume)
+func SetSoundPitch(sound Sound, pitch float) void:
+    return lib.SetSoundPitch(sound, pitch)
+func SetSoundPan(sound Sound, pan float) void:
+    return lib.SetSoundPan(sound, pan)
+func WaveCopy(wave Wave) Wave:
+    return lib.WaveCopy(wave)
+func WaveCrop(wave any, initSample int, finalSample int) void:
+    return lib.WaveCrop(wave, initSample, finalSample)
+func WaveFormat(wave any, sampleRate int, sampleSize int, channels int) void:
+    return lib.WaveFormat(wave, sampleRate, sampleSize, channels)
+func LoadWaveSamples(wave Wave) pointer:
+    return lib.LoadWaveSamples(wave)
+func UnloadWaveSamples(samples any) void:
+    return lib.UnloadWaveSamples(samples)
+func LoadMusicStream(fileName any) Music:
+    return lib.LoadMusicStream(fileName)
+func LoadMusicStreamFromMemory(fileType any, data any, dataSize int) Music:
+    return lib.LoadMusicStreamFromMemory(fileType, data, dataSize)
+func IsMusicReady(music Music) bool:
+    return lib.IsMusicReady(music)
+func UnloadMusicStream(music Music) void:
+    return lib.UnloadMusicStream(music)
+func PlayMusicStream(music Music) void:
+    return lib.PlayMusicStream(music)
+func IsMusicStreamPlaying(music Music) bool:
+    return lib.IsMusicStreamPlaying(music)
+func UpdateMusicStream(music Music) void:
+    return lib.UpdateMusicStream(music)
+func StopMusicStream(music Music) void:
+    return lib.StopMusicStream(music)
+func PauseMusicStream(music Music) void:
+    return lib.PauseMusicStream(music)
+func ResumeMusicStream(music Music) void:
+    return lib.ResumeMusicStream(music)
+func SeekMusicStream(music Music, position float) void:
+    return lib.SeekMusicStream(music, position)
+func SetMusicVolume(music Music, volume float) void:
+    return lib.SetMusicVolume(music, volume)
+func SetMusicPitch(music Music, pitch float) void:
+    return lib.SetMusicPitch(music, pitch)
+func SetMusicPan(music Music, pan float) void:
+    return lib.SetMusicPan(music, pan)
+func GetMusicTimeLength(music Music) float:
+    return lib.GetMusicTimeLength(music)
+func GetMusicTimePlayed(music Music) float:
+    return lib.GetMusicTimePlayed(music)
+func LoadAudioStream(sampleRate int, sampleSize int, channels int) AudioStream:
+    return lib.LoadAudioStream(sampleRate, sampleSize, channels)
+func IsAudioStreamReady(stream AudioStream) bool:
+    return lib.IsAudioStreamReady(stream)
+func UnloadAudioStream(stream AudioStream) void:
+    return lib.UnloadAudioStream(stream)
+func UpdateAudioStream(stream AudioStream, data any, frameCount int) void:
+    return lib.UpdateAudioStream(stream, data, frameCount)
+func IsAudioStreamProcessed(stream AudioStream) bool:
+    return lib.IsAudioStreamProcessed(stream)
+func PlayAudioStream(stream AudioStream) void:
+    return lib.PlayAudioStream(stream)
+func PauseAudioStream(stream AudioStream) void:
+    return lib.PauseAudioStream(stream)
+func ResumeAudioStream(stream AudioStream) void:
+    return lib.ResumeAudioStream(stream)
+func IsAudioStreamPlaying(stream AudioStream) bool:
+    return lib.IsAudioStreamPlaying(stream)
+func StopAudioStream(stream AudioStream) void:
+    return lib.StopAudioStream(stream)
+func SetAudioStreamVolume(stream AudioStream, volume float) void:
+    return lib.SetAudioStreamVolume(stream, volume)
+func SetAudioStreamPitch(stream AudioStream, pitch float) void:
+    return lib.SetAudioStreamPitch(stream, pitch)
+func SetAudioStreamPan(stream AudioStream, pan float) void:
+    return lib.SetAudioStreamPan(stream, pan)
+func SetAudioStreamBufferSizeDefault(size int) void:
+    return lib.SetAudioStreamBufferSizeDefault(size)
+func SetAudioStreamCallback(stream AudioStream, callback any) void:
+    return lib.SetAudioStreamCallback(stream, callback)
+func AttachAudioStreamProcessor(stream AudioStream, processor any) void:
+    return lib.AttachAudioStreamProcessor(stream, processor)
+func DetachAudioStreamProcessor(stream AudioStream, processor any) void:
+    return lib.DetachAudioStreamProcessor(stream, processor)
+func AttachAudioMixedProcessor(processor any) void:
+    return lib.AttachAudioMixedProcessor(processor)
+func DetachAudioMixedProcessor(processor any) void:
+    return lib.DetachAudioMixedProcessor(processor)
+
+use os
+let .ffi = false
+let .lib = load()
 func load():
     ffi = os.newFFI()
-    ffi.cbind(Vector2, [.float, .float])
-    ffi.cbind(Vector3, [.float, .float, .float])
-    ffi.cbind(Vector4, [.float, .float, .float, .float])
-    ffi.cbind(Matrix, [.float, .float, .float, .float, .float, .float, .float, .float, .float, .float, .float, .float, .float, .float, .float, .float])
-    ffi.cbind(Color, [.uchar, .uchar, .uchar, .uchar])
-    ffi.cbind(Rectangle, [.float, .float, .float, .float])
-    ffi.cbind(Image, [.voidPtr, .int, .int, .int, .int])
-    ffi.cbind(Texture, [.uint, .int, .int, .int, .int])
-    ffi.cbind(RenderTexture, [.uint, Texture, Texture])
-    ffi.cbind(NPatchInfo, [Rectangle, .int, .int, .int, .int, .int])
-    ffi.cbind(GlyphInfo, [.int, .int, .int, .int, Image])
-    ffi.cbind(Font, [.int, .int, .int, Texture, .voidPtr, .voidPtr])
-    ffi.cbind(Camera3D, [Vector3, Vector3, Vector3, .float, .int])
-    ffi.cbind(Camera2D, [Vector2, Vector2, .float, .float])
-    ffi.cbind(Mesh, [.int, .int, .voidPtr, .voidPtr, .voidPtr, .voidPtr, .voidPtr, .voidPtr, .voidPtr, .voidPtr, .voidPtr, .voidPtr, .voidPtr, .uint, .voidPtr])
-    ffi.cbind(Shader, [.uint, .voidPtr])
-    ffi.cbind(MaterialMap, [Texture, Color, .float])
-    ffi.cbind(Material, [Shader, .voidPtr, [os.CArray n: 4, elem: .float]])
-    ffi.cbind(Transform, [Vector3, Vector4, Vector3])
-    ffi.cbind(BoneInfo, [[os.CArray n: 32, elem: .char], .int])
-    ffi.cbind(Model, [Matrix, .int, .int, .voidPtr, .voidPtr, .voidPtr, .int, .voidPtr, .voidPtr])
-    ffi.cbind(ModelAnimation, [.int, .int, .voidPtr, .voidPtr, [os.CArray n: 32, elem: .char]])
-    ffi.cbind(Ray, [Vector3, Vector3])
-    ffi.cbind(RayCollision, [.bool, .float, Vector3, Vector3])
-    ffi.cbind(BoundingBox, [Vector3, Vector3])
-    ffi.cbind(Wave, [.uint, .uint, .uint, .uint, .voidPtr])
-    ffi.cbind(AudioStream, [.voidPtr, .voidPtr, .uint, .uint, .uint])
-    ffi.cbind(Sound, [AudioStream, .uint])
-    ffi.cbind(Music, [AudioStream, .uint, .bool, .int, .voidPtr])
-    ffi.cbind(VrDeviceInfo, [.int, .int, .float, .float, .float, .float, .float, .float, [os.CArray n: 4, elem: .float], [os.CArray n: 4, elem: .float]])
-    ffi.cbind(VrStereoConfig, [[os.CArray n: 2, elem: Matrix], [os.CArray n: 2, elem: Matrix], [os.CArray n: 2, elem: .float], [os.CArray n: 2, elem: .float], [os.CArray n: 2, elem: .float], [os.CArray n: 2, elem: .float], [os.CArray n: 2, elem: .float], [os.CArray n: 2, elem: .float]])
-    ffi.cbind(FilePathList, [.uint, .uint, .voidPtr])
-    ffi.cbind(AutomationEvent, [.uint, .uint, [os.CArray n: 4, elem: .int]])
-    ffi.cbind(AutomationEventList, [.uint, .uint, .voidPtr])
+    ffi.cbind(Vector2_S, [.float, .float])
+    ffi.cbind(Vector3_S, [.float, .float, .float])
+    ffi.cbind(Vector4_S, [.float, .float, .float, .float])
+    ffi.cbind(Matrix_S, [.float, .float, .float, .float, .float, .float, .float, .float, .float, .float, .float, .float, .float, .float, .float, .float])
+    ffi.cbind(Color_S, [.uchar, .uchar, .uchar, .uchar])
+    ffi.cbind(Rectangle_S, [.float, .float, .float, .float])
+    ffi.cbind(Image_S, [.voidPtr, .int, .int, .int, .int])
+    ffi.cbind(Texture_S, [.uint, .int, .int, .int, .int])
+    ffi.cbind(RenderTexture_S, [.uint, Texture, Texture])
+    ffi.cbind(NPatchInfo_S, [Rectangle, .int, .int, .int, .int, .int])
+    ffi.cbind(GlyphInfo_S, [.int, .int, .int, .int, Image])
+    ffi.cbind(Font_S, [.int, .int, .int, Texture2D, .voidPtr, .voidPtr])
+    ffi.cbind(Camera3D_S, [Vector3, Vector3, Vector3, .float, .int])
+    ffi.cbind(Camera2D_S, [Vector2, Vector2, .float, .float])
+    ffi.cbind(Mesh_S, [.int, .int, .voidPtr, .voidPtr, .voidPtr, .voidPtr, .voidPtr, .voidPtr, .voidPtr, .voidPtr, .voidPtr, .voidPtr, .voidPtr, .uint, .voidPtr])
+    ffi.cbind(Shader_S, [.uint, .voidPtr])
+    ffi.cbind(MaterialMap_S, [Texture2D, Color, .float])
+    ffi.cbind(Material_S, [Shader, .voidPtr, os.CArray{n: 4, elem: .float}])
+    ffi.cbind(Transform_S, [Vector3, Quaternion, Vector3])
+    ffi.cbind(BoneInfo_S, [os.CArray{n: 32, elem: .char}, .int])
+    ffi.cbind(Model_S, [Matrix, .int, .int, .voidPtr, .voidPtr, .voidPtr, .int, .voidPtr, .voidPtr])
+    ffi.cbind(ModelAnimation_S, [.int, .int, .voidPtr, .voidPtr, os.CArray{n: 32, elem: .char}])
+    ffi.cbind(Ray_S, [Vector3, Vector3])
+    ffi.cbind(RayCollision_S, [.bool, .float, Vector3, Vector3])
+    ffi.cbind(BoundingBox_S, [Vector3, Vector3])
+    ffi.cbind(Wave_S, [.uint, .uint, .uint, .uint, .voidPtr])
+    ffi.cbind(rAudioBuffer_S, [])
+    ffi.cbind(rAudioProcessor_S, [])
+    ffi.cbind(AudioStream_S, [.voidPtr, .voidPtr, .uint, .uint, .uint])
+    ffi.cbind(Sound_S, [AudioStream, .uint])
+    ffi.cbind(Music_S, [AudioStream, .uint, .bool, .int, .voidPtr])
+    ffi.cbind(VrDeviceInfo_S, [.int, .int, .float, .float, .float, .float, .float, .float, os.CArray{n: 4, elem: .float}, os.CArray{n: 4, elem: .float}])
+    ffi.cbind(VrStereoConfig_S, [os.CArray{n: 2, elem: Matrix}, os.CArray{n: 2, elem: Matrix}, os.CArray{n: 2, elem: .float}, os.CArray{n: 2, elem: .float}, os.CArray{n: 2, elem: .float}, os.CArray{n: 2, elem: .float}, os.CArray{n: 2, elem: .float}, os.CArray{n: 2, elem: .float}])
+    ffi.cbind(FilePathList_S, [.uint, .uint, .voidPtr])
+    ffi.cbind(AutomationEvent_S, [.uint, .uint, os.CArray{n: 4, elem: .int}])
+    ffi.cbind(AutomationEventList_S, [.uint, .uint, .voidPtr])
     ffi.cfunc('InitWindow', [.int, .int, .voidPtr], .void)
     ffi.cfunc('CloseWindow', [], .void)
     ffi.cfunc('WindowShouldClose', [], .bool)
@@ -1317,7 +1943,7 @@ func load():
     ffi.cfunc('EndMode2D', [], .void)
     ffi.cfunc('BeginMode3D', [Camera3D], .void)
     ffi.cfunc('EndMode3D', [], .void)
-    ffi.cfunc('BeginTextureMode', [RenderTexture], .void)
+    ffi.cfunc('BeginTextureMode', [RenderTexture2D], .void)
     ffi.cfunc('EndTextureMode', [], .void)
     ffi.cfunc('BeginShaderMode', [Shader], .void)
     ffi.cfunc('EndShaderMode', [], .void)
@@ -1337,14 +1963,14 @@ func load():
     ffi.cfunc('SetShaderValue', [Shader, .int, .voidPtr, .int], .void)
     ffi.cfunc('SetShaderValueV', [Shader, .int, .voidPtr, .int, .int], .void)
     ffi.cfunc('SetShaderValueMatrix', [Shader, .int, Matrix], .void)
-    ffi.cfunc('SetShaderValueTexture', [Shader, .int, Texture], .void)
+    ffi.cfunc('SetShaderValueTexture', [Shader, .int, Texture2D], .void)
     ffi.cfunc('UnloadShader', [Shader], .void)
-    ffi.cfunc('GetMouseRay', [Vector2, Camera3D], Ray)
-    ffi.cfunc('GetCameraMatrix', [Camera3D], Matrix)
+    ffi.cfunc('GetMouseRay', [Vector2, Camera], Ray)
+    ffi.cfunc('GetCameraMatrix', [Camera], Matrix)
     ffi.cfunc('GetCameraMatrix2D', [Camera2D], Matrix)
-    ffi.cfunc('GetWorldToScreen', [Vector3, Camera3D], Vector2)
+    ffi.cfunc('GetWorldToScreen', [Vector3, Camera], Vector2)
     ffi.cfunc('GetScreenToWorld2D', [Vector2, Camera2D], Vector2)
-    ffi.cfunc('GetWorldToScreenEx', [Vector3, Camera3D, .int, .int], Vector2)
+    ffi.cfunc('GetWorldToScreenEx', [Vector3, Camera, .int, .int], Vector2)
     ffi.cfunc('GetWorldToScreen2D', [Vector2, Camera2D], Vector2)
     ffi.cfunc('SetTargetFPS', [.int], .void)
     ffi.cfunc('GetFrameTime', [], .float)
@@ -1456,7 +2082,7 @@ func load():
     ffi.cfunc('GetGesturePinchAngle', [], .float)
     ffi.cfunc('UpdateCamera', [.voidPtr, .int], .void)
     ffi.cfunc('UpdateCameraPro', [.voidPtr, Vector3, Vector3, .float], .void)
-    ffi.cfunc('SetShapesTexture', [Texture, Rectangle], .void)
+    ffi.cfunc('SetShapesTexture', [Texture2D, Rectangle], .void)
     ffi.cfunc('DrawPixel', [.int, .int, Color], .void)
     ffi.cfunc('DrawPixelV', [Vector2, Color], .void)
     ffi.cfunc('DrawLine', [.int, .int, .int, .int, Color], .void)
@@ -1523,7 +2149,7 @@ func load():
     ffi.cfunc('LoadImageSvg', [.voidPtr, .int, .int], Image)
     ffi.cfunc('LoadImageAnim', [.voidPtr, .voidPtr], Image)
     ffi.cfunc('LoadImageFromMemory', [.voidPtr, .voidPtr, .int], Image)
-    ffi.cfunc('LoadImageFromTexture', [Texture], Image)
+    ffi.cfunc('LoadImageFromTexture', [Texture2D], Image)
     ffi.cfunc('LoadImageFromScreen', [], Image)
     ffi.cfunc('IsImageReady', [Image], .bool)
     ffi.cfunc('UnloadImage', [Image], .void)
@@ -1589,25 +2215,25 @@ func load():
     ffi.cfunc('ImageDraw', [.voidPtr, Image, Rectangle, Rectangle, Color], .void)
     ffi.cfunc('ImageDrawText', [.voidPtr, .voidPtr, .int, .int, .int, Color], .void)
     ffi.cfunc('ImageDrawTextEx', [.voidPtr, Font, .voidPtr, Vector2, .float, .float, Color], .void)
-    ffi.cfunc('LoadTexture', [.voidPtr], Texture)
-    ffi.cfunc('LoadTextureFromImage', [Image], Texture)
-    ffi.cfunc('LoadTextureCubemap', [Image, .int], Texture)
-    ffi.cfunc('LoadRenderTexture', [.int, .int], RenderTexture)
-    ffi.cfunc('IsTextureReady', [Texture], .bool)
-    ffi.cfunc('UnloadTexture', [Texture], .void)
-    ffi.cfunc('IsRenderTextureReady', [RenderTexture], .bool)
-    ffi.cfunc('UnloadRenderTexture', [RenderTexture], .void)
-    ffi.cfunc('UpdateTexture', [Texture, .voidPtr], .void)
-    ffi.cfunc('UpdateTextureRec', [Texture, Rectangle, .voidPtr], .void)
+    ffi.cfunc('LoadTexture', [.voidPtr], Texture2D)
+    ffi.cfunc('LoadTextureFromImage', [Image], Texture2D)
+    ffi.cfunc('LoadTextureCubemap', [Image, .int], TextureCubemap)
+    ffi.cfunc('LoadRenderTexture', [.int, .int], RenderTexture2D)
+    ffi.cfunc('IsTextureReady', [Texture2D], .bool)
+    ffi.cfunc('UnloadTexture', [Texture2D], .void)
+    ffi.cfunc('IsRenderTextureReady', [RenderTexture2D], .bool)
+    ffi.cfunc('UnloadRenderTexture', [RenderTexture2D], .void)
+    ffi.cfunc('UpdateTexture', [Texture2D, .voidPtr], .void)
+    ffi.cfunc('UpdateTextureRec', [Texture2D, Rectangle, .voidPtr], .void)
     ffi.cfunc('GenTextureMipmaps', [.voidPtr], .void)
-    ffi.cfunc('SetTextureFilter', [Texture, .int], .void)
-    ffi.cfunc('SetTextureWrap', [Texture, .int], .void)
-    ffi.cfunc('DrawTexture', [Texture, .int, .int, Color], .void)
-    ffi.cfunc('DrawTextureV', [Texture, Vector2, Color], .void)
-    ffi.cfunc('DrawTextureEx', [Texture, Vector2, .float, .float, Color], .void)
-    ffi.cfunc('DrawTextureRec', [Texture, Rectangle, Vector2, Color], .void)
-    ffi.cfunc('DrawTexturePro', [Texture, Rectangle, Rectangle, Vector2, .float, Color], .void)
-    ffi.cfunc('DrawTextureNPatch', [Texture, NPatchInfo, Rectangle, Vector2, .float, Color], .void)
+    ffi.cfunc('SetTextureFilter', [Texture2D, .int], .void)
+    ffi.cfunc('SetTextureWrap', [Texture2D, .int], .void)
+    ffi.cfunc('DrawTexture', [Texture2D, .int, .int, Color], .void)
+    ffi.cfunc('DrawTextureV', [Texture2D, Vector2, Color], .void)
+    ffi.cfunc('DrawTextureEx', [Texture2D, Vector2, .float, .float, Color], .void)
+    ffi.cfunc('DrawTextureRec', [Texture2D, Rectangle, Vector2, Color], .void)
+    ffi.cfunc('DrawTexturePro', [Texture2D, Rectangle, Rectangle, Vector2, .float, Color], .void)
+    ffi.cfunc('DrawTextureNPatch', [Texture2D, NPatchInfo, Rectangle, Vector2, .float, Color], .void)
     ffi.cfunc('Fade', [Color, .float], Color)
     ffi.cfunc('ColorToInt', [Color], .int)
     ffi.cfunc('ColorNormalize', [Color], Vector4)
@@ -1701,9 +2327,9 @@ func load():
     ffi.cfunc('DrawModelWires', [Model, Vector3, .float, Color], .void)
     ffi.cfunc('DrawModelWiresEx', [Model, Vector3, Vector3, .float, Vector3, Color], .void)
     ffi.cfunc('DrawBoundingBox', [BoundingBox, Color], .void)
-    ffi.cfunc('DrawBillboard', [Camera3D, Texture, Vector3, .float, Color], .void)
-    ffi.cfunc('DrawBillboardRec', [Camera3D, Texture, Rectangle, Vector3, Vector2, Color], .void)
-    ffi.cfunc('DrawBillboardPro', [Camera3D, Texture, Rectangle, Vector3, Vector3, Vector2, Vector2, .float, Color], .void)
+    ffi.cfunc('DrawBillboard', [Camera, Texture2D, Vector3, .float, Color], .void)
+    ffi.cfunc('DrawBillboardRec', [Camera, Texture2D, Rectangle, Vector3, Vector2, Color], .void)
+    ffi.cfunc('DrawBillboardPro', [Camera, Texture2D, Rectangle, Vector3, Vector3, Vector2, Vector2, .float, Color], .void)
     ffi.cfunc('UploadMesh', [.voidPtr, .bool], .void)
     ffi.cfunc('UpdateMeshBuffer', [Mesh, .int, .voidPtr, .int, .int], .void)
     ffi.cfunc('UnloadMesh', [Mesh], .void)
@@ -1727,7 +2353,7 @@ func load():
     ffi.cfunc('LoadMaterialDefault', [], Material)
     ffi.cfunc('IsMaterialReady', [Material], .bool)
     ffi.cfunc('UnloadMaterial', [Material], .void)
-    ffi.cfunc('SetMaterialTexture', [.voidPtr, .int, Texture], .void)
+    ffi.cfunc('SetMaterialTexture', [.voidPtr, .int, Texture2D], .void)
     ffi.cfunc('SetModelMeshMaterial', [.voidPtr, .int, .int], .void)
     ffi.cfunc('LoadModelAnimations', [.voidPtr, .voidPtr], .voidPtr)
     ffi.cfunc('UpdateModelAnimation', [Model, ModelAnimation, .int], .void)
@@ -1808,602 +2434,50 @@ func load():
     ffi.cfunc('DetachAudioStreamProcessor', [AudioStream, .voidPtr], .void)
     ffi.cfunc('AttachAudioMixedProcessor', [.voidPtr], .void)
     ffi.cfunc('DetachAudioMixedProcessor', [.voidPtr], .void)
-    my lib = ffi.bindLib(libPath, [genMap: true])
---     InitWindow = lib.InitWindow
-    CloseWindow = lib.CloseWindow
-    WindowShouldClose = lib.WindowShouldClose
-    IsWindowReady = lib.IsWindowReady
-    IsWindowFullscreen = lib.IsWindowFullscreen
-    IsWindowHidden = lib.IsWindowHidden
-    IsWindowMinimized = lib.IsWindowMinimized
-    IsWindowMaximized = lib.IsWindowMaximized
-    IsWindowFocused = lib.IsWindowFocused
-    IsWindowResized = lib.IsWindowResized
-    IsWindowState = lib.IsWindowState
-    SetWindowState = lib.SetWindowState
-    ClearWindowState = lib.ClearWindowState
-    ToggleFullscreen = lib.ToggleFullscreen
-    ToggleBorderlessWindowed = lib.ToggleBorderlessWindowed
-    MaximizeWindow = lib.MaximizeWindow
-    MinimizeWindow = lib.MinimizeWindow
-    RestoreWindow = lib.RestoreWindow
-    SetWindowIcon = lib.SetWindowIcon
-    SetWindowIcons = lib.SetWindowIcons
-    SetWindowTitle = lib.SetWindowTitle
-    SetWindowPosition = lib.SetWindowPosition
-    SetWindowMonitor = lib.SetWindowMonitor
-    SetWindowMinSize = lib.SetWindowMinSize
-    SetWindowMaxSize = lib.SetWindowMaxSize
-    SetWindowSize = lib.SetWindowSize
-    SetWindowOpacity = lib.SetWindowOpacity
-    SetWindowFocused = lib.SetWindowFocused
-    GetWindowHandle = lib.GetWindowHandle
-    GetScreenWidth = lib.GetScreenWidth
-    GetScreenHeight = lib.GetScreenHeight
-    GetRenderWidth = lib.GetRenderWidth
-    GetRenderHeight = lib.GetRenderHeight
-    GetMonitorCount = lib.GetMonitorCount
-    GetCurrentMonitor = lib.GetCurrentMonitor
-    GetMonitorPosition = lib.GetMonitorPosition
-    GetMonitorWidth = lib.GetMonitorWidth
-    GetMonitorHeight = lib.GetMonitorHeight
-    GetMonitorPhysicalWidth = lib.GetMonitorPhysicalWidth
-    GetMonitorPhysicalHeight = lib.GetMonitorPhysicalHeight
-    GetMonitorRefreshRate = lib.GetMonitorRefreshRate
-    GetWindowPosition = lib.GetWindowPosition
-    GetWindowScaleDPI = lib.GetWindowScaleDPI
-    GetMonitorName = lib.GetMonitorName
-    SetClipboardText = lib.SetClipboardText
-    GetClipboardText = lib.GetClipboardText
-    EnableEventWaiting = lib.EnableEventWaiting
-    DisableEventWaiting = lib.DisableEventWaiting
-    ShowCursor = lib.ShowCursor
-    HideCursor = lib.HideCursor
-    IsCursorHidden = lib.IsCursorHidden
-    EnableCursor = lib.EnableCursor
-    DisableCursor = lib.DisableCursor
-    IsCursorOnScreen = lib.IsCursorOnScreen
-    ClearBackground = lib.ClearBackground
-    BeginDrawing = lib.BeginDrawing
-    EndDrawing = lib.EndDrawing
-    BeginMode2D = lib.BeginMode2D
-    EndMode2D = lib.EndMode2D
-    BeginMode3D = lib.BeginMode3D
-    EndMode3D = lib.EndMode3D
-    BeginTextureMode = lib.BeginTextureMode
-    EndTextureMode = lib.EndTextureMode
-    BeginShaderMode = lib.BeginShaderMode
-    EndShaderMode = lib.EndShaderMode
-    BeginBlendMode = lib.BeginBlendMode
-    EndBlendMode = lib.EndBlendMode
-    BeginScissorMode = lib.BeginScissorMode
-    EndScissorMode = lib.EndScissorMode
-    BeginVrStereoMode = lib.BeginVrStereoMode
-    EndVrStereoMode = lib.EndVrStereoMode
-    LoadVrStereoConfig = lib.LoadVrStereoConfig
-    UnloadVrStereoConfig = lib.UnloadVrStereoConfig
-    LoadShader = lib.LoadShader
-    LoadShaderFromMemory = lib.LoadShaderFromMemory
-    IsShaderReady = lib.IsShaderReady
-    GetShaderLocation = lib.GetShaderLocation
-    GetShaderLocationAttrib = lib.GetShaderLocationAttrib
-    SetShaderValue = lib.SetShaderValue
-    SetShaderValueV = lib.SetShaderValueV
-    SetShaderValueMatrix = lib.SetShaderValueMatrix
-    SetShaderValueTexture = lib.SetShaderValueTexture
-    UnloadShader = lib.UnloadShader
-    GetMouseRay = lib.GetMouseRay
-    GetCameraMatrix = lib.GetCameraMatrix
-    GetCameraMatrix2D = lib.GetCameraMatrix2D
-    GetWorldToScreen = lib.GetWorldToScreen
-    GetScreenToWorld2D = lib.GetScreenToWorld2D
-    GetWorldToScreenEx = lib.GetWorldToScreenEx
-    GetWorldToScreen2D = lib.GetWorldToScreen2D
-    SetTargetFPS = lib.SetTargetFPS
-    GetFrameTime = lib.GetFrameTime
-    GetTime = lib.GetTime
-    GetFPS = lib.GetFPS
-    SwapScreenBuffer = lib.SwapScreenBuffer
-    PollInputEvents = lib.PollInputEvents
-    WaitTime = lib.WaitTime
-    SetRandomSeed = lib.SetRandomSeed
-    GetRandomValue = lib.GetRandomValue
-    LoadRandomSequence = lib.LoadRandomSequence
-    UnloadRandomSequence = lib.UnloadRandomSequence
-    TakeScreenshot = lib.TakeScreenshot
-    SetConfigFlags = lib.SetConfigFlags
-    OpenURL = lib.OpenURL
-    TraceLog = lib.TraceLog
-    SetTraceLogLevel = lib.SetTraceLogLevel
-    MemAlloc = lib.MemAlloc
-    MemRealloc = lib.MemRealloc
-    MemFree = lib.MemFree
-    SetTraceLogCallback = lib.SetTraceLogCallback
-    SetLoadFileDataCallback = lib.SetLoadFileDataCallback
-    SetSaveFileDataCallback = lib.SetSaveFileDataCallback
-    SetLoadFileTextCallback = lib.SetLoadFileTextCallback
-    SetSaveFileTextCallback = lib.SetSaveFileTextCallback
-    LoadFileData = lib.LoadFileData
-    UnloadFileData = lib.UnloadFileData
-    SaveFileData = lib.SaveFileData
-    ExportDataAsCode = lib.ExportDataAsCode
-    LoadFileText = lib.LoadFileText
-    UnloadFileText = lib.UnloadFileText
-    SaveFileText = lib.SaveFileText
-    FileExists = lib.FileExists
-    DirectoryExists = lib.DirectoryExists
-    IsFileExtension = lib.IsFileExtension
-    GetFileLength = lib.GetFileLength
-    GetFileExtension = lib.GetFileExtension
-    GetFileName = lib.GetFileName
-    GetFileNameWithoutExt = lib.GetFileNameWithoutExt
-    GetDirectoryPath = lib.GetDirectoryPath
-    GetPrevDirectoryPath = lib.GetPrevDirectoryPath
-    GetWorkingDirectory = lib.GetWorkingDirectory
-    GetApplicationDirectory = lib.GetApplicationDirectory
-    ChangeDirectory = lib.ChangeDirectory
-    IsPathFile = lib.IsPathFile
-    LoadDirectoryFiles = lib.LoadDirectoryFiles
-    LoadDirectoryFilesEx = lib.LoadDirectoryFilesEx
-    UnloadDirectoryFiles = lib.UnloadDirectoryFiles
-    IsFileDropped = lib.IsFileDropped
-    LoadDroppedFiles = lib.LoadDroppedFiles
-    UnloadDroppedFiles = lib.UnloadDroppedFiles
-    GetFileModTime = lib.GetFileModTime
-    CompressData = lib.CompressData
-    DecompressData = lib.DecompressData
-    EncodeDataBase64 = lib.EncodeDataBase64
-    DecodeDataBase64 = lib.DecodeDataBase64
-    LoadAutomationEventList = lib.LoadAutomationEventList
-    UnloadAutomationEventList = lib.UnloadAutomationEventList
-    ExportAutomationEventList = lib.ExportAutomationEventList
-    SetAutomationEventList = lib.SetAutomationEventList
-    SetAutomationEventBaseFrame = lib.SetAutomationEventBaseFrame
-    StartAutomationEventRecording = lib.StartAutomationEventRecording
-    StopAutomationEventRecording = lib.StopAutomationEventRecording
-    PlayAutomationEvent = lib.PlayAutomationEvent
-    IsKeyPressed = lib.IsKeyPressed
-    IsKeyPressedRepeat = lib.IsKeyPressedRepeat
-    IsKeyDown = lib.IsKeyDown
-    IsKeyReleased = lib.IsKeyReleased
-    IsKeyUp = lib.IsKeyUp
-    GetKeyPressed = lib.GetKeyPressed
-    GetCharPressed = lib.GetCharPressed
-    SetExitKey = lib.SetExitKey
-    IsGamepadAvailable = lib.IsGamepadAvailable
-    GetGamepadName = lib.GetGamepadName
-    IsGamepadButtonPressed = lib.IsGamepadButtonPressed
-    IsGamepadButtonDown = lib.IsGamepadButtonDown
-    IsGamepadButtonReleased = lib.IsGamepadButtonReleased
-    IsGamepadButtonUp = lib.IsGamepadButtonUp
-    GetGamepadButtonPressed = lib.GetGamepadButtonPressed
-    GetGamepadAxisCount = lib.GetGamepadAxisCount
-    GetGamepadAxisMovement = lib.GetGamepadAxisMovement
-    SetGamepadMappings = lib.SetGamepadMappings
-    IsMouseButtonPressed = lib.IsMouseButtonPressed
-    IsMouseButtonDown = lib.IsMouseButtonDown
-    IsMouseButtonReleased = lib.IsMouseButtonReleased
-    IsMouseButtonUp = lib.IsMouseButtonUp
-    GetMouseX = lib.GetMouseX
-    GetMouseY = lib.GetMouseY
-    GetMousePosition = lib.GetMousePosition
-    GetMouseDelta = lib.GetMouseDelta
-    SetMousePosition = lib.SetMousePosition
-    SetMouseOffset = lib.SetMouseOffset
-    SetMouseScale = lib.SetMouseScale
-    GetMouseWheelMove = lib.GetMouseWheelMove
-    GetMouseWheelMoveV = lib.GetMouseWheelMoveV
-    SetMouseCursor = lib.SetMouseCursor
-    GetTouchX = lib.GetTouchX
-    GetTouchY = lib.GetTouchY
-    GetTouchPosition = lib.GetTouchPosition
-    GetTouchPointId = lib.GetTouchPointId
-    GetTouchPointCount = lib.GetTouchPointCount
-    SetGesturesEnabled = lib.SetGesturesEnabled
-    IsGestureDetected = lib.IsGestureDetected
-    GetGestureDetected = lib.GetGestureDetected
-    GetGestureHoldDuration = lib.GetGestureHoldDuration
-    GetGestureDragVector = lib.GetGestureDragVector
-    GetGestureDragAngle = lib.GetGestureDragAngle
-    GetGesturePinchVector = lib.GetGesturePinchVector
-    GetGesturePinchAngle = lib.GetGesturePinchAngle
-    UpdateCamera = lib.UpdateCamera
-    UpdateCameraPro = lib.UpdateCameraPro
-    SetShapesTexture = lib.SetShapesTexture
-    DrawPixel = lib.DrawPixel
-    DrawPixelV = lib.DrawPixelV
-    DrawLine = lib.DrawLine
-    DrawLineV = lib.DrawLineV
-    DrawLineEx = lib.DrawLineEx
-    DrawLineStrip = lib.DrawLineStrip
-    DrawLineBezier = lib.DrawLineBezier
-    DrawCircle = lib.DrawCircle
-    DrawCircleSector = lib.DrawCircleSector
-    DrawCircleSectorLines = lib.DrawCircleSectorLines
-    DrawCircleGradient = lib.DrawCircleGradient
-    DrawCircleV = lib.DrawCircleV
-    DrawCircleLines = lib.DrawCircleLines
-    DrawCircleLinesV = lib.DrawCircleLinesV
-    DrawEllipse = lib.DrawEllipse
-    DrawEllipseLines = lib.DrawEllipseLines
-    DrawRing = lib.DrawRing
-    DrawRingLines = lib.DrawRingLines
-    DrawRectangle = lib.DrawRectangle
-    DrawRectangleV = lib.DrawRectangleV
-    DrawRectangleRec = lib.DrawRectangleRec
-    DrawRectanglePro = lib.DrawRectanglePro
-    DrawRectangleGradientV = lib.DrawRectangleGradientV
-    DrawRectangleGradientH = lib.DrawRectangleGradientH
-    DrawRectangleGradientEx = lib.DrawRectangleGradientEx
-    DrawRectangleLines = lib.DrawRectangleLines
-    DrawRectangleLinesEx = lib.DrawRectangleLinesEx
-    DrawRectangleRounded = lib.DrawRectangleRounded
-    DrawRectangleRoundedLines = lib.DrawRectangleRoundedLines
-    DrawTriangle = lib.DrawTriangle
-    DrawTriangleLines = lib.DrawTriangleLines
-    DrawTriangleFan = lib.DrawTriangleFan
-    DrawTriangleStrip = lib.DrawTriangleStrip
-    DrawPoly = lib.DrawPoly
-    DrawPolyLines = lib.DrawPolyLines
-    DrawPolyLinesEx = lib.DrawPolyLinesEx
-    DrawSplineLinear = lib.DrawSplineLinear
-    DrawSplineBasis = lib.DrawSplineBasis
-    DrawSplineCatmullRom = lib.DrawSplineCatmullRom
-    DrawSplineBezierQuadratic = lib.DrawSplineBezierQuadratic
-    DrawSplineBezierCubic = lib.DrawSplineBezierCubic
-    DrawSplineSegmentLinear = lib.DrawSplineSegmentLinear
-    DrawSplineSegmentBasis = lib.DrawSplineSegmentBasis
-    DrawSplineSegmentCatmullRom = lib.DrawSplineSegmentCatmullRom
-    DrawSplineSegmentBezierQuadratic = lib.DrawSplineSegmentBezierQuadratic
-    DrawSplineSegmentBezierCubic = lib.DrawSplineSegmentBezierCubic
-    GetSplinePointLinear = lib.GetSplinePointLinear
-    GetSplinePointBasis = lib.GetSplinePointBasis
-    GetSplinePointCatmullRom = lib.GetSplinePointCatmullRom
-    GetSplinePointBezierQuad = lib.GetSplinePointBezierQuad
-    GetSplinePointBezierCubic = lib.GetSplinePointBezierCubic
-    CheckCollisionRecs = lib.CheckCollisionRecs
-    CheckCollisionCircles = lib.CheckCollisionCircles
-    CheckCollisionCircleRec = lib.CheckCollisionCircleRec
-    CheckCollisionPointRec = lib.CheckCollisionPointRec
-    CheckCollisionPointCircle = lib.CheckCollisionPointCircle
-    CheckCollisionPointTriangle = lib.CheckCollisionPointTriangle
-    CheckCollisionPointPoly = lib.CheckCollisionPointPoly
-    CheckCollisionLines = lib.CheckCollisionLines
-    CheckCollisionPointLine = lib.CheckCollisionPointLine
-    GetCollisionRec = lib.GetCollisionRec
-    LoadImage = lib.LoadImage
-    LoadImageRaw = lib.LoadImageRaw
-    LoadImageSvg = lib.LoadImageSvg
-    LoadImageAnim = lib.LoadImageAnim
-    LoadImageFromMemory = lib.LoadImageFromMemory
-    LoadImageFromTexture = lib.LoadImageFromTexture
-    LoadImageFromScreen = lib.LoadImageFromScreen
-    IsImageReady = lib.IsImageReady
-    UnloadImage = lib.UnloadImage
-    ExportImage = lib.ExportImage
-    ExportImageToMemory = lib.ExportImageToMemory
-    ExportImageAsCode = lib.ExportImageAsCode
-    GenImageColor = lib.GenImageColor
-    GenImageGradientLinear = lib.GenImageGradientLinear
-    GenImageGradientRadial = lib.GenImageGradientRadial
-    GenImageGradientSquare = lib.GenImageGradientSquare
-    GenImageChecked = lib.GenImageChecked
-    GenImageWhiteNoise = lib.GenImageWhiteNoise
-    GenImagePerlinNoise = lib.GenImagePerlinNoise
-    GenImageCellular = lib.GenImageCellular
-    GenImageText = lib.GenImageText
-    ImageCopy = lib.ImageCopy
-    ImageFromImage = lib.ImageFromImage
-    ImageText = lib.ImageText
-    ImageTextEx = lib.ImageTextEx
-    ImageFormat = lib.ImageFormat
-    ImageToPOT = lib.ImageToPOT
-    ImageCrop = lib.ImageCrop
-    ImageAlphaCrop = lib.ImageAlphaCrop
-    ImageAlphaClear = lib.ImageAlphaClear
-    ImageAlphaMask = lib.ImageAlphaMask
-    ImageAlphaPremultiply = lib.ImageAlphaPremultiply
-    ImageBlurGaussian = lib.ImageBlurGaussian
-    ImageResize = lib.ImageResize
-    ImageResizeNN = lib.ImageResizeNN
-    ImageResizeCanvas = lib.ImageResizeCanvas
-    ImageMipmaps = lib.ImageMipmaps
-    ImageDither = lib.ImageDither
-    ImageFlipVertical = lib.ImageFlipVertical
-    ImageFlipHorizontal = lib.ImageFlipHorizontal
-    ImageRotate = lib.ImageRotate
-    ImageRotateCW = lib.ImageRotateCW
-    ImageRotateCCW = lib.ImageRotateCCW
-    ImageColorTint = lib.ImageColorTint
-    ImageColorInvert = lib.ImageColorInvert
-    ImageColorGrayscale = lib.ImageColorGrayscale
-    ImageColorContrast = lib.ImageColorContrast
-    ImageColorBrightness = lib.ImageColorBrightness
-    ImageColorReplace = lib.ImageColorReplace
-    LoadImageColors = lib.LoadImageColors
-    LoadImagePalette = lib.LoadImagePalette
-    UnloadImageColors = lib.UnloadImageColors
-    UnloadImagePalette = lib.UnloadImagePalette
-    GetImageAlphaBorder = lib.GetImageAlphaBorder
-    GetImageColor = lib.GetImageColor
-    ImageClearBackground = lib.ImageClearBackground
-    ImageDrawPixel = lib.ImageDrawPixel
-    ImageDrawPixelV = lib.ImageDrawPixelV
-    ImageDrawLine = lib.ImageDrawLine
-    ImageDrawLineV = lib.ImageDrawLineV
-    ImageDrawCircle = lib.ImageDrawCircle
-    ImageDrawCircleV = lib.ImageDrawCircleV
-    ImageDrawCircleLines = lib.ImageDrawCircleLines
-    ImageDrawCircleLinesV = lib.ImageDrawCircleLinesV
-    ImageDrawRectangle = lib.ImageDrawRectangle
-    ImageDrawRectangleV = lib.ImageDrawRectangleV
-    ImageDrawRectangleRec = lib.ImageDrawRectangleRec
-    ImageDrawRectangleLines = lib.ImageDrawRectangleLines
-    ImageDraw = lib.ImageDraw
-    ImageDrawText = lib.ImageDrawText
-    ImageDrawTextEx = lib.ImageDrawTextEx
---     LoadTexture = lib.LoadTexture
-    LoadTextureFromImage = lib.LoadTextureFromImage
-    LoadTextureCubemap = lib.LoadTextureCubemap
-    LoadRenderTexture = lib.LoadRenderTexture
-    IsTextureReady = lib.IsTextureReady
-    UnloadTexture = lib.UnloadTexture
-    IsRenderTextureReady = lib.IsRenderTextureReady
-    UnloadRenderTexture = lib.UnloadRenderTexture
-    UpdateTexture = lib.UpdateTexture
-    UpdateTextureRec = lib.UpdateTextureRec
-    GenTextureMipmaps = lib.GenTextureMipmaps
-    SetTextureFilter = lib.SetTextureFilter
-    SetTextureWrap = lib.SetTextureWrap
-    DrawTexture = lib.DrawTexture
-    DrawTextureV = lib.DrawTextureV
-    DrawTextureEx = lib.DrawTextureEx
-    DrawTextureRec = lib.DrawTextureRec
-    DrawTexturePro = lib.DrawTexturePro
-    DrawTextureNPatch = lib.DrawTextureNPatch
-    Fade = lib.Fade
-    ColorToInt = lib.ColorToInt
-    ColorNormalize = lib.ColorNormalize
-    ColorFromNormalized = lib.ColorFromNormalized
-    ColorToHSV = lib.ColorToHSV
-    ColorFromHSV = lib.ColorFromHSV
-    ColorTint = lib.ColorTint
-    ColorBrightness = lib.ColorBrightness
-    ColorContrast = lib.ColorContrast
-    ColorAlpha = lib.ColorAlpha
-    ColorAlphaBlend = lib.ColorAlphaBlend
-    GetColor = lib.GetColor
-    GetPixelColor = lib.GetPixelColor
-    SetPixelColor = lib.SetPixelColor
-    GetPixelDataSize = lib.GetPixelDataSize
-    GetFontDefault = lib.GetFontDefault
-    LoadFont = lib.LoadFont
-    LoadFontEx = lib.LoadFontEx
-    LoadFontFromImage = lib.LoadFontFromImage
-    LoadFontFromMemory = lib.LoadFontFromMemory
-    IsFontReady = lib.IsFontReady
-    LoadFontData = lib.LoadFontData
-    GenImageFontAtlas = lib.GenImageFontAtlas
-    UnloadFontData = lib.UnloadFontData
-    UnloadFont = lib.UnloadFont
-    ExportFontAsCode = lib.ExportFontAsCode
-    DrawFPS = lib.DrawFPS
---     DrawText = lib.DrawText
-    DrawTextEx = lib.DrawTextEx
-    DrawTextPro = lib.DrawTextPro
-    DrawTextCodepoint = lib.DrawTextCodepoint
-    DrawTextCodepoints = lib.DrawTextCodepoints
-    SetTextLineSpacing = lib.SetTextLineSpacing
---     MeasureText = lib.MeasureText
-    MeasureTextEx = lib.MeasureTextEx
-    GetGlyphIndex = lib.GetGlyphIndex
-    GetGlyphInfo = lib.GetGlyphInfo
-    GetGlyphAtlasRec = lib.GetGlyphAtlasRec
-    LoadUTF8 = lib.LoadUTF8
-    UnloadUTF8 = lib.UnloadUTF8
-    LoadCodepoints = lib.LoadCodepoints
-    UnloadCodepoints = lib.UnloadCodepoints
-    GetCodepointCount = lib.GetCodepointCount
-    GetCodepoint = lib.GetCodepoint
-    GetCodepointNext = lib.GetCodepointNext
-    GetCodepointPrevious = lib.GetCodepointPrevious
-    CodepointToUTF8 = lib.CodepointToUTF8
-    TextCopy = lib.TextCopy
-    TextIsEqual = lib.TextIsEqual
-    TextLength = lib.TextLength
-    TextFormat = lib.TextFormat
-    TextSubtext = lib.TextSubtext
-    TextReplace = lib.TextReplace
-    TextInsert = lib.TextInsert
-    TextJoin = lib.TextJoin
-    TextSplit = lib.TextSplit
-    TextAppend = lib.TextAppend
-    TextFindIndex = lib.TextFindIndex
-    TextToUpper = lib.TextToUpper
-    TextToLower = lib.TextToLower
-    TextToPascal = lib.TextToPascal
-    TextToInteger = lib.TextToInteger
-    DrawLine3D = lib.DrawLine3D
-    DrawPoint3D = lib.DrawPoint3D
-    DrawCircle3D = lib.DrawCircle3D
-    DrawTriangle3D = lib.DrawTriangle3D
-    DrawTriangleStrip3D = lib.DrawTriangleStrip3D
-    DrawCube = lib.DrawCube
-    DrawCubeV = lib.DrawCubeV
-    DrawCubeWires = lib.DrawCubeWires
-    DrawCubeWiresV = lib.DrawCubeWiresV
-    DrawSphere = lib.DrawSphere
-    DrawSphereEx = lib.DrawSphereEx
-    DrawSphereWires = lib.DrawSphereWires
-    DrawCylinder = lib.DrawCylinder
-    DrawCylinderEx = lib.DrawCylinderEx
-    DrawCylinderWires = lib.DrawCylinderWires
-    DrawCylinderWiresEx = lib.DrawCylinderWiresEx
-    DrawCapsule = lib.DrawCapsule
-    DrawCapsuleWires = lib.DrawCapsuleWires
-    DrawPlane = lib.DrawPlane
-    DrawRay = lib.DrawRay
-    DrawGrid = lib.DrawGrid
-    LoadModel = lib.LoadModel
-    LoadModelFromMesh = lib.LoadModelFromMesh
-    IsModelReady = lib.IsModelReady
-    UnloadModel = lib.UnloadModel
-    GetModelBoundingBox = lib.GetModelBoundingBox
-    DrawModel = lib.DrawModel
-    DrawModelEx = lib.DrawModelEx
-    DrawModelWires = lib.DrawModelWires
-    DrawModelWiresEx = lib.DrawModelWiresEx
-    DrawBoundingBox = lib.DrawBoundingBox
-    DrawBillboard = lib.DrawBillboard
-    DrawBillboardRec = lib.DrawBillboardRec
-    DrawBillboardPro = lib.DrawBillboardPro
-    UploadMesh = lib.UploadMesh
-    UpdateMeshBuffer = lib.UpdateMeshBuffer
-    UnloadMesh = lib.UnloadMesh
-    DrawMesh = lib.DrawMesh
-    DrawMeshInstanced = lib.DrawMeshInstanced
-    ExportMesh = lib.ExportMesh
-    GetMeshBoundingBox = lib.GetMeshBoundingBox
-    GenMeshTangents = lib.GenMeshTangents
-    GenMeshPoly = lib.GenMeshPoly
-    GenMeshPlane = lib.GenMeshPlane
-    GenMeshCube = lib.GenMeshCube
-    GenMeshSphere = lib.GenMeshSphere
-    GenMeshHemiSphere = lib.GenMeshHemiSphere
-    GenMeshCylinder = lib.GenMeshCylinder
-    GenMeshCone = lib.GenMeshCone
-    GenMeshTorus = lib.GenMeshTorus
-    GenMeshKnot = lib.GenMeshKnot
-    GenMeshHeightmap = lib.GenMeshHeightmap
-    GenMeshCubicmap = lib.GenMeshCubicmap
-    LoadMaterials = lib.LoadMaterials
-    LoadMaterialDefault = lib.LoadMaterialDefault
-    IsMaterialReady = lib.IsMaterialReady
-    UnloadMaterial = lib.UnloadMaterial
-    SetMaterialTexture = lib.SetMaterialTexture
-    SetModelMeshMaterial = lib.SetModelMeshMaterial
-    LoadModelAnimations = lib.LoadModelAnimations
-    UpdateModelAnimation = lib.UpdateModelAnimation
-    UnloadModelAnimation = lib.UnloadModelAnimation
-    UnloadModelAnimations = lib.UnloadModelAnimations
-    IsModelAnimationValid = lib.IsModelAnimationValid
-    CheckCollisionSpheres = lib.CheckCollisionSpheres
-    CheckCollisionBoxes = lib.CheckCollisionBoxes
-    CheckCollisionBoxSphere = lib.CheckCollisionBoxSphere
-    GetRayCollisionSphere = lib.GetRayCollisionSphere
-    GetRayCollisionBox = lib.GetRayCollisionBox
-    GetRayCollisionMesh = lib.GetRayCollisionMesh
-    GetRayCollisionTriangle = lib.GetRayCollisionTriangle
-    GetRayCollisionQuad = lib.GetRayCollisionQuad
-    InitAudioDevice = lib.InitAudioDevice
-    CloseAudioDevice = lib.CloseAudioDevice
-    IsAudioDeviceReady = lib.IsAudioDeviceReady
-    SetMasterVolume = lib.SetMasterVolume
-    GetMasterVolume = lib.GetMasterVolume
-    LoadWave = lib.LoadWave
-    LoadWaveFromMemory = lib.LoadWaveFromMemory
-    IsWaveReady = lib.IsWaveReady
-    LoadSound = lib.LoadSound
-    LoadSoundFromWave = lib.LoadSoundFromWave
-    LoadSoundAlias = lib.LoadSoundAlias
-    IsSoundReady = lib.IsSoundReady
-    UpdateSound = lib.UpdateSound
-    UnloadWave = lib.UnloadWave
-    UnloadSound = lib.UnloadSound
-    UnloadSoundAlias = lib.UnloadSoundAlias
-    ExportWave = lib.ExportWave
-    ExportWaveAsCode = lib.ExportWaveAsCode
-    PlaySound = lib.PlaySound
-    StopSound = lib.StopSound
-    PauseSound = lib.PauseSound
-    ResumeSound = lib.ResumeSound
-    IsSoundPlaying = lib.IsSoundPlaying
-    SetSoundVolume = lib.SetSoundVolume
-    SetSoundPitch = lib.SetSoundPitch
-    SetSoundPan = lib.SetSoundPan
-    WaveCopy = lib.WaveCopy
-    WaveCrop = lib.WaveCrop
-    WaveFormat = lib.WaveFormat
-    LoadWaveSamples = lib.LoadWaveSamples
-    UnloadWaveSamples = lib.UnloadWaveSamples
-    LoadMusicStream = lib.LoadMusicStream
-    LoadMusicStreamFromMemory = lib.LoadMusicStreamFromMemory
-    IsMusicReady = lib.IsMusicReady
-    UnloadMusicStream = lib.UnloadMusicStream
-    PlayMusicStream = lib.PlayMusicStream
-    IsMusicStreamPlaying = lib.IsMusicStreamPlaying
-    UpdateMusicStream = lib.UpdateMusicStream
-    StopMusicStream = lib.StopMusicStream
-    PauseMusicStream = lib.PauseMusicStream
-    ResumeMusicStream = lib.ResumeMusicStream
-    SeekMusicStream = lib.SeekMusicStream
-    SetMusicVolume = lib.SetMusicVolume
-    SetMusicPitch = lib.SetMusicPitch
-    SetMusicPan = lib.SetMusicPan
-    GetMusicTimeLength = lib.GetMusicTimeLength
-    GetMusicTimePlayed = lib.GetMusicTimePlayed
-    LoadAudioStream = lib.LoadAudioStream
-    IsAudioStreamReady = lib.IsAudioStreamReady
-    UnloadAudioStream = lib.UnloadAudioStream
-    UpdateAudioStream = lib.UpdateAudioStream
-    IsAudioStreamProcessed = lib.IsAudioStreamProcessed
-    PlayAudioStream = lib.PlayAudioStream
-    PauseAudioStream = lib.PauseAudioStream
-    ResumeAudioStream = lib.ResumeAudioStream
-    IsAudioStreamPlaying = lib.IsAudioStreamPlaying
-    StopAudioStream = lib.StopAudioStream
-    SetAudioStreamVolume = lib.SetAudioStreamVolume
-    SetAudioStreamPitch = lib.SetAudioStreamPitch
-    SetAudioStreamPan = lib.SetAudioStreamPan
-    SetAudioStreamBufferSizeDefault = lib.SetAudioStreamBufferSizeDefault
-    SetAudioStreamCallback = lib.SetAudioStreamCallback
-    AttachAudioStreamProcessor = lib.AttachAudioStreamProcessor
-    DetachAudioStreamProcessor = lib.DetachAudioStreamProcessor
-    AttachAudioMixedProcessor = lib.AttachAudioMixedProcessor
-    DetachAudioMixedProcessor = lib.DetachAudioMixedProcessor
+    let lib = ffi.bindLib(?String{some: libPath}, {gen_table: false})
     return lib
 
 -- Macros
-var Root.GCC_HAVE_DWARF2_CFI_ASM int = 1
-var Root.RAYLIB_VERSION_MAJOR int = 5
-var Root.RAYLIB_VERSION_MINOR int = 0
-var Root.RAYLIB_VERSION_PATCH int = 0
-var Root.RAYLIB_VERSION string = "5.0"
-var Root.PI float = 3.1415927410125732
-var Root.DEG2RAD float = 0.01745329238474369
-var Root.RAD2DEG float = 57.2957763671875
-var Root.LIGHTGRAY Color = [Color r: 200, g: 200, b: 200, a: 255]
-var Root.GRAY Color = [Color r: 130, g: 130, b: 130, a: 255]
-var Root.DARKGRAY Color = [Color r: 80, g: 80, b: 80, a: 255]
-var Root.YELLOW Color = [Color r: 253, g: 249, b: 0, a: 255]
-var Root.GOLD Color = [Color r: 255, g: 203, b: 0, a: 255]
-var Root.ORANGE Color = [Color r: 255, g: 161, b: 0, a: 255]
-var Root.PINK Color = [Color r: 255, g: 109, b: 194, a: 255]
-var Root.RED Color = [Color r: 230, g: 41, b: 55, a: 255]
-var Root.MAROON Color = [Color r: 190, g: 33, b: 55, a: 255]
-var Root.GREEN Color = [Color r: 0, g: 228, b: 48, a: 255]
-var Root.LIME Color = [Color r: 0, g: 158, b: 47, a: 255]
-var Root.DARKGREEN Color = [Color r: 0, g: 117, b: 44, a: 255]
-var Root.SKYBLUE Color = [Color r: 102, g: 191, b: 255, a: 255]
-var Root.BLUE Color = [Color r: 0, g: 121, b: 241, a: 255]
-var Root.DARKBLUE Color = [Color r: 0, g: 82, b: 172, a: 255]
-var Root.PURPLE Color = [Color r: 200, g: 122, b: 255, a: 255]
-var Root.VIOLET Color = [Color r: 135, g: 60, b: 190, a: 255]
-var Root.DARKPURPLE Color = [Color r: 112, g: 31, b: 126, a: 255]
-var Root.BEIGE Color = [Color r: 211, g: 176, b: 131, a: 255]
-var Root.BROWN Color = [Color r: 127, g: 106, b: 79, a: 255]
-var Root.DARKBROWN Color = [Color r: 76, g: 63, b: 47, a: 255]
-var Root.WHITE Color = [Color r: 255, g: 255, b: 255, a: 255]
-var Root.BLACK Color = [Color r: 0, g: 0, b: 0, a: 255]
-var Root.BLANK Color = [Color r: 0, g: 0, b: 0, a: 0]
-var Root.MAGENTA Color = [Color r: 255, g: 0, b: 255, a: 255]
-var Root.RAYWHITE Color = [Color r: 245, g: 245, b: 245, a: 255]
--- var Root.true int = 1
--- var Root.false int = 0
-var Root.MOUSE_LEFT_BUTTON int = 0
-var Root.MOUSE_RIGHT_BUTTON int = 1
-var Root.MOUSE_MIDDLE_BUTTON int = 2
-var Root.MATERIAL_MAP_DIFFUSE int = 0
-var Root.MATERIAL_MAP_SPECULAR int = 1
-var Root.SHADER_LOC_MAP_DIFFUSE int = 15
-var Root.SHADER_LOC_MAP_SPECULAR int = 16
+var .GCC_HAVE_DWARF2_CFI_ASM int = 1
+var .RAYLIB_VERSION_MAJOR int = 5
+var .RAYLIB_VERSION_MINOR int = 0
+var .RAYLIB_VERSION_PATCH int = 0
+var .RAYLIB_VERSION String = "5.0"
+var .PI float = 3.1415927410125732
+var .DEG2RAD float = 0.01745329238474369
+var .RAD2DEG float = 57.2957763671875
+var .LIGHTGRAY Color = Color{r: 200, g: 200, b: 200, a: 255}
+var .GRAY Color = Color{r: 130, g: 130, b: 130, a: 255}
+var .DARKGRAY Color = Color{r: 80, g: 80, b: 80, a: 255}
+var .YELLOW Color = Color{r: 253, g: 249, b: 0, a: 255}
+var .GOLD Color = Color{r: 255, g: 203, b: 0, a: 255}
+var .ORANGE Color = Color{r: 255, g: 161, b: 0, a: 255}
+var .PINK Color = Color{r: 255, g: 109, b: 194, a: 255}
+var .RED Color = Color{r: 230, g: 41, b: 55, a: 255}
+var .MAROON Color = Color{r: 190, g: 33, b: 55, a: 255}
+var .GREEN Color = Color{r: 0, g: 228, b: 48, a: 255}
+var .LIME Color = Color{r: 0, g: 158, b: 47, a: 255}
+var .DARKGREEN Color = Color{r: 0, g: 117, b: 44, a: 255}
+var .SKYBLUE Color = Color{r: 102, g: 191, b: 255, a: 255}
+var .BLUE Color = Color{r: 0, g: 121, b: 241, a: 255}
+var .DARKBLUE Color = Color{r: 0, g: 82, b: 172, a: 255}
+var .PURPLE Color = Color{r: 200, g: 122, b: 255, a: 255}
+var .VIOLET Color = Color{r: 135, g: 60, b: 190, a: 255}
+var .DARKPURPLE Color = Color{r: 112, g: 31, b: 126, a: 255}
+var .BEIGE Color = Color{r: 211, g: 176, b: 131, a: 255}
+var .BROWN Color = Color{r: 127, g: 106, b: 79, a: 255}
+var .DARKBROWN Color = Color{r: 76, g: 63, b: 47, a: 255}
+var .WHITE Color = Color{r: 255, g: 255, b: 255, a: 255}
+var .BLACK Color = Color{r: 0, g: 0, b: 0, a: 255}
+var .BLANK Color = Color{r: 0, g: 0, b: 0, a: 0}
+var .MAGENTA Color = Color{r: 255, g: 0, b: 255, a: 255}
+var .RAYWHITE Color = Color{r: 245, g: 245, b: 245, a: 255}
+-- var .true int = 1
+-- var .false int = 0
+var .MOUSE_LEFT_BUTTON int = 0
+var .MOUSE_RIGHT_BUTTON int = 1
+var .MOUSE_MIDDLE_BUTTON int = 2
+var .MATERIAL_MAP_DIFFUSE int = 0
+var .MATERIAL_MAP_SPECULAR int = 1
+var .SHADER_LOC_MAP_DIFFUSE int = 15
+var .SHADER_LOC_MAP_SPECULAR int = 16

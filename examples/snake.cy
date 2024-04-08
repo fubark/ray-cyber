@@ -2,52 +2,42 @@
 
 -- Snake, a game ported from Raylib examples.
 
-import os 'os'
---import ray 'https://github.com/fubark/ray-cyber'
-import ray '../mod.cy'
+use os
+--use rl 'https://github.com/fubark/ray-cyber'
+use rl '../mod.cy'
+use Vec2 -> rl.Vector2
 
-my Root.SNAKE_LENGTH = 256
-my Root.SQUARE_SIZE = 31
+let .SNAKE_LENGTH = 256
+let .SQUARE_SIZE = 31
 
-type Vec2 ray.Vector2
+let Snake{pos, size, speed, color}
+let Food{pos, size, active, color}
 
-type Snake object:
-    my pos
-    my size
-    my speed
-    my color
+let .screenWidth = 800
+let .screenHeight = 450
 
-type Food object:
-    my pos
-    my size
-    my active
-    my color
+let .framesCounter = 0
+let .gameOver = false
+let .pause = false
 
-my Root.screenWidth = 800
-my Root.screenHeight = 450
-
-my Root.framesCounter = 0
-my Root.gameOver = false
-my Root.pause = false
-
-my Root.fruit = [Food:]
-my Root.snake = List.fill([Snake:], SNAKE_LENGTH)
-my Root.snakePosition = List.fill([Vec2:], SNAKE_LENGTH)
-my Root.allowMove = false
-my Root.offset = [Vec2 x: 0, y: 0]
-my Root.counterTail = 0
+let .fruit = Food{}
+let .snake = List.fill(Snake{}, SNAKE_LENGTH)
+let .snakePosition = List.fill(Vec2{}, SNAKE_LENGTH)
+let .allowMove = false
+let .offset = Vec2{x: 0, y: 0}
+let .counterTail = 0
 
 -- Invoke main.
 main()
 
-func main():
-    ray.InitWindow(screenWidth, screenHeight, 'classic game: snake')
+let main():
+    rl.InitWindow(screenWidth, screenHeight, 'classic game: snake')
     InitGame()
-    ray.SetTargetFPS(60)
+    rl.SetTargetFPS(60)
 
     -- Main game loop
     -- Detect window close button or ESC key
-    while !ray.WindowShouldClose(): 
+    while !rl.WindowShouldClose(): 
         UpdateGame()
         DrawGame()
 
@@ -55,10 +45,10 @@ func main():
     UnloadGame()
 
     -- Close window and OpenGL context
-    ray.CloseWindow()
+    rl.CloseWindow()
 
 -- Initialize game variables
-func InitGame():
+let InitGame():
     framesCounter = 0
     gameOver = false
     pause = false
@@ -70,46 +60,46 @@ func InitGame():
     offset.y = float(screenHeight % SQUARE_SIZE)
 
     for 0..SNAKE_LENGTH -> i:
-        snake[i].pos = [Vec2 x: offset.x/2.0, y: offset.y/2.0]
-        snake[i].size = [Vec2 x: float(SQUARE_SIZE), y: float(SQUARE_SIZE)]
-        snake[i].speed = [Vec2 x: float(SQUARE_SIZE), y: 0]
+        snake[i].pos = Vec2{x: offset.x/2.0, y: offset.y/2.0}
+        snake[i].size = Vec2{x: float(SQUARE_SIZE), y: float(SQUARE_SIZE)}
+        snake[i].speed = Vec2{x: float(SQUARE_SIZE), y: 0}
 
         if i == 0:
-            snake[i].color = ray.DARKBLUE
+            snake[i].color = rl.DARKBLUE
         else:
-            snake[i].color = ray.BLUE
+            snake[i].color = rl.BLUE
 
     for 0..SNAKE_LENGTH -> i:
-        snakePosition[i] = [Vec2 x: 0, y: 0]
+        snakePosition[i] = Vec2{x: 0, y: 0}
 
-    fruit.size = [Vec2 x: float(SQUARE_SIZE), y: float(SQUARE_SIZE)]
-    fruit.color = ray.SKYBLUE
+    fruit.size = Vec2{x: float(SQUARE_SIZE), y: float(SQUARE_SIZE)}
+    fruit.color = rl.SKYBLUE
     fruit.active = false
 
-func UpdateGame():
+let UpdateGame():
     if gameOver:
-        if ray.IsKeyPressed(ray.KEY_ENTER):
+        if rl.IsKeyPressed(rl.KEY_ENTER):
             InitGame()
             gameOver = false
         return
 
-    if ray.IsKeyPressed(ray.KEY_P):
+    if rl.IsKeyPressed(rl.KEY_P):
         pause = !pause
 
     if pause: return
     
     -- Player control
-    if ray.IsKeyPressed(ray.KEY_RIGHT) and snake[0].speed.x == 0.0 and allowMove:
-        snake[0].speed = [Vec2 x: float(SQUARE_SIZE), y: 0]
+    if rl.IsKeyPressed(rl.KEY_RIGHT) and snake[0].speed.x == 0.0 and allowMove:
+        snake[0].speed = Vec2{x: float(SQUARE_SIZE), y: 0}
         allowMove = false
-    if ray.IsKeyPressed(ray.KEY_LEFT) and snake[0].speed.x == 0.0 and allowMove:
-        snake[0].speed = [Vec2 x: float(-SQUARE_SIZE), y: 0]
+    if rl.IsKeyPressed(rl.KEY_LEFT) and snake[0].speed.x == 0.0 and allowMove:
+        snake[0].speed = Vec2{x: float(-SQUARE_SIZE), y: 0}
         allowMove = false
-    if ray.IsKeyPressed(ray.KEY_UP) and snake[0].speed.y == 0.0 and allowMove:
-        snake[0].speed = [Vec2 x: 0, y: float(-SQUARE_SIZE)]
+    if rl.IsKeyPressed(rl.KEY_UP) and snake[0].speed.y == 0.0 and allowMove:
+        snake[0].speed = Vec2{x: 0, y: float(-SQUARE_SIZE)}
         allowMove = false
-    if ray.IsKeyPressed(ray.KEY_DOWN) and snake[0].speed.y == 0.0 and allowMove:
-        snake[0].speed = [Vec2 x: 0, y: float(SQUARE_SIZE)]
+    if rl.IsKeyPressed(rl.KEY_DOWN) and snake[0].speed.y == 0.0 and allowMove:
+        snake[0].speed = Vec2{x: 0, y: float(SQUARE_SIZE)}
         allowMove = false
 
     -- Snake movement
@@ -140,17 +130,17 @@ func UpdateGame():
     -- Fruit position calculation
     if !fruit.active:
         fruit.active = true
-        fruit.pos = [Vec2
-            x: float(ray.GetRandomValue(0, screenWidth/SQUARE_SIZE - 1) * SQUARE_SIZE) + offset.x/2.0,
-            y: float(ray.GetRandomValue(0, screenHeight/SQUARE_SIZE - 1) * SQUARE_SIZE) + offset.y/2.0,
-        ]
+        fruit.pos = Vec2{
+            x: float(rl.GetRandomValue(0, screenWidth/SQUARE_SIZE - 1) * SQUARE_SIZE) + offset.x/2.0,
+            y: float(rl.GetRandomValue(0, screenHeight/SQUARE_SIZE - 1) * SQUARE_SIZE) + offset.y/2.0,
+        }
 
         while:
-            fruit.pos = [Vec2
-                x: float(ray.GetRandomValue(0, screenWidth/SQUARE_SIZE - 1) * SQUARE_SIZE) + offset.x/2.0,
-                y: float(ray.GetRandomValue(0, screenHeight/SQUARE_SIZE - 1) * SQUARE_SIZE) + offset.y/2.0,
-            ]
-            my hit = false
+            fruit.pos = Vec2{
+                x: float(rl.GetRandomValue(0, screenWidth/SQUARE_SIZE - 1) * SQUARE_SIZE) + offset.x/2.0,
+                y: float(rl.GetRandomValue(0, screenHeight/SQUARE_SIZE - 1) * SQUARE_SIZE) + offset.y/2.0,
+            }
+            let hit = false
             for 0..counterTail -> i:
                 if fruit.pos.x == snake[i].pos.x and fruit.pos.y == snake[i].pos.y:
                     hit = true
@@ -169,37 +159,37 @@ func UpdateGame():
 
     framesCounter += 1
 
-func DrawGame():
-    ray.BeginDrawing()
-    ray.ClearBackground(ray.RAYWHITE)
+let DrawGame():
+    rl.BeginDrawing()
+    rl.ClearBackground(rl.RAYWHITE)
 
     if !gameOver:
         -- Draw grid lines
         for 0..screenWidth/SQUARE_SIZE + 1 -> i:
-            ray.DrawLine(
+            rl.DrawLine(
                 SQUARE_SIZE*i + int(offset.x/2.0), int(offset.y/2.0),
-                SQUARE_SIZE*i + int(offset.x/2.0), screenHeight - int(offset.y/2.0), ray.LIGHTGRAY)
+                SQUARE_SIZE*i + int(offset.x/2.0), screenHeight - int(offset.y/2.0), rl.LIGHTGRAY)
 
         for 0..screenHeight/SQUARE_SIZE + 1 -> i:
-            ray.DrawLine(
+            rl.DrawLine(
                 int(offset.x/2.0), SQUARE_SIZE*i + int(offset.y/2.0),
-                screenWidth - int(offset.x/2.0), SQUARE_SIZE*i + int(offset.y/2.0), ray.LIGHTGRAY)
+                screenWidth - int(offset.x/2.0), SQUARE_SIZE*i + int(offset.y/2.0), rl.LIGHTGRAY)
 
         -- Draw snake
         for 0..counterTail -> i:
-            my snakei = snake[i]
-            ray.DrawRectangleV(snakei.pos, snakei.size, snakei.color)
+            let snakei = snake[i]
+            rl.DrawRectangleV(snakei.pos, snakei.size, snakei.color)
 
         -- Draw fruit to pick
-        ray.DrawRectangleV(fruit.pos, fruit.size, fruit.color)
+        rl.DrawRectangleV(fruit.pos, fruit.size, fruit.color)
 
         if pause:
-            ray.DrawText('GAME PAUSED', screenWidth/2 - ray.MeasureText('GAME PAUSED', 40)/2, screenHeight/2 - 40, 40, ray.GRAY)
+            rl.DrawText('GAME PAUSED', screenWidth/2 - rl.MeasureText('GAME PAUSED', 40)/2, screenHeight/2 - 40, 40, rl.GRAY)
     else:
-        ray.DrawText('PRESS [ENTER] TO PLAY AGAIN', ray.GetScreenWidth()/2 - ray.MeasureText('PRESS [ENTER] TO PLAY AGAIN', 20)/2, ray.GetScreenHeight()/2 - 50, 20, ray.GRAY)
+        rl.DrawText('PRESS [ENTER] TO PLAY AGAIN', rl.GetScreenWidth()/2 - rl.MeasureText('PRESS [ENTER] TO PLAY AGAIN', 20)/2, rl.GetScreenHeight()/2 - 50, 20, rl.GRAY)
 
-    ray.EndDrawing()
+    rl.EndDrawing()
 
-func UnloadGame():
+let UnloadGame():
     -- TODO: Unload all dynamic loaded data (textures, sounds, models...)
     pass

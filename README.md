@@ -11,7 +11,7 @@ Start using by importing the URL from your script.
 1. [Install Cyber](https://github.com/fubark/cyber#install)
 2. Create a new cyber script `game.cy`:
 ```text
-import rl 'https://github.com/fubark/ray-cyber'
+use rl 'https://github.com/fubark/ray-cyber'
 
 rl.InitWindow(800, 600, 'Hello')
 rl.SetTargetFPS(60)

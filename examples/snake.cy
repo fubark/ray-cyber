@@ -21,8 +21,8 @@ let .gameOver = false
 let .pause = false
 
 let .fruit = Food{}
-let .snake = List.fill(Snake{}, SNAKE_LENGTH)
-let .snakePosition = List.fill(Vec2{}, SNAKE_LENGTH)
+let .snake = List.fill(Snake{}, SNAKE_LENGTH as int)
+let .snakePosition = List.fill(Vec2{}, SNAKE_LENGTH as int)
 let .allowMove = false
 let .offset = Vec2{x: 0, y: 0}
 let .counterTail = 0

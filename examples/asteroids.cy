@@ -42,10 +42,10 @@ let .victory = false
 let .shipHeight = 0.0
 
 let .player = Player{}
-let .shoot = List.fill(Shoot{}, PLAYER_MAX_SHOOTS)
-let .bigMeteor = List.fill(Meteor{}, MAX_BIG_METEORS)
-let .mediumMeteor = List.fill(Meteor{}, MAX_MEDIUM_METEORS)
-let .smallMeteor = List.fill(Meteor{}, MAX_SMALL_METEORS)
+let .shoot = List.fill(Shoot{}, PLAYER_MAX_SHOOTS as int)
+let .bigMeteor = List.fill(Meteor{}, MAX_BIG_METEORS as int)
+let .mediumMeteor = List.fill(Meteor{}, MAX_MEDIUM_METEORS as int)
+let .smallMeteor = List.fill(Meteor{}, MAX_SMALL_METEORS as int)
 
 let .midMeteorsCount = 0
 let .smallMeteorsCount = 0

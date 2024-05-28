@@ -1,6 +1,6 @@
 # ray-cyber
 Complete [raylib 5.0](https://github.com/raysan5/raylib) bindings for [Cyber](https://cyberscript.dev)!
-Bindings auto-generated from [cbindgen.cy](https://github.com/fubark/cyber/blob/master/src/cbindgen.cy).
+Bindings auto-generated from [cbindgen.cy](https://github.com/fubark/cyber/blob/master/src/tools/cbindgen.cy).
 
 Start using by importing the URL from your script.
 

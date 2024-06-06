@@ -24,7 +24,7 @@ let .fruit = Food{}
 let .snake = List.fill(Snake{}, SNAKE_LENGTH as int)
 let .snakePosition = List.fill(Vec2{}, SNAKE_LENGTH as int)
 let .allowMove = false
-let .offset = Vec2{x: 0, y: 0}
+let .offset = Vec2{x=0, y=0}
 let .counterTail = 0
 
 -- Invoke main.
@@ -60,9 +60,9 @@ let InitGame():
     offset.y = float(screenHeight % SQUARE_SIZE)
 
     for 0..SNAKE_LENGTH -> i:
-        snake[i].pos = Vec2{x: offset.x/2.0, y: offset.y/2.0}
-        snake[i].size = Vec2{x: float(SQUARE_SIZE), y: float(SQUARE_SIZE)}
-        snake[i].speed = Vec2{x: float(SQUARE_SIZE), y: 0}
+        snake[i].pos = Vec2{x=offset.x/2.0, y=offset.y/2.0}
+        snake[i].size = Vec2{x=float(SQUARE_SIZE), y=float(SQUARE_SIZE)}
+        snake[i].speed = Vec2{x=float(SQUARE_SIZE), y=0}
 
         if i == 0:
             snake[i].color = rl.DARKBLUE
@@ -70,9 +70,9 @@ let InitGame():
             snake[i].color = rl.BLUE
 
     for 0..SNAKE_LENGTH -> i:
-        snakePosition[i] = Vec2{x: 0, y: 0}
+        snakePosition[i] = Vec2{x=0, y=0}
 
-    fruit.size = Vec2{x: float(SQUARE_SIZE), y: float(SQUARE_SIZE)}
+    fruit.size = Vec2{x=float(SQUARE_SIZE), y=float(SQUARE_SIZE)}
     fruit.color = rl.SKYBLUE
     fruit.active = false
 
@@ -90,16 +90,16 @@ let UpdateGame():
     
     -- Player control
     if rl.IsKeyPressed(rl.KEY_RIGHT) and snake[0].speed.x == 0.0 and allowMove:
-        snake[0].speed = Vec2{x: float(SQUARE_SIZE), y: 0}
+        snake[0].speed = Vec2{x=float(SQUARE_SIZE), y=0}
         allowMove = false
     if rl.IsKeyPressed(rl.KEY_LEFT) and snake[0].speed.x == 0.0 and allowMove:
-        snake[0].speed = Vec2{x: float(-SQUARE_SIZE), y: 0}
+        snake[0].speed = Vec2{x=float(-SQUARE_SIZE), y=0}
         allowMove = false
     if rl.IsKeyPressed(rl.KEY_UP) and snake[0].speed.y == 0.0 and allowMove:
-        snake[0].speed = Vec2{x: 0, y: float(-SQUARE_SIZE)}
+        snake[0].speed = Vec2{x=0, y=float(-SQUARE_SIZE)}
         allowMove = false
     if rl.IsKeyPressed(rl.KEY_DOWN) and snake[0].speed.y == 0.0 and allowMove:
-        snake[0].speed = Vec2{x: 0, y: float(SQUARE_SIZE)}
+        snake[0].speed = Vec2{x=0, y=float(SQUARE_SIZE)}
         allowMove = false
 
     -- Snake movement
@@ -131,14 +131,14 @@ let UpdateGame():
     if !fruit.active:
         fruit.active = true
         fruit.pos = Vec2{
-            x: float(rl.GetRandomValue(0, screenWidth/SQUARE_SIZE - 1) * SQUARE_SIZE) + offset.x/2.0,
-            y: float(rl.GetRandomValue(0, screenHeight/SQUARE_SIZE - 1) * SQUARE_SIZE) + offset.y/2.0,
+            x = float(rl.GetRandomValue(0, screenWidth/SQUARE_SIZE - 1) * SQUARE_SIZE) + offset.x/2.0,
+            y = float(rl.GetRandomValue(0, screenHeight/SQUARE_SIZE - 1) * SQUARE_SIZE) + offset.y/2.0,
         }
 
         while:
             fruit.pos = Vec2{
-                x: float(rl.GetRandomValue(0, screenWidth/SQUARE_SIZE - 1) * SQUARE_SIZE) + offset.x/2.0,
-                y: float(rl.GetRandomValue(0, screenHeight/SQUARE_SIZE - 1) * SQUARE_SIZE) + offset.y/2.0,
+                x = float(rl.GetRandomValue(0, screenWidth/SQUARE_SIZE - 1) * SQUARE_SIZE) + offset.x/2.0,
+                y = float(rl.GetRandomValue(0, screenHeight/SQUARE_SIZE - 1) * SQUARE_SIZE) + offset.y/2.0,
             }
             let hit = false
             for 0..counterTail -> i:

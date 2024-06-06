@@ -36,24 +36,24 @@ func LoadTexture(fileName String) Texture2D:
 
 func Vector2.sub(self, o Vector2) Vector2:
     return Vector2{
-        x: self.x - o.x,
-        y: self.y - o.y,
+        x = self.x - o.x,
+        y = self.y - o.y,
     }
 
 func Vector2.add(self, o Vector2) Vector2:
     return Vector2{
-        x: self.x + o.x,
-        y: self.y + o.y,
+        x = self.x + o.x,
+        y = self.y + o.y,
     }
 
 func Vector2.scale(self, scale float) Vector2:
     return Vector2{
-        x: self.x * scale,
-        y: self.y * scale,
+        x = self.x * scale,
+        y = self.y * scale,
     }
 
 func Vector2.normalize(self) Vector2:
-    var res = Vector2{x: 0, y: 0}
+    var res = Vector2{x=0, y=0}
     var len = self.len()
     if len > 0.0:
         var ilen = 1.0/len
@@ -1863,11 +1863,11 @@ func load():
     ffi.cbind(Mesh_S, [symbol.int, symbol.int, symbol.voidPtr, symbol.voidPtr, symbol.voidPtr, symbol.voidPtr, symbol.voidPtr, symbol.voidPtr, symbol.voidPtr, symbol.voidPtr, symbol.voidPtr, symbol.voidPtr, symbol.voidPtr, symbol.uint, symbol.voidPtr])
     ffi.cbind(Shader_S, [symbol.uint, symbol.voidPtr])
     ffi.cbind(MaterialMap_S, [Texture2D, Color, symbol.float])
-    ffi.cbind(Material_S, [Shader, symbol.voidPtr, os.CArray{n: 4, elem: symbol.float}])
+    ffi.cbind(Material_S, [Shader, symbol.voidPtr, os.CArray{n=4, elem=symbol.float}])
     ffi.cbind(Transform_S, [Vector3, Quaternion, Vector3])
-    ffi.cbind(BoneInfo_S, [os.CArray{n: 32, elem: symbol.char}, symbol.int])
+    ffi.cbind(BoneInfo_S, [os.CArray{n=32, elem=symbol.char}, symbol.int])
     ffi.cbind(Model_S, [Matrix, symbol.int, symbol.int, symbol.voidPtr, symbol.voidPtr, symbol.voidPtr, symbol.int, symbol.voidPtr, symbol.voidPtr])
-    ffi.cbind(ModelAnimation_S, [symbol.int, symbol.int, symbol.voidPtr, symbol.voidPtr, os.CArray{n: 32, elem: symbol.char}])
+    ffi.cbind(ModelAnimation_S, [symbol.int, symbol.int, symbol.voidPtr, symbol.voidPtr, os.CArray{n=32, elem=symbol.char}])
     ffi.cbind(Ray_S, [Vector3, Vector3])
     ffi.cbind(RayCollision_S, [symbol.bool, symbol.float, Vector3, Vector3])
     ffi.cbind(BoundingBox_S, [Vector3, Vector3])
@@ -1877,10 +1877,10 @@ func load():
     ffi.cbind(AudioStream_S, [symbol.voidPtr, symbol.voidPtr, symbol.uint, symbol.uint, symbol.uint])
     ffi.cbind(Sound_S, [AudioStream, symbol.uint])
     ffi.cbind(Music_S, [AudioStream, symbol.uint, symbol.bool, symbol.int, symbol.voidPtr])
-    ffi.cbind(VrDeviceInfo_S, [symbol.int, symbol.int, symbol.float, symbol.float, symbol.float, symbol.float, symbol.float, symbol.float, os.CArray{n: 4, elem: symbol.float}, os.CArray{n: 4, elem: symbol.float}])
-    ffi.cbind(VrStereoConfig_S, [os.CArray{n: 2, elem: Matrix}, os.CArray{n: 2, elem: Matrix}, os.CArray{n: 2, elem: symbol.float}, os.CArray{n: 2, elem: symbol.float}, os.CArray{n: 2, elem: symbol.float}, os.CArray{n: 2, elem: symbol.float}, os.CArray{n: 2, elem: symbol.float}, os.CArray{n: 2, elem: symbol.float}])
+    ffi.cbind(VrDeviceInfo_S, [symbol.int, symbol.int, symbol.float, symbol.float, symbol.float, symbol.float, symbol.float, symbol.float, os.CArray{n=4, elem=symbol.float}, os.CArray{n=4, elem=symbol.float}])
+    ffi.cbind(VrStereoConfig_S, [os.CArray{n=2, elem=Matrix}, os.CArray{n=2, elem=Matrix}, os.CArray{n=2, elem=symbol.float}, os.CArray{n=2, elem=symbol.float}, os.CArray{n=2, elem=symbol.float}, os.CArray{n=2, elem=symbol.float}, os.CArray{n=2, elem=symbol.float}, os.CArray{n=2, elem=symbol.float}])
     ffi.cbind(FilePathList_S, [symbol.uint, symbol.uint, symbol.voidPtr])
-    ffi.cbind(AutomationEvent_S, [symbol.uint, symbol.uint, os.CArray{n: 4, elem: symbol.int}])
+    ffi.cbind(AutomationEvent_S, [symbol.uint, symbol.uint, os.CArray{n=4, elem=symbol.int}])
     ffi.cbind(AutomationEventList_S, [symbol.uint, symbol.uint, symbol.voidPtr])
     ffi.cfunc('InitWindow', [symbol.int, symbol.int, symbol.voidPtr], symbol.void)
     ffi.cfunc('CloseWindow', [], symbol.void)
@@ -2434,7 +2434,7 @@ func load():
     ffi.cfunc('DetachAudioStreamProcessor', [AudioStream, symbol.voidPtr], symbol.void)
     ffi.cfunc('AttachAudioMixedProcessor', [symbol.voidPtr], symbol.void)
     ffi.cfunc('DetachAudioMixedProcessor', [symbol.voidPtr], symbol.void)
-    let lib = ffi.bindLib(Option[String].some(libPath), {gen_table: false})
+    let lib = ffi.bindLib(Option[String].some(libPath), {gen_table=false})
     return lib
 
 -- Macros
@@ -2446,32 +2446,32 @@ var .RAYLIB_VERSION String = "5.0"
 var .PI float = 3.1415927410125732
 var .DEG2RAD float = 0.01745329238474369
 var .RAD2DEG float = 57.2957763671875
-var .LIGHTGRAY Color = Color{r: 200, g: 200, b: 200, a: 255}
-var .GRAY Color = Color{r: 130, g: 130, b: 130, a: 255}
-var .DARKGRAY Color = Color{r: 80, g: 80, b: 80, a: 255}
-var .YELLOW Color = Color{r: 253, g: 249, b: 0, a: 255}
-var .GOLD Color = Color{r: 255, g: 203, b: 0, a: 255}
-var .ORANGE Color = Color{r: 255, g: 161, b: 0, a: 255}
-var .PINK Color = Color{r: 255, g: 109, b: 194, a: 255}
-var .RED Color = Color{r: 230, g: 41, b: 55, a: 255}
-var .MAROON Color = Color{r: 190, g: 33, b: 55, a: 255}
-var .GREEN Color = Color{r: 0, g: 228, b: 48, a: 255}
-var .LIME Color = Color{r: 0, g: 158, b: 47, a: 255}
-var .DARKGREEN Color = Color{r: 0, g: 117, b: 44, a: 255}
-var .SKYBLUE Color = Color{r: 102, g: 191, b: 255, a: 255}
-var .BLUE Color = Color{r: 0, g: 121, b: 241, a: 255}
-var .DARKBLUE Color = Color{r: 0, g: 82, b: 172, a: 255}
-var .PURPLE Color = Color{r: 200, g: 122, b: 255, a: 255}
-var .VIOLET Color = Color{r: 135, g: 60, b: 190, a: 255}
-var .DARKPURPLE Color = Color{r: 112, g: 31, b: 126, a: 255}
-var .BEIGE Color = Color{r: 211, g: 176, b: 131, a: 255}
-var .BROWN Color = Color{r: 127, g: 106, b: 79, a: 255}
-var .DARKBROWN Color = Color{r: 76, g: 63, b: 47, a: 255}
-var .WHITE Color = Color{r: 255, g: 255, b: 255, a: 255}
-var .BLACK Color = Color{r: 0, g: 0, b: 0, a: 255}
-var .BLANK Color = Color{r: 0, g: 0, b: 0, a: 0}
-var .MAGENTA Color = Color{r: 255, g: 0, b: 255, a: 255}
-var .RAYWHITE Color = Color{r: 245, g: 245, b: 245, a: 255}
+var .LIGHTGRAY Color = Color{r=200, g=200, b=200, a=255}
+var .GRAY Color = Color{r=130, g=130, b=130, a=255}
+var .DARKGRAY Color = Color{r=80, g=80, b=80, a=255}
+var .YELLOW Color = Color{r=253, g=249, b=0, a=255}
+var .GOLD Color = Color{r=255, g=203, b=0, a=255}
+var .ORANGE Color = Color{r=255, g=161, b=0, a=255}
+var .PINK Color = Color{r=255, g=109, b=194, a=255}
+var .RED Color = Color{r=230, g=41, b=55, a=255}
+var .MAROON Color = Color{r=190, g=33, b=55, a=255}
+var .GREEN Color = Color{r=0, g=228, b=48, a=255}
+var .LIME Color = Color{r=0, g=158, b=47, a=255}
+var .DARKGREEN Color = Color{r=0, g=117, b=44, a=255}
+var .SKYBLUE Color = Color{r=102, g=191, b=255, a=255}
+var .BLUE Color = Color{r=0, g=121, b=241, a=255}
+var .DARKBLUE Color = Color{r=0, g=82, b=172, a=255}
+var .PURPLE Color = Color{r=200, g=122, b=255, a=255}
+var .VIOLET Color = Color{r=135, g=60, b=190, a=255}
+var .DARKPURPLE Color = Color{r=112, g=31, b=126, a=255}
+var .BEIGE Color = Color{r=211, g=176, b=131, a=255}
+var .BROWN Color = Color{r=127, g=106, b=79, a=255}
+var .DARKBROWN Color = Color{r=76, g=63, b=47, a=255}
+var .WHITE Color = Color{r=255, g=255, b=255, a=255}
+var .BLACK Color = Color{r=0, g=0, b=0, a=255}
+var .BLANK Color = Color{r=0, g=0, b=0, a=0}
+var .MAGENTA Color = Color{r=255, g=0, b=255, a=255}
+var .RAYWHITE Color = Color{r=245, g=245, b=245, a=255}
 -- var .true int = 1
 -- var .false int = 0
 var .MOUSE_LEFT_BUTTON int = 0

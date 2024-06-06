@@ -83,14 +83,14 @@ let InitGame():
     shipHeight = (PLAYER_BASE_SIZE/2.0)/math.tan(20*rl.DEG2RAD)
 
     -- Initialization player
-    player.position = Vec2{x: float(screenWidth/2), y: float(screenHeight/2) - shipHeight/2.0}
-    player.speed = Vec2{x: 0, y: 0}
+    player.position = Vec2{x=float(screenWidth/2), y=float(screenHeight/2) - shipHeight/2.0}
+    player.speed = Vec2{x=0, y=0}
     player.acceleration = 0.0
     player.rotation = 0.0
     player.collider = Vec3{
-        x: player.position.x + math.sin(player.rotation*rl.DEG2RAD)*(shipHeight/2.5),
-        y: player.position.y - math.cos(player.rotation*rl.DEG2RAD)*(shipHeight/2.5),
-        z: 12,
+        x = player.position.x + math.sin(player.rotation*rl.DEG2RAD)*(shipHeight/2.5),
+        y = player.position.y - math.cos(player.rotation*rl.DEG2RAD)*(shipHeight/2.5),
+        z = 12,
     }
     player.color = rl.LIGHTGRAY
 
@@ -98,8 +98,8 @@ let InitGame():
 
     -- Initialization shoot
     for 0..PLAYER_MAX_SHOOTS -> i:
-        shoot[i].position = Vec2{x: 0, y: 0}
-        shoot[i].speed = Vec2{x: 0, y: 0}
+        shoot[i].position = Vec2{x=0, y=0}
+        shoot[i].speed = Vec2{x=0, y=0}
         shoot[i].radius = 2.0
         shoot[i].active = false
         shoot[i].lifeSpawn = 0
@@ -122,7 +122,7 @@ let InitGame():
                 posy = float(rl.GetRandomValue(0, screenHeight))
             else: correctRange = true
 
-        bigMeteor[i].position = Vec2{x: posx, y: posy}
+        bigMeteor[i].position = Vec2{x=posx, y=posy}
 
         correctRange = false
         velx = float(rl.GetRandomValue(-int(METEORS_SPEED), int(METEORS_SPEED)))
@@ -134,21 +134,21 @@ let InitGame():
                 vely = float(rl.GetRandomValue(-int(METEORS_SPEED), int(METEORS_SPEED)))
             else: correctRange = true
 
-        bigMeteor[i].speed = Vec2{x: velx, y: vely}
+        bigMeteor[i].speed = Vec2{x=velx, y=vely}
         bigMeteor[i].radius = 40.0
         bigMeteor[i].active = true
         bigMeteor[i].color = rl.BLUE
 
     for 0..MAX_MEDIUM_METEORS -> i:
-        mediumMeteor[i].position = Vec2{x: -100, y: -100}
-        mediumMeteor[i].speed = Vec2{x: 0, y: 0}
+        mediumMeteor[i].position = Vec2{x=-100, y=-100}
+        mediumMeteor[i].speed = Vec2{x=0, y=0}
         mediumMeteor[i].radius = 20.0
         mediumMeteor[i].active = false
         mediumMeteor[i].color = rl.BLUE
 
     for 0..MAX_SMALL_METEORS -> i:
-        smallMeteor[i].position = Vec2{x: -100, y: -100}
-        smallMeteor[i].speed = Vec2{x: 0, y: 0}
+        smallMeteor[i].position = Vec2{x=-100, y=-100}
+        smallMeteor[i].speed = Vec2{x=0, y=0}
         smallMeteor[i].radius = 10.0
         smallMeteor[i].active = false
         smallMeteor[i].color = rl.BLUE
@@ -207,8 +207,8 @@ let UpdateGame():
         for 0..PLAYER_MAX_SHOOTS -> i:
             if !shoot[i].active:
                 shoot[i].position = Vec2{
-                    x: player.position.x + math.sin(player.rotation*rl.DEG2RAD)*(shipHeight),
-                    y: player.position.y - math.cos(player.rotation*rl.DEG2RAD)*(shipHeight),
+                    x = player.position.x + math.sin(player.rotation*rl.DEG2RAD)*(shipHeight),
+                    y = player.position.y - math.cos(player.rotation*rl.DEG2RAD)*(shipHeight),
                 }
                 shoot[i].active = true
                 shoot[i].speed.x = 1.5*math.sin(player.rotation*rl.DEG2RAD)*PLAYER_SPEED
@@ -243,36 +243,36 @@ let UpdateGame():
 
             -- Life of shoot
             if shoot[i].lifeSpawn >= 60:
-                shoot[i].position = Vec2{x: 0, y: 0}
-                shoot[i].speed = Vec2{x: 0, y: 0}
+                shoot[i].position = Vec2{x=0, y=0}
+                shoot[i].speed = Vec2{x=0, y=0}
                 shoot[i].lifeSpawn = 0
                 shoot[i].active = false
 
     -- Collision logic: player vs meteors
     player.collider = Vec3{
-        x: player.position.x + math.sin(player.rotation*rl.DEG2RAD)*(shipHeight/2.5),
-        y: player.position.y - math.cos(player.rotation*rl.DEG2RAD)*(shipHeight/2.5),
-        z: 12,
+        x = player.position.x + math.sin(player.rotation*rl.DEG2RAD)*(shipHeight/2.5),
+        y = player.position.y - math.cos(player.rotation*rl.DEG2RAD)*(shipHeight/2.5),
+        z = 12,
     }
 
     for 0..MAX_BIG_METEORS -> a:
         let meteor = bigMeteor[a]
         if rl.CheckCollisionCircles(
-            Vec2{x: player.collider.x, y: player.collider.y}, player.collider.z,
+            Vec2{x=player.collider.x, y=player.collider.y}, player.collider.z,
             meteor.position, meteor.radius) and meteor.active:
             gameOver = true
 
     for 0..MAX_MEDIUM_METEORS -> a:
         let meteor = mediumMeteor[a]
         if rl.CheckCollisionCircles(
-            Vec2{x: player.collider.x, y: player.collider.y}, player.collider.z,
+            Vec2{x=player.collider.x, y=player.collider.y}, player.collider.z,
             meteor.position, meteor.radius) and meteor.active:
             gameOver = true
 
     for 0..MAX_SMALL_METEORS -> a:
         let meteor = smallMeteor[a]
         if rl.CheckCollisionCircles(
-            Vec2{x: player.collider.x, y: player.collider.y}, player.collider.z,
+            Vec2{x=player.collider.x, y=player.collider.y}, player.collider.z,
             meteor.position, meteor.radius) and meteor.active:
             gameOver = true
 
@@ -342,24 +342,24 @@ let UpdateGame():
                     for 0..2 -> j:
                         if midMeteorsCount%2 == 0:
                             mediumMeteor[midMeteorsCount].position = Vec2{
-                                x: meteor.position.x, y: meteor.position.y
+                                x = meteor.position.x, y = meteor.position.y
                             }
                             mediumMeteor[midMeteorsCount].speed = Vec2{
-                                x: math.cos(shooti.rotation*rl.DEG2RAD)*METEORS_SPEED*-1,
-                                y: math.sin(shooti.rotation*rl.DEG2RAD)*METEORS_SPEED*-1,
+                                x = math.cos(shooti.rotation*rl.DEG2RAD)*METEORS_SPEED*-1,
+                                y = math.sin(shooti.rotation*rl.DEG2RAD)*METEORS_SPEED*-1,
                             }
                         else:
                             mediumMeteor[midMeteorsCount].position = Vec2{
-                                x: meteor.position.x, y: meteor.position.y
+                                x = meteor.position.x, y = meteor.position.y
                             }
                             mediumMeteor[midMeteorsCount].speed = Vec2{
-                                x: math.cos(shooti.rotation*rl.DEG2RAD)*METEORS_SPEED,
-                                y: math.sin(shooti.rotation*rl.DEG2RAD)*METEORS_SPEED
+                                x = math.cos(shooti.rotation*rl.DEG2RAD)*METEORS_SPEED,
+                                y = math.sin(shooti.rotation*rl.DEG2RAD)*METEORS_SPEED
                             }
 
                         mediumMeteor[midMeteorsCount].active = true
                         midMeteorsCount += 1
-                    --bigMeteor[a].position = Vec2{x: -100, y: -100}
+                    --bigMeteor[a].position = Vec2{x=-100, y=-100}
                     meteor.color = rl.RED
                     break
 
@@ -374,24 +374,24 @@ let UpdateGame():
                     for 0..2 -> j:
                         if smallMeteorsCount%2 == 0:
                             smallMeteor[smallMeteorsCount].position = Vec2{
-                                x: meteor.position.x, y: meteor.position.y
+                                x = meteor.position.x, y = meteor.position.y
                             }
                             smallMeteor[smallMeteorsCount].speed = Vec2{
-                                x: math.cos(shooti.rotation*rl.DEG2RAD)*METEORS_SPEED*-1,
-                                y: math.sin(shooti.rotation*rl.DEG2RAD)*METEORS_SPEED*-1,
+                                x = math.cos(shooti.rotation*rl.DEG2RAD)*METEORS_SPEED*-1,
+                                y = math.sin(shooti.rotation*rl.DEG2RAD)*METEORS_SPEED*-1,
                             }
                         else:
                             smallMeteor[smallMeteorsCount].position = Vec2{
-                                x: meteor.position.x, y: meteor.position.y
+                                x = meteor.position.x, y = meteor.position.y
                             }
                             smallMeteor[smallMeteorsCount].speed = Vec2{
-                                x: math.cos(shooti.rotation*rl.DEG2RAD)*METEORS_SPEED,
-                                y: math.sin(shooti.rotation*rl.DEG2RAD)*METEORS_SPEED
+                                x = math.cos(shooti.rotation*rl.DEG2RAD)*METEORS_SPEED,
+                                y = math.sin(shooti.rotation*rl.DEG2RAD)*METEORS_SPEED
                             }
 
                         smallMeteor[smallMeteorsCount].active = true
                         smallMeteorsCount += 1
-                    --mediumMeteor[b].position = Vec2{x: -100, y: -100}
+                    --mediumMeteor[b].position = Vec2{x=-100, y=-100}
                     meteor.color = rl.GREEN
                     break
 
@@ -403,7 +403,7 @@ let UpdateGame():
                     meteor.active = false
                     destroyedMeteorsCount += 1
                     meteor.color = rl.YELLOW
-                    -- smallMeteor[c].position = Vec2{x: -100, y:-100}
+                    -- smallMeteor[c].position = Vec2{x=-100, y=-100}
                     break
 
     if destroyedMeteorsCount == MAX_BIG_METEORS + MAX_MEDIUM_METEORS + MAX_SMALL_METEORS:
@@ -417,16 +417,16 @@ let DrawGame():
     if !gameOver:
         -- Draw spaceship
         let v1 = Vec2{
-            x: player.position.x + math.sin(player.rotation*rl.DEG2RAD)*(shipHeight),
-            y: player.position.y - math.cos(player.rotation*rl.DEG2RAD)*(shipHeight),
+            x = player.position.x + math.sin(player.rotation*rl.DEG2RAD)*(shipHeight),
+            y = player.position.y - math.cos(player.rotation*rl.DEG2RAD)*(shipHeight),
         }
         let v2 = Vec2{
-            x: player.position.x - math.cos(player.rotation*rl.DEG2RAD)*(PLAYER_BASE_SIZE/2.0),
-            y: player.position.y - math.sin(player.rotation*rl.DEG2RAD)*(PLAYER_BASE_SIZE/2.0),
+            x = player.position.x - math.cos(player.rotation*rl.DEG2RAD)*(PLAYER_BASE_SIZE/2.0),
+            y = player.position.y - math.sin(player.rotation*rl.DEG2RAD)*(PLAYER_BASE_SIZE/2.0),
         }
         let v3 = Vec2{
-            x: player.position.x + math.cos(player.rotation*rl.DEG2RAD)*(PLAYER_BASE_SIZE/2.0),
-            y: player.position.y + math.sin(player.rotation*rl.DEG2RAD)*(PLAYER_BASE_SIZE/2.0),
+            x = player.position.x + math.cos(player.rotation*rl.DEG2RAD)*(PLAYER_BASE_SIZE/2.0),
+            y = player.position.y + math.sin(player.rotation*rl.DEG2RAD)*(PLAYER_BASE_SIZE/2.0),
         }
         rl.DrawTriangle(v1, v2, v3, rl.MAROON)
 

@@ -137,7 +137,7 @@ let Character.new():
     return o
 
 let Character{base, weapon, weaponCollideRect, health}:
-    let tick(deltaTime):
+    let tick(self, deltaTime):
         if !self.base.getAlive(): return
 
         if rl.IsKeyDown(rl.KEY_A): self.base.velocity.x -= 1.0
@@ -146,7 +146,7 @@ let Character{base, weapon, weaponCollideRect, health}:
         if rl.IsKeyDown(rl.KEY_S): self.base.velocity.y += 1.0
         self.base.tick(deltaTime)
 
-    let render():
+    let render(self):
         self.base.render()
         -- Draw the sword
         let origin = Vec2{x=0, y=0}
@@ -185,13 +185,13 @@ let Character{base, weapon, weaponCollideRect, health}:
         }
         rl.DrawTexturePro(self.weapon, source, dest, origin, rotation, rl.WHITE)
 
-    let takeDamage(damage):
+    let takeDamage(self, damage):
         self.health -= damage
         if self.health <= 0.0:
             self.base.setAlive(false)
 
-    let getHealth(): return self.health
-    let getWeaponCollideRect(): return self.weaponCollideRect
+    let getHealth(self): return self.health
+    let getWeaponCollideRect(self): return self.weaponCollideRect
 
 
 let BaseCharacter.new():
@@ -227,19 +227,19 @@ let BaseCharacter{
     worldPosLastFrame,
     texture, idle, run }:
 
-    let getWorldPos():
+    let getWorldPos(self):
         return self.worldPos
 
-    let setAlive(isAlive):
+    let setAlive(self, isAlive):
         self.alive = isAlive
 
-    let getAlive():
+    let getAlive(self):
         return self.alive
 
-    let undoMovement():
+    let undoMovement(self):
         self.worldPos = self.worldPosLastFrame
 
-    let tick(deltaTime):
+    let tick(self, deltaTime):
         self.worldPosLastFrame = self.worldPos
 
         -- update animation frame
@@ -269,7 +269,7 @@ let BaseCharacter{
         self.velocity.x = 0.0
         self.velocity.y = 0.0
 
-    let render():
+    let render(self):
         if !self.alive: return
         let source = Rect{x=float(self.frame) * self.width, y=0.0, width=float(self.rightLeft) * self.width, height=self.height}
 
@@ -278,7 +278,7 @@ let BaseCharacter{
             width = self.scale * self.width, height = self.scale * self.height}
         rl.DrawTexturePro(self.texture, source, dest, Vec2{x=0, y=0}, 0, rl.WHITE)
 
-    let getCollideRect():
+    let getCollideRect(self):
         return Rect{
             x = self.worldPos.x,
             y = self.worldPos.y,
@@ -290,11 +290,11 @@ let Prop.new(pos, tex):
     return Prop{worldPos=pos, texture=tex, scale=4.0}
 
 let Prop{worldPos, texture, scale}:
-    let render():
+    let render(self):
         let screenPos = Vec2.sub(self.worldPos, viewPos)
         rl.DrawTextureEx(self.texture, screenPos, 0.0, self.scale, rl.WHITE)
 
-    let getCollideRect():
+    let getCollideRect(self):
         return Rect{
             x = self.worldPos.x,
             y = self.worldPos.y,
@@ -318,7 +318,7 @@ let Enemy.new(pos, idleTex, runTex):
     return o
 
 let Enemy{base, target, damagePerSec, radius}:
-    let tick(deltaTime):
+    let tick(self, deltaTime):
         if !self.base.getAlive(): return
 
         -- get toTarget
@@ -329,10 +329,10 @@ let Enemy{base, target, damagePerSec, radius}:
         if rl.CheckCollisionRecs(self.target.base.getCollideRect(), self.base.getCollideRect()):
             self.target.takeDamage(self.damagePerSec * deltaTime)
 
-    let setTarget(char):
+    let setTarget(self, char):
         self.target = char
 
-    let getScreenPos():
+    let getScreenPos(self):
         return Vec2.sub(self.base.worldPos, self.target.base.getWorldPos())
 
 let spawnRandomEnemy(target):

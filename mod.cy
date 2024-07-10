@@ -10,7 +10,7 @@ var .libUrl = switch os.system:
 
 var .libPath = os.cacheUrl(libUrl)
 
-func InitFoo(width int, height int, title pointer): pass
+func InitFoo(width int, height int, title *void): pass
 
 func InitWindow(width int, height int, title String):
     var cstr = os.cstr(title)
@@ -130,7 +130,7 @@ type Rectangle_S:
 type Rectangle = Rectangle_S
 
 type Image_S:
-    data any -- void *
+    data *void -- void *
     width int
     height int
     mipmaps int
@@ -184,8 +184,8 @@ type Font_S:
     glyphCount int
     glyphPadding int
     texture Texture2D
-    recs any -- Rectangle *
-    glyphs any -- GlyphInfo *
+    recs *void -- Rectangle *
+    glyphs *void -- GlyphInfo *
 
 type Font = Font_S
 
@@ -211,25 +211,25 @@ type Camera2D = Camera2D_S
 type Mesh_S:
     vertexCount int
     triangleCount int
-    vertices any -- float *
-    texcoords any -- float *
-    texcoords2 any -- float *
-    normals any -- float *
-    tangents any -- float *
-    colors any -- unsigned char *
-    indices any -- unsigned short *
-    animVertices any -- float *
-    animNormals any -- float *
-    boneIds any -- unsigned char *
-    boneWeights any -- float *
+    vertices *void -- float *
+    texcoords *void -- float *
+    texcoords2 *void -- float *
+    normals *void -- float *
+    tangents *void -- float *
+    colors *void -- unsigned char *
+    indices *void -- unsigned short *
+    animVertices *void -- float *
+    animNormals *void -- float *
+    boneIds *void -- unsigned char *
+    boneWeights *void -- float *
     vaoId int
-    vboId any -- unsigned int *
+    vboId *void -- unsigned int *
 
 type Mesh = Mesh_S
 
 type Shader_S:
     id int
-    locs any -- int *
+    locs *void -- int *
 
 type Shader = Shader_S
 
@@ -242,7 +242,7 @@ type MaterialMap = MaterialMap_S
 
 type Material_S:
     shader Shader
-    maps any -- MaterialMap *
+    maps *void -- MaterialMap *
     params List[dyn] -- float[4]
 
 type Material = Material_S
@@ -264,20 +264,20 @@ type Model_S:
     transform Matrix
     meshCount int
     materialCount int
-    meshes any -- Mesh *
-    materials any -- Material *
-    meshMaterial any -- int *
+    meshes *void -- Mesh *
+    materials *void -- Material *
+    meshMaterial *void -- int *
     boneCount int
-    bones any -- BoneInfo *
-    bindPose any -- Transform *
+    bones *void -- BoneInfo *
+    bindPose *void -- Transform *
 
 type Model = Model_S
 
 type ModelAnimation_S:
     boneCount int
     frameCount int
-    bones any -- BoneInfo *
-    framePoses any -- Transform **
+    bones *void -- BoneInfo *
+    framePoses *void -- Transform **
     name List[dyn] -- char[32]
 
 type ModelAnimation = ModelAnimation_S
@@ -307,7 +307,7 @@ type Wave_S:
     sampleRate int
     sampleSize int
     channels int
-    data any -- void *
+    data *void -- void *
 
 type Wave = Wave_S
 
@@ -318,8 +318,8 @@ type rAudioProcessor_S #int64_t
 type rAudioProcessor = rAudioProcessor_S
 
 type AudioStream_S:
-    buffer any -- rAudioBuffer *
-    processor any -- rAudioProcessor *
+    buffer *void -- rAudioBuffer *
+    processor *void -- rAudioProcessor *
     sampleRate int
     sampleSize int
     channels int
@@ -337,7 +337,7 @@ type Music_S:
     frameCount int
     looping bool
     ctxType int
-    ctxData any -- void *
+    ctxData *void -- void *
 
 type Music = Music_S
 
@@ -370,7 +370,7 @@ type VrStereoConfig = VrStereoConfig_S
 type FilePathList_S:
     capacity int
     count int
-    paths any -- char **
+    paths *void -- char **
 
 type FilePathList = FilePathList_S
 
@@ -384,7 +384,7 @@ type AutomationEvent = AutomationEvent_S
 type AutomationEventList_S:
     capacity int
     count int
-    events any -- AutomationEvent *
+    events *void -- AutomationEvent *
 
 type AutomationEventList = AutomationEventList_S
 
@@ -728,17 +728,17 @@ var .NPATCH_NINE_PATCH int = 0
 var .NPATCH_THREE_PATCH_VERTICAL int = 1
 var .NPATCH_THREE_PATCH_HORIZONTAL int = 2
 
-type TraceLogCallback = pointer
+type TraceLogCallback = *void
 
-type LoadFileDataCallback = pointer
+type LoadFileDataCallback = *void
 
-type SaveFileDataCallback = pointer
+type SaveFileDataCallback = *void
 
-type LoadFileTextCallback = pointer
+type LoadFileTextCallback = *void
 
-type SaveFileTextCallback = pointer
+type SaveFileTextCallback = *void
 
---func InitWindow(width int, height int, title any) void
+--func InitWindow(width int, height int, title *void) void
 func CloseWindow() void:
     return lib.CloseWindow()
 func WindowShouldClose() bool:
@@ -775,9 +775,9 @@ func RestoreWindow() void:
     return lib.RestoreWindow()
 func SetWindowIcon(image Image) void:
     return lib.SetWindowIcon(image)
-func SetWindowIcons(images any, count int) void:
+func SetWindowIcons(images *void, count int) void:
     return lib.SetWindowIcons(images, count)
-func SetWindowTitle(title any) void:
+func SetWindowTitle(title *void) void:
     return lib.SetWindowTitle(title)
 func SetWindowPosition(x int, y int) void:
     return lib.SetWindowPosition(x, y)
@@ -793,7 +793,7 @@ func SetWindowOpacity(opacity float) void:
     return lib.SetWindowOpacity(opacity)
 func SetWindowFocused() void:
     return lib.SetWindowFocused()
-func GetWindowHandle() pointer:
+func GetWindowHandle() *void:
     return lib.GetWindowHandle()
 func GetScreenWidth() int:
     return lib.GetScreenWidth()
@@ -823,11 +823,11 @@ func GetWindowPosition() Vector2:
     return lib.GetWindowPosition()
 func GetWindowScaleDPI() Vector2:
     return lib.GetWindowScaleDPI()
-func GetMonitorName(monitor int) pointer:
+func GetMonitorName(monitor int) *void:
     return lib.GetMonitorName(monitor)
-func SetClipboardText(text any) void:
+func SetClipboardText(text *void) void:
     return lib.SetClipboardText(text)
-func GetClipboardText() pointer:
+func GetClipboardText() *void:
     return lib.GetClipboardText()
 func EnableEventWaiting() void:
     return lib.EnableEventWaiting()
@@ -883,19 +883,19 @@ func LoadVrStereoConfig(device VrDeviceInfo) VrStereoConfig:
     return lib.LoadVrStereoConfig(device)
 func UnloadVrStereoConfig(config VrStereoConfig) void:
     return lib.UnloadVrStereoConfig(config)
-func LoadShader(vsFileName any, fsFileName any) Shader:
+func LoadShader(vsFileName *void, fsFileName *void) Shader:
     return lib.LoadShader(vsFileName, fsFileName)
-func LoadShaderFromMemory(vsCode any, fsCode any) Shader:
+func LoadShaderFromMemory(vsCode *void, fsCode *void) Shader:
     return lib.LoadShaderFromMemory(vsCode, fsCode)
 func IsShaderReady(shader Shader) bool:
     return lib.IsShaderReady(shader)
-func GetShaderLocation(shader Shader, uniformName any) int:
+func GetShaderLocation(shader Shader, uniformName *void) int:
     return lib.GetShaderLocation(shader, uniformName)
-func GetShaderLocationAttrib(shader Shader, attribName any) int:
+func GetShaderLocationAttrib(shader Shader, attribName *void) int:
     return lib.GetShaderLocationAttrib(shader, attribName)
-func SetShaderValue(shader Shader, locIndex int, value any, uniformType int) void:
+func SetShaderValue(shader Shader, locIndex int, value *void, uniformType int) void:
     return lib.SetShaderValue(shader, locIndex, value, uniformType)
-func SetShaderValueV(shader Shader, locIndex int, value any, uniformType int, count int) void:
+func SetShaderValueV(shader Shader, locIndex int, value *void, uniformType int, count int) void:
     return lib.SetShaderValueV(shader, locIndex, value, uniformType, count)
 func SetShaderValueMatrix(shader Shader, locIndex int, mat Matrix) void:
     return lib.SetShaderValueMatrix(shader, locIndex, mat)
@@ -935,79 +935,79 @@ func SetRandomSeed(seed int) void:
     return lib.SetRandomSeed(seed)
 func GetRandomValue(min int, max int) int:
     return lib.GetRandomValue(min, max)
-func LoadRandomSequence(count int, min int, max int) pointer:
+func LoadRandomSequence(count int, min int, max int) *void:
     return lib.LoadRandomSequence(count, min, max)
-func UnloadRandomSequence(sequence any) void:
+func UnloadRandomSequence(sequence *void) void:
     return lib.UnloadRandomSequence(sequence)
-func TakeScreenshot(fileName any) void:
+func TakeScreenshot(fileName *void) void:
     return lib.TakeScreenshot(fileName)
 func SetConfigFlags(flags int) void:
     return lib.SetConfigFlags(flags)
-func OpenURL(url any) void:
+func OpenURL(url *void) void:
     return lib.OpenURL(url)
-func TraceLog(logLevel int, text any) void:
+func TraceLog(logLevel int, text *void) void:
     return lib.TraceLog(logLevel, text)
 func SetTraceLogLevel(logLevel int) void:
     return lib.SetTraceLogLevel(logLevel)
-func MemAlloc(size int) pointer:
+func MemAlloc(size int) *void:
     return lib.MemAlloc(size)
-func MemRealloc(ptr any, size int) pointer:
+func MemRealloc(ptr *void, size int) *void:
     return lib.MemRealloc(ptr, size)
-func MemFree(ptr any) void:
+func MemFree(ptr *void) void:
     return lib.MemFree(ptr)
-func SetTraceLogCallback(callback any) void:
+func SetTraceLogCallback(callback *void) void:
     return lib.SetTraceLogCallback(callback)
-func SetLoadFileDataCallback(callback any) void:
+func SetLoadFileDataCallback(callback *void) void:
     return lib.SetLoadFileDataCallback(callback)
-func SetSaveFileDataCallback(callback any) void:
+func SetSaveFileDataCallback(callback *void) void:
     return lib.SetSaveFileDataCallback(callback)
-func SetLoadFileTextCallback(callback any) void:
+func SetLoadFileTextCallback(callback *void) void:
     return lib.SetLoadFileTextCallback(callback)
-func SetSaveFileTextCallback(callback any) void:
+func SetSaveFileTextCallback(callback *void) void:
     return lib.SetSaveFileTextCallback(callback)
-func LoadFileData(fileName any, dataSize any) pointer:
+func LoadFileData(fileName *void, dataSize *void) *void:
     return lib.LoadFileData(fileName, dataSize)
-func UnloadFileData(data any) void:
+func UnloadFileData(data *void) void:
     return lib.UnloadFileData(data)
-func SaveFileData(fileName any, data any, dataSize int) bool:
+func SaveFileData(fileName *void, data *void, dataSize int) bool:
     return lib.SaveFileData(fileName, data, dataSize)
-func ExportDataAsCode(data any, dataSize int, fileName any) bool:
+func ExportDataAsCode(data *void, dataSize int, fileName *void) bool:
     return lib.ExportDataAsCode(data, dataSize, fileName)
-func LoadFileText(fileName any) pointer:
+func LoadFileText(fileName *void) *void:
     return lib.LoadFileText(fileName)
-func UnloadFileText(text any) void:
+func UnloadFileText(text *void) void:
     return lib.UnloadFileText(text)
-func SaveFileText(fileName any, text any) bool:
+func SaveFileText(fileName *void, text *void) bool:
     return lib.SaveFileText(fileName, text)
-func FileExists(fileName any) bool:
+func FileExists(fileName *void) bool:
     return lib.FileExists(fileName)
-func DirectoryExists(dirPath any) bool:
+func DirectoryExists(dirPath *void) bool:
     return lib.DirectoryExists(dirPath)
-func IsFileExtension(fileName any, ext any) bool:
+func IsFileExtension(fileName *void, ext *void) bool:
     return lib.IsFileExtension(fileName, ext)
-func GetFileLength(fileName any) int:
+func GetFileLength(fileName *void) int:
     return lib.GetFileLength(fileName)
-func GetFileExtension(fileName any) pointer:
+func GetFileExtension(fileName *void) *void:
     return lib.GetFileExtension(fileName)
-func GetFileName(filePath any) pointer:
+func GetFileName(filePath *void) *void:
     return lib.GetFileName(filePath)
-func GetFileNameWithoutExt(filePath any) pointer:
+func GetFileNameWithoutExt(filePath *void) *void:
     return lib.GetFileNameWithoutExt(filePath)
-func GetDirectoryPath(filePath any) pointer:
+func GetDirectoryPath(filePath *void) *void:
     return lib.GetDirectoryPath(filePath)
-func GetPrevDirectoryPath(dirPath any) pointer:
+func GetPrevDirectoryPath(dirPath *void) *void:
     return lib.GetPrevDirectoryPath(dirPath)
-func GetWorkingDirectory() pointer:
+func GetWorkingDirectory() *void:
     return lib.GetWorkingDirectory()
-func GetApplicationDirectory() pointer:
+func GetApplicationDirectory() *void:
     return lib.GetApplicationDirectory()
-func ChangeDirectory(dir any) bool:
+func ChangeDirectory(dir *void) bool:
     return lib.ChangeDirectory(dir)
-func IsPathFile(path any) bool:
+func IsPathFile(path *void) bool:
     return lib.IsPathFile(path)
-func LoadDirectoryFiles(dirPath any) FilePathList:
+func LoadDirectoryFiles(dirPath *void) FilePathList:
     return lib.LoadDirectoryFiles(dirPath)
-func LoadDirectoryFilesEx(basePath any, filter any, scanSubdirs bool) FilePathList:
+func LoadDirectoryFilesEx(basePath *void, filter *void, scanSubdirs bool) FilePathList:
     return lib.LoadDirectoryFilesEx(basePath, filter, scanSubdirs)
 func UnloadDirectoryFiles(files FilePathList) void:
     return lib.UnloadDirectoryFiles(files)
@@ -1017,23 +1017,23 @@ func LoadDroppedFiles() FilePathList:
     return lib.LoadDroppedFiles()
 func UnloadDroppedFiles(files FilePathList) void:
     return lib.UnloadDroppedFiles(files)
-func GetFileModTime(fileName any) int:
+func GetFileModTime(fileName *void) int:
     return lib.GetFileModTime(fileName)
-func CompressData(data any, dataSize int, compDataSize any) pointer:
+func CompressData(data *void, dataSize int, compDataSize *void) *void:
     return lib.CompressData(data, dataSize, compDataSize)
-func DecompressData(compData any, compDataSize int, dataSize any) pointer:
+func DecompressData(compData *void, compDataSize int, dataSize *void) *void:
     return lib.DecompressData(compData, compDataSize, dataSize)
-func EncodeDataBase64(data any, dataSize int, outputSize any) pointer:
+func EncodeDataBase64(data *void, dataSize int, outputSize *void) *void:
     return lib.EncodeDataBase64(data, dataSize, outputSize)
-func DecodeDataBase64(data any, outputSize any) pointer:
+func DecodeDataBase64(data *void, outputSize *void) *void:
     return lib.DecodeDataBase64(data, outputSize)
-func LoadAutomationEventList(fileName any) AutomationEventList:
+func LoadAutomationEventList(fileName *void) AutomationEventList:
     return lib.LoadAutomationEventList(fileName)
-func UnloadAutomationEventList(list any) void:
+func UnloadAutomationEventList(list *void) void:
     return lib.UnloadAutomationEventList(list)
-func ExportAutomationEventList(list AutomationEventList, fileName any) bool:
+func ExportAutomationEventList(list AutomationEventList, fileName *void) bool:
     return lib.ExportAutomationEventList(list, fileName)
-func SetAutomationEventList(list any) void:
+func SetAutomationEventList(list *void) void:
     return lib.SetAutomationEventList(list)
 func SetAutomationEventBaseFrame(frame int) void:
     return lib.SetAutomationEventBaseFrame(frame)
@@ -1061,7 +1061,7 @@ func SetExitKey(key int) void:
     return lib.SetExitKey(key)
 func IsGamepadAvailable(gamepad int) bool:
     return lib.IsGamepadAvailable(gamepad)
-func GetGamepadName(gamepad int) pointer:
+func GetGamepadName(gamepad int) *void:
     return lib.GetGamepadName(gamepad)
 func IsGamepadButtonPressed(gamepad int, button int) bool:
     return lib.IsGamepadButtonPressed(gamepad, button)
@@ -1077,7 +1077,7 @@ func GetGamepadAxisCount(gamepad int) int:
     return lib.GetGamepadAxisCount(gamepad)
 func GetGamepadAxisMovement(gamepad int, axis int) float:
     return lib.GetGamepadAxisMovement(gamepad, axis)
-func SetGamepadMappings(mappings any) int:
+func SetGamepadMappings(mappings *void) int:
     return lib.SetGamepadMappings(mappings)
 func IsMouseButtonPressed(button int) bool:
     return lib.IsMouseButtonPressed(button)
@@ -1133,9 +1133,9 @@ func GetGesturePinchVector() Vector2:
     return lib.GetGesturePinchVector()
 func GetGesturePinchAngle() float:
     return lib.GetGesturePinchAngle()
-func UpdateCamera(camera any, mode int) void:
+func UpdateCamera(camera *void, mode int) void:
     return lib.UpdateCamera(camera, mode)
-func UpdateCameraPro(camera any, movement Vector3, rotation Vector3, zoom float) void:
+func UpdateCameraPro(camera *void, movement Vector3, rotation Vector3, zoom float) void:
     return lib.UpdateCameraPro(camera, movement, rotation, zoom)
 func SetShapesTexture(texture Texture2D, source Rectangle) void:
     return lib.SetShapesTexture(texture, source)
@@ -1149,7 +1149,7 @@ func DrawLineV(startPos Vector2, endPos Vector2, color Color) void:
     return lib.DrawLineV(startPos, endPos, color)
 func DrawLineEx(startPos Vector2, endPos Vector2, thick float, color Color) void:
     return lib.DrawLineEx(startPos, endPos, thick, color)
-func DrawLineStrip(points any, pointCount int, color Color) void:
+func DrawLineStrip(points *void, pointCount int, color Color) void:
     return lib.DrawLineStrip(points, pointCount, color)
 func DrawLineBezier(startPos Vector2, endPos Vector2, thick float, color Color) void:
     return lib.DrawLineBezier(startPos, endPos, thick, color)
@@ -1201,9 +1201,9 @@ func DrawTriangle(v1 Vector2, v2 Vector2, v3 Vector2, color Color) void:
     return lib.DrawTriangle(v1, v2, v3, color)
 func DrawTriangleLines(v1 Vector2, v2 Vector2, v3 Vector2, color Color) void:
     return lib.DrawTriangleLines(v1, v2, v3, color)
-func DrawTriangleFan(points any, pointCount int, color Color) void:
+func DrawTriangleFan(points *void, pointCount int, color Color) void:
     return lib.DrawTriangleFan(points, pointCount, color)
-func DrawTriangleStrip(points any, pointCount int, color Color) void:
+func DrawTriangleStrip(points *void, pointCount int, color Color) void:
     return lib.DrawTriangleStrip(points, pointCount, color)
 func DrawPoly(center Vector2, sides int, radius float, rotation float, color Color) void:
     return lib.DrawPoly(center, sides, radius, rotation, color)
@@ -1211,15 +1211,15 @@ func DrawPolyLines(center Vector2, sides int, radius float, rotation float, colo
     return lib.DrawPolyLines(center, sides, radius, rotation, color)
 func DrawPolyLinesEx(center Vector2, sides int, radius float, rotation float, lineThick float, color Color) void:
     return lib.DrawPolyLinesEx(center, sides, radius, rotation, lineThick, color)
-func DrawSplineLinear(points any, pointCount int, thick float, color Color) void:
+func DrawSplineLinear(points *void, pointCount int, thick float, color Color) void:
     return lib.DrawSplineLinear(points, pointCount, thick, color)
-func DrawSplineBasis(points any, pointCount int, thick float, color Color) void:
+func DrawSplineBasis(points *void, pointCount int, thick float, color Color) void:
     return lib.DrawSplineBasis(points, pointCount, thick, color)
-func DrawSplineCatmullRom(points any, pointCount int, thick float, color Color) void:
+func DrawSplineCatmullRom(points *void, pointCount int, thick float, color Color) void:
     return lib.DrawSplineCatmullRom(points, pointCount, thick, color)
-func DrawSplineBezierQuadratic(points any, pointCount int, thick float, color Color) void:
+func DrawSplineBezierQuadratic(points *void, pointCount int, thick float, color Color) void:
     return lib.DrawSplineBezierQuadratic(points, pointCount, thick, color)
-func DrawSplineBezierCubic(points any, pointCount int, thick float, color Color) void:
+func DrawSplineBezierCubic(points *void, pointCount int, thick float, color Color) void:
     return lib.DrawSplineBezierCubic(points, pointCount, thick, color)
 func DrawSplineSegmentLinear(p1 Vector2, p2 Vector2, thick float, color Color) void:
     return lib.DrawSplineSegmentLinear(p1, p2, thick, color)
@@ -1253,23 +1253,23 @@ func CheckCollisionPointCircle(point Vector2, center Vector2, radius float) bool
     return lib.CheckCollisionPointCircle(point, center, radius)
 func CheckCollisionPointTriangle(point Vector2, p1 Vector2, p2 Vector2, p3 Vector2) bool:
     return lib.CheckCollisionPointTriangle(point, p1, p2, p3)
-func CheckCollisionPointPoly(point Vector2, points any, pointCount int) bool:
+func CheckCollisionPointPoly(point Vector2, points *void, pointCount int) bool:
     return lib.CheckCollisionPointPoly(point, points, pointCount)
-func CheckCollisionLines(startPos1 Vector2, endPos1 Vector2, startPos2 Vector2, endPos2 Vector2, collisionPoint any) bool:
+func CheckCollisionLines(startPos1 Vector2, endPos1 Vector2, startPos2 Vector2, endPos2 Vector2, collisionPoint *void) bool:
     return lib.CheckCollisionLines(startPos1, endPos1, startPos2, endPos2, collisionPoint)
 func CheckCollisionPointLine(point Vector2, p1 Vector2, p2 Vector2, threshold int) bool:
     return lib.CheckCollisionPointLine(point, p1, p2, threshold)
 func GetCollisionRec(rec1 Rectangle, rec2 Rectangle) Rectangle:
     return lib.GetCollisionRec(rec1, rec2)
-func LoadImage(fileName any) Image:
+func LoadImage(fileName *void) Image:
     return lib.LoadImage(fileName)
-func LoadImageRaw(fileName any, width int, height int, format int, headerSize int) Image:
+func LoadImageRaw(fileName *void, width int, height int, format int, headerSize int) Image:
     return lib.LoadImageRaw(fileName, width, height, format, headerSize)
-func LoadImageSvg(fileNameOrString any, width int, height int) Image:
+func LoadImageSvg(fileNameOrString *void, width int, height int) Image:
     return lib.LoadImageSvg(fileNameOrString, width, height)
-func LoadImageAnim(fileName any, frames any) Image:
+func LoadImageAnim(fileName *void, frames *void) Image:
     return lib.LoadImageAnim(fileName, frames)
-func LoadImageFromMemory(fileType any, fileData any, dataSize int) Image:
+func LoadImageFromMemory(fileType *void, fileData *void, dataSize int) Image:
     return lib.LoadImageFromMemory(fileType, fileData, dataSize)
 func LoadImageFromTexture(texture Texture2D) Image:
     return lib.LoadImageFromTexture(texture)
@@ -1279,11 +1279,11 @@ func IsImageReady(image Image) bool:
     return lib.IsImageReady(image)
 func UnloadImage(image Image) void:
     return lib.UnloadImage(image)
-func ExportImage(image Image, fileName any) bool:
+func ExportImage(image Image, fileName *void) bool:
     return lib.ExportImage(image, fileName)
-func ExportImageToMemory(image Image, fileType any, fileSize any) pointer:
+func ExportImageToMemory(image Image, fileType *void, fileSize *void) *void:
     return lib.ExportImageToMemory(image, fileType, fileSize)
-func ExportImageAsCode(image Image, fileName any) bool:
+func ExportImageAsCode(image Image, fileName *void) bool:
     return lib.ExportImageAsCode(image, fileName)
 func GenImageColor(width int, height int, color Color) Image:
     return lib.GenImageColor(width, height, color)
@@ -1301,109 +1301,109 @@ func GenImagePerlinNoise(width int, height int, offsetX int, offsetY int, scale 
     return lib.GenImagePerlinNoise(width, height, offsetX, offsetY, scale)
 func GenImageCellular(width int, height int, tileSize int) Image:
     return lib.GenImageCellular(width, height, tileSize)
-func GenImageText(width int, height int, text any) Image:
+func GenImageText(width int, height int, text *void) Image:
     return lib.GenImageText(width, height, text)
 func ImageCopy(image Image) Image:
     return lib.ImageCopy(image)
 func ImageFromImage(image Image, rec Rectangle) Image:
     return lib.ImageFromImage(image, rec)
-func ImageText(text any, fontSize int, color Color) Image:
+func ImageText(text *void, fontSize int, color Color) Image:
     return lib.ImageText(text, fontSize, color)
-func ImageTextEx(font Font, text any, fontSize float, spacing float, tint Color) Image:
+func ImageTextEx(font Font, text *void, fontSize float, spacing float, tint Color) Image:
     return lib.ImageTextEx(font, text, fontSize, spacing, tint)
-func ImageFormat(image any, newFormat int) void:
+func ImageFormat(image *void, newFormat int) void:
     return lib.ImageFormat(image, newFormat)
-func ImageToPOT(image any, fill Color) void:
+func ImageToPOT(image *void, fill Color) void:
     return lib.ImageToPOT(image, fill)
-func ImageCrop(image any, crop Rectangle) void:
+func ImageCrop(image *void, crop Rectangle) void:
     return lib.ImageCrop(image, crop)
-func ImageAlphaCrop(image any, threshold float) void:
+func ImageAlphaCrop(image *void, threshold float) void:
     return lib.ImageAlphaCrop(image, threshold)
-func ImageAlphaClear(image any, color Color, threshold float) void:
+func ImageAlphaClear(image *void, color Color, threshold float) void:
     return lib.ImageAlphaClear(image, color, threshold)
-func ImageAlphaMask(image any, alphaMask Image) void:
+func ImageAlphaMask(image *void, alphaMask Image) void:
     return lib.ImageAlphaMask(image, alphaMask)
-func ImageAlphaPremultiply(image any) void:
+func ImageAlphaPremultiply(image *void) void:
     return lib.ImageAlphaPremultiply(image)
-func ImageBlurGaussian(image any, blurSize int) void:
+func ImageBlurGaussian(image *void, blurSize int) void:
     return lib.ImageBlurGaussian(image, blurSize)
-func ImageResize(image any, newWidth int, newHeight int) void:
+func ImageResize(image *void, newWidth int, newHeight int) void:
     return lib.ImageResize(image, newWidth, newHeight)
-func ImageResizeNN(image any, newWidth int, newHeight int) void:
+func ImageResizeNN(image *void, newWidth int, newHeight int) void:
     return lib.ImageResizeNN(image, newWidth, newHeight)
-func ImageResizeCanvas(image any, newWidth int, newHeight int, offsetX int, offsetY int, fill Color) void:
+func ImageResizeCanvas(image *void, newWidth int, newHeight int, offsetX int, offsetY int, fill Color) void:
     return lib.ImageResizeCanvas(image, newWidth, newHeight, offsetX, offsetY, fill)
-func ImageMipmaps(image any) void:
+func ImageMipmaps(image *void) void:
     return lib.ImageMipmaps(image)
-func ImageDither(image any, rBpp int, gBpp int, bBpp int, aBpp int) void:
+func ImageDither(image *void, rBpp int, gBpp int, bBpp int, aBpp int) void:
     return lib.ImageDither(image, rBpp, gBpp, bBpp, aBpp)
-func ImageFlipVertical(image any) void:
+func ImageFlipVertical(image *void) void:
     return lib.ImageFlipVertical(image)
-func ImageFlipHorizontal(image any) void:
+func ImageFlipHorizontal(image *void) void:
     return lib.ImageFlipHorizontal(image)
-func ImageRotate(image any, degrees int) void:
+func ImageRotate(image *void, degrees int) void:
     return lib.ImageRotate(image, degrees)
-func ImageRotateCW(image any) void:
+func ImageRotateCW(image *void) void:
     return lib.ImageRotateCW(image)
-func ImageRotateCCW(image any) void:
+func ImageRotateCCW(image *void) void:
     return lib.ImageRotateCCW(image)
-func ImageColorTint(image any, color Color) void:
+func ImageColorTint(image *void, color Color) void:
     return lib.ImageColorTint(image, color)
-func ImageColorInvert(image any) void:
+func ImageColorInvert(image *void) void:
     return lib.ImageColorInvert(image)
-func ImageColorGrayscale(image any) void:
+func ImageColorGrayscale(image *void) void:
     return lib.ImageColorGrayscale(image)
-func ImageColorContrast(image any, contrast float) void:
+func ImageColorContrast(image *void, contrast float) void:
     return lib.ImageColorContrast(image, contrast)
-func ImageColorBrightness(image any, brightness int) void:
+func ImageColorBrightness(image *void, brightness int) void:
     return lib.ImageColorBrightness(image, brightness)
-func ImageColorReplace(image any, color Color, replace Color) void:
+func ImageColorReplace(image *void, color Color, replace Color) void:
     return lib.ImageColorReplace(image, color, replace)
-func LoadImageColors(image Image) pointer:
+func LoadImageColors(image Image) *void:
     return lib.LoadImageColors(image)
-func LoadImagePalette(image Image, maxPaletteSize int, colorCount any) pointer:
+func LoadImagePalette(image Image, maxPaletteSize int, colorCount *void) *void:
     return lib.LoadImagePalette(image, maxPaletteSize, colorCount)
-func UnloadImageColors(colors any) void:
+func UnloadImageColors(colors *void) void:
     return lib.UnloadImageColors(colors)
-func UnloadImagePalette(colors any) void:
+func UnloadImagePalette(colors *void) void:
     return lib.UnloadImagePalette(colors)
 func GetImageAlphaBorder(image Image, threshold float) Rectangle:
     return lib.GetImageAlphaBorder(image, threshold)
 func GetImageColor(image Image, x int, y int) Color:
     return lib.GetImageColor(image, x, y)
-func ImageClearBackground(dst any, color Color) void:
+func ImageClearBackground(dst *void, color Color) void:
     return lib.ImageClearBackground(dst, color)
-func ImageDrawPixel(dst any, posX int, posY int, color Color) void:
+func ImageDrawPixel(dst *void, posX int, posY int, color Color) void:
     return lib.ImageDrawPixel(dst, posX, posY, color)
-func ImageDrawPixelV(dst any, position Vector2, color Color) void:
+func ImageDrawPixelV(dst *void, position Vector2, color Color) void:
     return lib.ImageDrawPixelV(dst, position, color)
-func ImageDrawLine(dst any, startPosX int, startPosY int, endPosX int, endPosY int, color Color) void:
+func ImageDrawLine(dst *void, startPosX int, startPosY int, endPosX int, endPosY int, color Color) void:
     return lib.ImageDrawLine(dst, startPosX, startPosY, endPosX, endPosY, color)
-func ImageDrawLineV(dst any, start Vector2, end Vector2, color Color) void:
+func ImageDrawLineV(dst *void, start Vector2, end Vector2, color Color) void:
     return lib.ImageDrawLineV(dst, start, end, color)
-func ImageDrawCircle(dst any, centerX int, centerY int, radius int, color Color) void:
+func ImageDrawCircle(dst *void, centerX int, centerY int, radius int, color Color) void:
     return lib.ImageDrawCircle(dst, centerX, centerY, radius, color)
-func ImageDrawCircleV(dst any, center Vector2, radius int, color Color) void:
+func ImageDrawCircleV(dst *void, center Vector2, radius int, color Color) void:
     return lib.ImageDrawCircleV(dst, center, radius, color)
-func ImageDrawCircleLines(dst any, centerX int, centerY int, radius int, color Color) void:
+func ImageDrawCircleLines(dst *void, centerX int, centerY int, radius int, color Color) void:
     return lib.ImageDrawCircleLines(dst, centerX, centerY, radius, color)
-func ImageDrawCircleLinesV(dst any, center Vector2, radius int, color Color) void:
+func ImageDrawCircleLinesV(dst *void, center Vector2, radius int, color Color) void:
     return lib.ImageDrawCircleLinesV(dst, center, radius, color)
-func ImageDrawRectangle(dst any, posX int, posY int, width int, height int, color Color) void:
+func ImageDrawRectangle(dst *void, posX int, posY int, width int, height int, color Color) void:
     return lib.ImageDrawRectangle(dst, posX, posY, width, height, color)
-func ImageDrawRectangleV(dst any, position Vector2, size Vector2, color Color) void:
+func ImageDrawRectangleV(dst *void, position Vector2, size Vector2, color Color) void:
     return lib.ImageDrawRectangleV(dst, position, size, color)
-func ImageDrawRectangleRec(dst any, rec Rectangle, color Color) void:
+func ImageDrawRectangleRec(dst *void, rec Rectangle, color Color) void:
     return lib.ImageDrawRectangleRec(dst, rec, color)
-func ImageDrawRectangleLines(dst any, rec Rectangle, thick int, color Color) void:
+func ImageDrawRectangleLines(dst *void, rec Rectangle, thick int, color Color) void:
     return lib.ImageDrawRectangleLines(dst, rec, thick, color)
-func ImageDraw(dst any, src Image, srcRec Rectangle, dstRec Rectangle, tint Color) void:
+func ImageDraw(dst *void, src Image, srcRec Rectangle, dstRec Rectangle, tint Color) void:
     return lib.ImageDraw(dst, src, srcRec, dstRec, tint)
-func ImageDrawText(dst any, text any, posX int, posY int, fontSize int, color Color) void:
+func ImageDrawText(dst *void, text *void, posX int, posY int, fontSize int, color Color) void:
     return lib.ImageDrawText(dst, text, posX, posY, fontSize, color)
-func ImageDrawTextEx(dst any, font Font, text any, position Vector2, fontSize float, spacing float, tint Color) void:
+func ImageDrawTextEx(dst *void, font Font, text *void, position Vector2, fontSize float, spacing float, tint Color) void:
     return lib.ImageDrawTextEx(dst, font, text, position, fontSize, spacing, tint)
---func LoadTexture(fileName any) Texture2D
+--func LoadTexture(fileName *void) Texture2D
 func LoadTextureFromImage(image Image) Texture2D:
     return lib.LoadTextureFromImage(image)
 func LoadTextureCubemap(image Image, layout int) TextureCubemap:
@@ -1418,11 +1418,11 @@ func IsRenderTextureReady(target RenderTexture2D) bool:
     return lib.IsRenderTextureReady(target)
 func UnloadRenderTexture(target RenderTexture2D) void:
     return lib.UnloadRenderTexture(target)
-func UpdateTexture(texture Texture2D, pixels any) void:
+func UpdateTexture(texture Texture2D, pixels *void) void:
     return lib.UpdateTexture(texture, pixels)
-func UpdateTextureRec(texture Texture2D, rec Rectangle, pixels any) void:
+func UpdateTextureRec(texture Texture2D, rec Rectangle, pixels *void) void:
     return lib.UpdateTextureRec(texture, rec, pixels)
-func GenTextureMipmaps(texture any) void:
+func GenTextureMipmaps(texture *void) void:
     return lib.GenTextureMipmaps(texture)
 func SetTextureFilter(texture Texture2D, filter int) void:
     return lib.SetTextureFilter(texture, filter)
@@ -1464,49 +1464,49 @@ func ColorAlphaBlend(dst Color, src Color, tint Color) Color:
     return lib.ColorAlphaBlend(dst, src, tint)
 func GetColor(hexValue int) Color:
     return lib.GetColor(hexValue)
-func GetPixelColor(srcPtr any, format int) Color:
+func GetPixelColor(srcPtr *void, format int) Color:
     return lib.GetPixelColor(srcPtr, format)
-func SetPixelColor(dstPtr any, color Color, format int) void:
+func SetPixelColor(dstPtr *void, color Color, format int) void:
     return lib.SetPixelColor(dstPtr, color, format)
 func GetPixelDataSize(width int, height int, format int) int:
     return lib.GetPixelDataSize(width, height, format)
 func GetFontDefault() Font:
     return lib.GetFontDefault()
-func LoadFont(fileName any) Font:
+func LoadFont(fileName *void) Font:
     return lib.LoadFont(fileName)
-func LoadFontEx(fileName any, fontSize int, codepoints any, codepointCount int) Font:
+func LoadFontEx(fileName *void, fontSize int, codepoints *void, codepointCount int) Font:
     return lib.LoadFontEx(fileName, fontSize, codepoints, codepointCount)
 func LoadFontFromImage(image Image, key Color, firstChar int) Font:
     return lib.LoadFontFromImage(image, key, firstChar)
-func LoadFontFromMemory(fileType any, fileData any, dataSize int, fontSize int, codepoints any, codepointCount int) Font:
+func LoadFontFromMemory(fileType *void, fileData *void, dataSize int, fontSize int, codepoints *void, codepointCount int) Font:
     return lib.LoadFontFromMemory(fileType, fileData, dataSize, fontSize, codepoints, codepointCount)
 func IsFontReady(font Font) bool:
     return lib.IsFontReady(font)
-func LoadFontData(fileData any, dataSize int, fontSize int, codepoints any, codepointCount int, param5 int) pointer:
+func LoadFontData(fileData *void, dataSize int, fontSize int, codepoints *void, codepointCount int, param5 int) *void:
     return lib.LoadFontData(fileData, dataSize, fontSize, codepoints, codepointCount, param5)
-func GenImageFontAtlas(glyphs any, glyphRecs any, glyphCount int, fontSize int, padding int, packMethod int) Image:
+func GenImageFontAtlas(glyphs *void, glyphRecs *void, glyphCount int, fontSize int, padding int, packMethod int) Image:
     return lib.GenImageFontAtlas(glyphs, glyphRecs, glyphCount, fontSize, padding, packMethod)
-func UnloadFontData(glyphs any, glyphCount int) void:
+func UnloadFontData(glyphs *void, glyphCount int) void:
     return lib.UnloadFontData(glyphs, glyphCount)
 func UnloadFont(font Font) void:
     return lib.UnloadFont(font)
-func ExportFontAsCode(font Font, fileName any) bool:
+func ExportFontAsCode(font Font, fileName *void) bool:
     return lib.ExportFontAsCode(font, fileName)
 func DrawFPS(posX int, posY int) void:
     return lib.DrawFPS(posX, posY)
---func DrawText(text any, posX int, posY int, fontSize int, color Color) void
-func DrawTextEx(font Font, text any, position Vector2, fontSize float, spacing float, tint Color) void:
+--func DrawText(text *void, posX int, posY int, fontSize int, color Color) void
+func DrawTextEx(font Font, text *void, position Vector2, fontSize float, spacing float, tint Color) void:
     return lib.DrawTextEx(font, text, position, fontSize, spacing, tint)
-func DrawTextPro(font Font, text any, position Vector2, origin Vector2, rotation float, fontSize float, spacing float, tint Color) void:
+func DrawTextPro(font Font, text *void, position Vector2, origin Vector2, rotation float, fontSize float, spacing float, tint Color) void:
     return lib.DrawTextPro(font, text, position, origin, rotation, fontSize, spacing, tint)
 func DrawTextCodepoint(font Font, codepoint int, position Vector2, fontSize float, tint Color) void:
     return lib.DrawTextCodepoint(font, codepoint, position, fontSize, tint)
-func DrawTextCodepoints(font Font, codepoints any, codepointCount int, position Vector2, fontSize float, spacing float, tint Color) void:
+func DrawTextCodepoints(font Font, codepoints *void, codepointCount int, position Vector2, fontSize float, spacing float, tint Color) void:
     return lib.DrawTextCodepoints(font, codepoints, codepointCount, position, fontSize, spacing, tint)
 func SetTextLineSpacing(spacing int) void:
     return lib.SetTextLineSpacing(spacing)
---func MeasureText(text any, fontSize int) int
-func MeasureTextEx(font Font, text any, fontSize float, spacing float) Vector2:
+--func MeasureText(text *void, fontSize int) int
+func MeasureTextEx(font Font, text *void, fontSize float, spacing float) Vector2:
     return lib.MeasureTextEx(font, text, fontSize, spacing)
 func GetGlyphIndex(font Font, codepoint int) int:
     return lib.GetGlyphIndex(font, codepoint)
@@ -1514,53 +1514,53 @@ func GetGlyphInfo(font Font, codepoint int) GlyphInfo:
     return lib.GetGlyphInfo(font, codepoint)
 func GetGlyphAtlasRec(font Font, codepoint int) Rectangle:
     return lib.GetGlyphAtlasRec(font, codepoint)
-func LoadUTF8(codepoints any, length int) pointer:
+func LoadUTF8(codepoints *void, length int) *void:
     return lib.LoadUTF8(codepoints, length)
-func UnloadUTF8(text any) void:
+func UnloadUTF8(text *void) void:
     return lib.UnloadUTF8(text)
-func LoadCodepoints(text any, count any) pointer:
+func LoadCodepoints(text *void, count *void) *void:
     return lib.LoadCodepoints(text, count)
-func UnloadCodepoints(codepoints any) void:
+func UnloadCodepoints(codepoints *void) void:
     return lib.UnloadCodepoints(codepoints)
-func GetCodepointCount(text any) int:
+func GetCodepointCount(text *void) int:
     return lib.GetCodepointCount(text)
-func GetCodepoint(text any, codepointSize any) int:
+func GetCodepoint(text *void, codepointSize *void) int:
     return lib.GetCodepoint(text, codepointSize)
-func GetCodepointNext(text any, codepointSize any) int:
+func GetCodepointNext(text *void, codepointSize *void) int:
     return lib.GetCodepointNext(text, codepointSize)
-func GetCodepointPrevious(text any, codepointSize any) int:
+func GetCodepointPrevious(text *void, codepointSize *void) int:
     return lib.GetCodepointPrevious(text, codepointSize)
-func CodepointToUTF8(codepoint int, utf8Size any) pointer:
+func CodepointToUTF8(codepoint int, utf8Size *void) *void:
     return lib.CodepointToUTF8(codepoint, utf8Size)
-func TextCopy(dst any, src any) int:
+func TextCopy(dst *void, src *void) int:
     return lib.TextCopy(dst, src)
-func TextIsEqual(text1 any, text2 any) bool:
+func TextIsEqual(text1 *void, text2 *void) bool:
     return lib.TextIsEqual(text1, text2)
-func TextLength(text any) int:
+func TextLength(text *void) int:
     return lib.TextLength(text)
-func TextFormat(text any) pointer:
+func TextFormat(text *void) *void:
     return lib.TextFormat(text)
-func TextSubtext(text any, position int, length int) pointer:
+func TextSubtext(text *void, position int, length int) *void:
     return lib.TextSubtext(text, position, length)
-func TextReplace(text any, replace any, by any) pointer:
+func TextReplace(text *void, replace *void, by *void) *void:
     return lib.TextReplace(text, replace, by)
-func TextInsert(text any, insert any, position int) pointer:
+func TextInsert(text *void, insert *void, position int) *void:
     return lib.TextInsert(text, insert, position)
-func TextJoin(textList any, count int, delimiter any) pointer:
+func TextJoin(textList *void, count int, delimiter *void) *void:
     return lib.TextJoin(textList, count, delimiter)
-func TextSplit(text any, delimiter int, count any) pointer:
+func TextSplit(text *void, delimiter int, count *void) *void:
     return lib.TextSplit(text, delimiter, count)
-func TextAppend(text any, append any, position any) void:
+func TextAppend(text *void, append *void, position *void) void:
     return lib.TextAppend(text, append, position)
-func TextFindIndex(text any, find any) int:
+func TextFindIndex(text *void, find *void) int:
     return lib.TextFindIndex(text, find)
-func TextToUpper(text any) pointer:
+func TextToUpper(text *void) *void:
     return lib.TextToUpper(text)
-func TextToLower(text any) pointer:
+func TextToLower(text *void) *void:
     return lib.TextToLower(text)
-func TextToPascal(text any) pointer:
+func TextToPascal(text *void) *void:
     return lib.TextToPascal(text)
-func TextToInteger(text any) int:
+func TextToInteger(text *void) int:
     return lib.TextToInteger(text)
 func DrawLine3D(startPos Vector3, endPos Vector3, color Color) void:
     return lib.DrawLine3D(startPos, endPos, color)
@@ -1570,7 +1570,7 @@ func DrawCircle3D(center Vector3, radius float, rotationAxis Vector3, rotationAn
     return lib.DrawCircle3D(center, radius, rotationAxis, rotationAngle, color)
 func DrawTriangle3D(v1 Vector3, v2 Vector3, v3 Vector3, color Color) void:
     return lib.DrawTriangle3D(v1, v2, v3, color)
-func DrawTriangleStrip3D(points any, pointCount int, color Color) void:
+func DrawTriangleStrip3D(points *void, pointCount int, color Color) void:
     return lib.DrawTriangleStrip3D(points, pointCount, color)
 func DrawCube(position Vector3, width float, height float, length float, color Color) void:
     return lib.DrawCube(position, width, height, length, color)
@@ -1604,7 +1604,7 @@ func DrawRay(ray Ray, color Color) void:
     return lib.DrawRay(ray, color)
 func DrawGrid(slices int, spacing float) void:
     return lib.DrawGrid(slices, spacing)
-func LoadModel(fileName any) Model:
+func LoadModel(fileName *void) Model:
     return lib.LoadModel(fileName)
 func LoadModelFromMesh(mesh Mesh) Model:
     return lib.LoadModelFromMesh(mesh)
@@ -1630,21 +1630,21 @@ func DrawBillboardRec(camera Camera, texture Texture2D, source Rectangle, positi
     return lib.DrawBillboardRec(camera, texture, source, position, size, tint)
 func DrawBillboardPro(camera Camera, texture Texture2D, source Rectangle, position Vector3, up Vector3, size Vector2, origin Vector2, rotation float, tint Color) void:
     return lib.DrawBillboardPro(camera, texture, source, position, up, size, origin, rotation, tint)
-func UploadMesh(mesh any, dynamic bool) void:
+func UploadMesh(mesh *void, dynamic bool) void:
     return lib.UploadMesh(mesh, dynamic)
-func UpdateMeshBuffer(mesh Mesh, index int, data any, dataSize int, offset int) void:
+func UpdateMeshBuffer(mesh Mesh, index int, data *void, dataSize int, offset int) void:
     return lib.UpdateMeshBuffer(mesh, index, data, dataSize, offset)
 func UnloadMesh(mesh Mesh) void:
     return lib.UnloadMesh(mesh)
 func DrawMesh(mesh Mesh, material Material, transform Matrix) void:
     return lib.DrawMesh(mesh, material, transform)
-func DrawMeshInstanced(mesh Mesh, material Material, transforms any, instances int) void:
+func DrawMeshInstanced(mesh Mesh, material Material, transforms *void, instances int) void:
     return lib.DrawMeshInstanced(mesh, material, transforms, instances)
-func ExportMesh(mesh Mesh, fileName any) bool:
+func ExportMesh(mesh Mesh, fileName *void) bool:
     return lib.ExportMesh(mesh, fileName)
 func GetMeshBoundingBox(mesh Mesh) BoundingBox:
     return lib.GetMeshBoundingBox(mesh)
-func GenMeshTangents(mesh any) void:
+func GenMeshTangents(mesh *void) void:
     return lib.GenMeshTangents(mesh)
 func GenMeshPoly(sides int, radius float) Mesh:
     return lib.GenMeshPoly(sides, radius)
@@ -1668,7 +1668,7 @@ func GenMeshHeightmap(heightmap Image, size Vector3) Mesh:
     return lib.GenMeshHeightmap(heightmap, size)
 func GenMeshCubicmap(cubicmap Image, cubeSize Vector3) Mesh:
     return lib.GenMeshCubicmap(cubicmap, cubeSize)
-func LoadMaterials(fileName any, materialCount any) pointer:
+func LoadMaterials(fileName *void, materialCount *void) *void:
     return lib.LoadMaterials(fileName, materialCount)
 func LoadMaterialDefault() Material:
     return lib.LoadMaterialDefault()
@@ -1676,17 +1676,17 @@ func IsMaterialReady(material Material) bool:
     return lib.IsMaterialReady(material)
 func UnloadMaterial(material Material) void:
     return lib.UnloadMaterial(material)
-func SetMaterialTexture(material any, mapType int, texture Texture2D) void:
+func SetMaterialTexture(material *void, mapType int, texture Texture2D) void:
     return lib.SetMaterialTexture(material, mapType, texture)
-func SetModelMeshMaterial(model any, meshId int, materialId int) void:
+func SetModelMeshMaterial(model *void, meshId int, materialId int) void:
     return lib.SetModelMeshMaterial(model, meshId, materialId)
-func LoadModelAnimations(fileName any, animCount any) pointer:
+func LoadModelAnimations(fileName *void, animCount *void) *void:
     return lib.LoadModelAnimations(fileName, animCount)
 func UpdateModelAnimation(model Model, anim ModelAnimation, frame int) void:
     return lib.UpdateModelAnimation(model, anim, frame)
 func UnloadModelAnimation(anim ModelAnimation) void:
     return lib.UnloadModelAnimation(anim)
-func UnloadModelAnimations(animations any, animCount int) void:
+func UnloadModelAnimations(animations *void, animCount int) void:
     return lib.UnloadModelAnimations(animations, animCount)
 func IsModelAnimationValid(model Model, anim ModelAnimation) bool:
     return lib.IsModelAnimationValid(model, anim)
@@ -1706,7 +1706,7 @@ func GetRayCollisionTriangle(ray Ray, p1 Vector3, p2 Vector3, p3 Vector3) RayCol
     return lib.GetRayCollisionTriangle(ray, p1, p2, p3)
 func GetRayCollisionQuad(ray Ray, p1 Vector3, p2 Vector3, p3 Vector3, p4 Vector3) RayCollision:
     return lib.GetRayCollisionQuad(ray, p1, p2, p3, p4)
-type AudioCallback = pointer
+type AudioCallback = *void
 
 func InitAudioDevice() void:
     return lib.InitAudioDevice()
@@ -1718,13 +1718,13 @@ func SetMasterVolume(volume float) void:
     return lib.SetMasterVolume(volume)
 func GetMasterVolume() float:
     return lib.GetMasterVolume()
-func LoadWave(fileName any) Wave:
+func LoadWave(fileName *void) Wave:
     return lib.LoadWave(fileName)
-func LoadWaveFromMemory(fileType any, fileData any, dataSize int) Wave:
+func LoadWaveFromMemory(fileType *void, fileData *void, dataSize int) Wave:
     return lib.LoadWaveFromMemory(fileType, fileData, dataSize)
 func IsWaveReady(wave Wave) bool:
     return lib.IsWaveReady(wave)
-func LoadSound(fileName any) Sound:
+func LoadSound(fileName *void) Sound:
     return lib.LoadSound(fileName)
 func LoadSoundFromWave(wave Wave) Sound:
     return lib.LoadSoundFromWave(wave)
@@ -1732,7 +1732,7 @@ func LoadSoundAlias(source Sound) Sound:
     return lib.LoadSoundAlias(source)
 func IsSoundReady(sound Sound) bool:
     return lib.IsSoundReady(sound)
-func UpdateSound(sound Sound, data any, sampleCount int) void:
+func UpdateSound(sound Sound, data *void, sampleCount int) void:
     return lib.UpdateSound(sound, data, sampleCount)
 func UnloadWave(wave Wave) void:
     return lib.UnloadWave(wave)
@@ -1740,9 +1740,9 @@ func UnloadSound(sound Sound) void:
     return lib.UnloadSound(sound)
 func UnloadSoundAlias(alias Sound) void:
     return lib.UnloadSoundAlias(alias)
-func ExportWave(wave Wave, fileName any) bool:
+func ExportWave(wave Wave, fileName *void) bool:
     return lib.ExportWave(wave, fileName)
-func ExportWaveAsCode(wave Wave, fileName any) bool:
+func ExportWaveAsCode(wave Wave, fileName *void) bool:
     return lib.ExportWaveAsCode(wave, fileName)
 func PlaySound(sound Sound) void:
     return lib.PlaySound(sound)
@@ -1762,17 +1762,17 @@ func SetSoundPan(sound Sound, pan float) void:
     return lib.SetSoundPan(sound, pan)
 func WaveCopy(wave Wave) Wave:
     return lib.WaveCopy(wave)
-func WaveCrop(wave any, initSample int, finalSample int) void:
+func WaveCrop(wave *void, initSample int, finalSample int) void:
     return lib.WaveCrop(wave, initSample, finalSample)
-func WaveFormat(wave any, sampleRate int, sampleSize int, channels int) void:
+func WaveFormat(wave *void, sampleRate int, sampleSize int, channels int) void:
     return lib.WaveFormat(wave, sampleRate, sampleSize, channels)
-func LoadWaveSamples(wave Wave) pointer:
+func LoadWaveSamples(wave Wave) *void:
     return lib.LoadWaveSamples(wave)
-func UnloadWaveSamples(samples any) void:
+func UnloadWaveSamples(samples *void) void:
     return lib.UnloadWaveSamples(samples)
-func LoadMusicStream(fileName any) Music:
+func LoadMusicStream(fileName *void) Music:
     return lib.LoadMusicStream(fileName)
-func LoadMusicStreamFromMemory(fileType any, data any, dataSize int) Music:
+func LoadMusicStreamFromMemory(fileType *void, data *void, dataSize int) Music:
     return lib.LoadMusicStreamFromMemory(fileType, data, dataSize)
 func IsMusicReady(music Music) bool:
     return lib.IsMusicReady(music)
@@ -1808,7 +1808,7 @@ func IsAudioStreamReady(stream AudioStream) bool:
     return lib.IsAudioStreamReady(stream)
 func UnloadAudioStream(stream AudioStream) void:
     return lib.UnloadAudioStream(stream)
-func UpdateAudioStream(stream AudioStream, data any, frameCount int) void:
+func UpdateAudioStream(stream AudioStream, data *void, frameCount int) void:
     return lib.UpdateAudioStream(stream, data, frameCount)
 func IsAudioStreamProcessed(stream AudioStream) bool:
     return lib.IsAudioStreamProcessed(stream)
@@ -1830,15 +1830,15 @@ func SetAudioStreamPan(stream AudioStream, pan float) void:
     return lib.SetAudioStreamPan(stream, pan)
 func SetAudioStreamBufferSizeDefault(size int) void:
     return lib.SetAudioStreamBufferSizeDefault(size)
-func SetAudioStreamCallback(stream AudioStream, callback any) void:
+func SetAudioStreamCallback(stream AudioStream, callback *void) void:
     return lib.SetAudioStreamCallback(stream, callback)
-func AttachAudioStreamProcessor(stream AudioStream, processor any) void:
+func AttachAudioStreamProcessor(stream AudioStream, processor *void) void:
     return lib.AttachAudioStreamProcessor(stream, processor)
-func DetachAudioStreamProcessor(stream AudioStream, processor any) void:
+func DetachAudioStreamProcessor(stream AudioStream, processor *void) void:
     return lib.DetachAudioStreamProcessor(stream, processor)
-func AttachAudioMixedProcessor(processor any) void:
+func AttachAudioMixedProcessor(processor *void) void:
     return lib.AttachAudioMixedProcessor(processor)
-func DetachAudioMixedProcessor(processor any) void:
+func DetachAudioMixedProcessor(processor *void) void:
     return lib.DetachAudioMixedProcessor(processor)
 
 use os

@@ -36,7 +36,7 @@ let .boundsMinY = 45.0 * mapScale
 let .boundsMaxX = 700.0 * mapScale
 let .boundsMaxY = 700.0 * mapScale
 let .knight = false
-let .enemies = []
+let .enemies = {_}
 
 -- Assumes script path is the second arg.
 let basePath = os.dirName(os.realPath(os.args()[1])).?
@@ -60,10 +60,10 @@ GoblinRunTex = rl.LoadTexture("$(basePath)/characters/goblin_run_spritesheet.png
 SlimeIdleTex = rl.LoadTexture("$(basePath)/characters/slime_idle_spritesheet.png")
 SlimeRunTex = rl.LoadTexture("$(basePath)/characters/slime_run_spritesheet.png")
 
-let props = [
+let props = {
     Prop.new(Vec2{x=600, y=300}, rockTex),
     Prop.new(Vec2{x=400, y=500}, logTex),
-]
+}
 
 InitGame()
 while !rl.WindowShouldClose():
@@ -360,6 +360,6 @@ let InitGame():
 
     score = 0
 
-    enemies = []
+    enemies = {_}
     for 0..10:
         spawnRandomEnemy(knight)

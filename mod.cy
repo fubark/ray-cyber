@@ -1,6 +1,6 @@
 use math
 
--- ./cbindgen.cy -o mod.cy raylib.h -I/opt/homebrew/Cellar/llvm/17.0.6/lib/clang/17/include
+-- ./cbindgen.cy -o mod.cy raylib.h -I/opt/homebrew/Cellar/llvm/18.1.8/lib/clang/18/include
 
 var .libUrl = switch os.system:
     case 'linux' => 'https://raw.githubusercontent.com/fubark/ray-cyber/master/libraylib.so.5.0.0'
@@ -74,14 +74,14 @@ type Vector2_S:
     x float
     y float
 
-type Vector2 = Vector2_S
+type Vector2 -> Vector2_S
 
 type Vector3_S:
     x float
     y float
     z float
 
-type Vector3 = Vector3_S
+type Vector3 -> Vector3_S
 
 type Vector4_S:
     x float
@@ -89,9 +89,9 @@ type Vector4_S:
     z float
     w float
 
-type Vector4 = Vector4_S
+type Vector4 -> Vector4_S
 
-type Quaternion = Vector4
+type Quaternion -> Vector4
 
 type Matrix_S:
     m0 float
@@ -111,7 +111,7 @@ type Matrix_S:
     m11 float
     m15 float
 
-type Matrix = Matrix_S
+type Matrix -> Matrix_S
 
 type Color_S:
     r int
@@ -119,7 +119,7 @@ type Color_S:
     b int
     a int
 
-type Color = Color_S
+type Color -> Color_S
 
 type Rectangle_S:
     x float
@@ -127,7 +127,7 @@ type Rectangle_S:
     width float
     height float
 
-type Rectangle = Rectangle_S
+type Rectangle -> Rectangle_S
 
 type Image_S:
     data *void -- void *
@@ -136,7 +136,7 @@ type Image_S:
     mipmaps int
     format int
 
-type Image = Image_S
+type Image -> Image_S
 
 type Texture_S:
     id int
@@ -145,20 +145,20 @@ type Texture_S:
     mipmaps int
     format int
 
-type Texture = Texture_S
+type Texture -> Texture_S
 
-type Texture2D = Texture
+type Texture2D -> Texture
 
-type TextureCubemap = Texture
+type TextureCubemap -> Texture
 
 type RenderTexture_S:
     id int
     texture Texture
     depth Texture
 
-type RenderTexture = RenderTexture_S
+type RenderTexture -> RenderTexture_S
 
-type RenderTexture2D = RenderTexture
+type RenderTexture2D -> RenderTexture
 
 type NPatchInfo_S:
     source Rectangle
@@ -168,7 +168,7 @@ type NPatchInfo_S:
     bottom int
     layout int
 
-type NPatchInfo = NPatchInfo_S
+type NPatchInfo -> NPatchInfo_S
 
 type GlyphInfo_S:
     value int
@@ -177,7 +177,7 @@ type GlyphInfo_S:
     advanceX int
     image Image
 
-type GlyphInfo = GlyphInfo_S
+type GlyphInfo -> GlyphInfo_S
 
 type Font_S:
     baseSize int
@@ -187,7 +187,7 @@ type Font_S:
     recs *void -- Rectangle *
     glyphs *void -- GlyphInfo *
 
-type Font = Font_S
+type Font -> Font_S
 
 type Camera3D_S:
     position Vector3
@@ -196,9 +196,9 @@ type Camera3D_S:
     fovy float
     projection int
 
-type Camera3D = Camera3D_S
+type Camera3D -> Camera3D_S
 
-type Camera = Camera3D
+type Camera -> Camera3D
 
 type Camera2D_S:
     offset Vector2
@@ -206,7 +206,7 @@ type Camera2D_S:
     rotation float
     zoom float
 
-type Camera2D = Camera2D_S
+type Camera2D -> Camera2D_S
 
 type Mesh_S:
     vertexCount int
@@ -225,40 +225,40 @@ type Mesh_S:
     vaoId int
     vboId *void -- unsigned int *
 
-type Mesh = Mesh_S
+type Mesh -> Mesh_S
 
 type Shader_S:
     id int
     locs *void -- int *
 
-type Shader = Shader_S
+type Shader -> Shader_S
 
 type MaterialMap_S:
     texture Texture2D
     color Color
     value float
 
-type MaterialMap = MaterialMap_S
+type MaterialMap -> MaterialMap_S
 
 type Material_S:
     shader Shader
     maps *void -- MaterialMap *
     params List[dyn] -- float[4]
 
-type Material = Material_S
+type Material -> Material_S
 
 type Transform_S:
     translation Vector3
     rotation Quaternion
     scale Vector3
 
-type Transform = Transform_S
+type Transform -> Transform_S
 
 type BoneInfo_S:
     name List[dyn] -- char[32]
     parent int
 
-type BoneInfo = BoneInfo_S
+type BoneInfo -> BoneInfo_S
 
 type Model_S:
     transform Matrix
@@ -271,7 +271,7 @@ type Model_S:
     bones *void -- BoneInfo *
     bindPose *void -- Transform *
 
-type Model = Model_S
+type Model -> Model_S
 
 type ModelAnimation_S:
     boneCount int
@@ -280,13 +280,13 @@ type ModelAnimation_S:
     framePoses *void -- Transform **
     name List[dyn] -- char[32]
 
-type ModelAnimation = ModelAnimation_S
+type ModelAnimation -> ModelAnimation_S
 
 type Ray_S:
     position Vector3
     direction Vector3
 
-type Ray = Ray_S
+type Ray -> Ray_S
 
 type RayCollision_S:
     hit bool
@@ -294,13 +294,13 @@ type RayCollision_S:
     point Vector3
     normal Vector3
 
-type RayCollision = RayCollision_S
+type RayCollision -> RayCollision_S
 
 type BoundingBox_S:
     min Vector3
     max Vector3
 
-type BoundingBox = BoundingBox_S
+type BoundingBox -> BoundingBox_S
 
 type Wave_S:
     frameCount int
@@ -309,13 +309,13 @@ type Wave_S:
     channels int
     data *void -- void *
 
-type Wave = Wave_S
+type Wave -> Wave_S
 
 type rAudioBuffer_S #int64_t
-type rAudioBuffer = rAudioBuffer_S
+type rAudioBuffer -> rAudioBuffer_S
 
 type rAudioProcessor_S #int64_t
-type rAudioProcessor = rAudioProcessor_S
+type rAudioProcessor -> rAudioProcessor_S
 
 type AudioStream_S:
     buffer *void -- rAudioBuffer *
@@ -324,13 +324,13 @@ type AudioStream_S:
     sampleSize int
     channels int
 
-type AudioStream = AudioStream_S
+type AudioStream -> AudioStream_S
 
 type Sound_S:
     stream AudioStream
     frameCount int
 
-type Sound = Sound_S
+type Sound -> Sound_S
 
 type Music_S:
     stream AudioStream
@@ -339,7 +339,7 @@ type Music_S:
     ctxType int
     ctxData *void -- void *
 
-type Music = Music_S
+type Music -> Music_S
 
 type VrDeviceInfo_S:
     hResolution int
@@ -353,7 +353,7 @@ type VrDeviceInfo_S:
     lensDistortionValues List[dyn] -- float[4]
     chromaAbCorrection List[dyn] -- float[4]
 
-type VrDeviceInfo = VrDeviceInfo_S
+type VrDeviceInfo -> VrDeviceInfo_S
 
 type VrStereoConfig_S:
     projection List[dyn] -- Matrix[2]
@@ -365,30 +365,30 @@ type VrStereoConfig_S:
     scale List[dyn] -- float[2]
     scaleIn List[dyn] -- float[2]
 
-type VrStereoConfig = VrStereoConfig_S
+type VrStereoConfig -> VrStereoConfig_S
 
 type FilePathList_S:
     capacity int
     count int
     paths *void -- char **
 
-type FilePathList = FilePathList_S
+type FilePathList -> FilePathList_S
 
 type AutomationEvent_S:
     frame int
     type int
     params List[dyn] -- int[4]
 
-type AutomationEvent = AutomationEvent_S
+type AutomationEvent -> AutomationEvent_S
 
 type AutomationEventList_S:
     capacity int
     count int
     events *void -- AutomationEvent *
 
-type AutomationEventList = AutomationEventList_S
+type AutomationEventList -> AutomationEventList_S
 
-type ConfigFlags = int
+type ConfigFlags -> int
 var .FLAG_VSYNC_HINT int = 64
 var .FLAG_FULLSCREEN_MODE int = 2
 var .FLAG_WINDOW_RESIZABLE int = 4
@@ -406,7 +406,7 @@ var .FLAG_BORDERLESS_WINDOWED_MODE int = 32768
 var .FLAG_MSAA_4X_HINT int = 32
 var .FLAG_INTERLACED_HINT int = 65536
 
-type TraceLogLevel = int
+type TraceLogLevel -> int
 var .LOG_ALL int = 0
 var .LOG_TRACE int = 1
 var .LOG_DEBUG int = 2
@@ -416,7 +416,7 @@ var .LOG_ERROR int = 5
 var .LOG_FATAL int = 6
 var .LOG_NONE int = 7
 
-type KeyboardKey = int
+type KeyboardKey -> int
 var .KEY_NULL int = 0
 var .KEY_APOSTROPHE int = 39
 var .KEY_COMMA int = 44
@@ -528,7 +528,7 @@ var .KEY_MENU int = 82
 var .KEY_VOLUME_UP int = 24
 var .KEY_VOLUME_DOWN int = 25
 
-type MouseButton = int
+type MouseButton -> int
 var .MOUSE_BUTTON_LEFT int = 0
 var .MOUSE_BUTTON_RIGHT int = 1
 var .MOUSE_BUTTON_MIDDLE int = 2
@@ -537,7 +537,7 @@ var .MOUSE_BUTTON_EXTRA int = 4
 var .MOUSE_BUTTON_FORWARD int = 5
 var .MOUSE_BUTTON_BACK int = 6
 
-type MouseCursor = int
+type MouseCursor -> int
 var .MOUSE_CURSOR_DEFAULT int = 0
 var .MOUSE_CURSOR_ARROW int = 1
 var .MOUSE_CURSOR_IBEAM int = 2
@@ -550,7 +550,7 @@ var .MOUSE_CURSOR_RESIZE_NESW int = 8
 var .MOUSE_CURSOR_RESIZE_ALL int = 9
 var .MOUSE_CURSOR_NOT_ALLOWED int = 10
 
-type GamepadButton = int
+type GamepadButton -> int
 var .GAMEPAD_BUTTON_UNKNOWN int = 0
 var .GAMEPAD_BUTTON_LEFT_FACE_UP int = 1
 var .GAMEPAD_BUTTON_LEFT_FACE_RIGHT int = 2
@@ -570,7 +570,7 @@ var .GAMEPAD_BUTTON_MIDDLE_RIGHT int = 15
 var .GAMEPAD_BUTTON_LEFT_THUMB int = 16
 var .GAMEPAD_BUTTON_RIGHT_THUMB int = 17
 
-type GamepadAxis = int
+type GamepadAxis -> int
 var .GAMEPAD_AXIS_LEFT_X int = 0
 var .GAMEPAD_AXIS_LEFT_Y int = 1
 var .GAMEPAD_AXIS_RIGHT_X int = 2
@@ -578,7 +578,7 @@ var .GAMEPAD_AXIS_RIGHT_Y int = 3
 var .GAMEPAD_AXIS_LEFT_TRIGGER int = 4
 var .GAMEPAD_AXIS_RIGHT_TRIGGER int = 5
 
-type MaterialMapIndex = int
+type MaterialMapIndex -> int
 var .MATERIAL_MAP_ALBEDO int = 0
 var .MATERIAL_MAP_METALNESS int = 1
 var .MATERIAL_MAP_NORMAL int = 2
@@ -591,7 +591,7 @@ var .MATERIAL_MAP_IRRADIANCE int = 8
 var .MATERIAL_MAP_PREFILTER int = 9
 var .MATERIAL_MAP_BRDF int = 10
 
-type ShaderLocationIndex = int
+type ShaderLocationIndex -> int
 var .SHADER_LOC_VERTEX_POSITION int = 0
 var .SHADER_LOC_VERTEX_TEXCOORD01 int = 1
 var .SHADER_LOC_VERTEX_TEXCOORD02 int = 2
@@ -619,7 +619,7 @@ var .SHADER_LOC_MAP_IRRADIANCE int = 23
 var .SHADER_LOC_MAP_PREFILTER int = 24
 var .SHADER_LOC_MAP_BRDF int = 25
 
-type ShaderUniformDataType = int
+type ShaderUniformDataType -> int
 var .SHADER_UNIFORM_FLOAT int = 0
 var .SHADER_UNIFORM_VEC2 int = 1
 var .SHADER_UNIFORM_VEC3 int = 2
@@ -630,13 +630,13 @@ var .SHADER_UNIFORM_IVEC3 int = 6
 var .SHADER_UNIFORM_IVEC4 int = 7
 var .SHADER_UNIFORM_SAMPLER2D int = 8
 
-type ShaderAttributeDataType = int
+type ShaderAttributeDataType -> int
 var .SHADER_ATTRIB_FLOAT int = 0
 var .SHADER_ATTRIB_VEC2 int = 1
 var .SHADER_ATTRIB_VEC3 int = 2
 var .SHADER_ATTRIB_VEC4 int = 3
 
-type PixelFormat = int
+type PixelFormat -> int
 var .PIXELFORMAT_UNCOMPRESSED_GRAYSCALE int = 1
 var .PIXELFORMAT_UNCOMPRESSED_GRAY_ALPHA int = 2
 var .PIXELFORMAT_UNCOMPRESSED_R5G6B5 int = 3
@@ -662,7 +662,7 @@ var .PIXELFORMAT_COMPRESSED_PVRT_RGBA int = 22
 var .PIXELFORMAT_COMPRESSED_ASTC_4x4_RGBA int = 23
 var .PIXELFORMAT_COMPRESSED_ASTC_8x8_RGBA int = 24
 
-type TextureFilter = int
+type TextureFilter -> int
 var .TEXTURE_FILTER_POINT int = 0
 var .TEXTURE_FILTER_BILINEAR int = 1
 var .TEXTURE_FILTER_TRILINEAR int = 2
@@ -670,13 +670,13 @@ var .TEXTURE_FILTER_ANISOTROPIC_4X int = 3
 var .TEXTURE_FILTER_ANISOTROPIC_8X int = 4
 var .TEXTURE_FILTER_ANISOTROPIC_16X int = 5
 
-type TextureWrap = int
+type TextureWrap -> int
 var .TEXTURE_WRAP_REPEAT int = 0
 var .TEXTURE_WRAP_CLAMP int = 1
 var .TEXTURE_WRAP_MIRROR_REPEAT int = 2
 var .TEXTURE_WRAP_MIRROR_CLAMP int = 3
 
-type CubemapLayout = int
+type CubemapLayout -> int
 var .CUBEMAP_LAYOUT_AUTO_DETECT int = 0
 var .CUBEMAP_LAYOUT_LINE_VERTICAL int = 1
 var .CUBEMAP_LAYOUT_LINE_HORIZONTAL int = 2
@@ -684,12 +684,12 @@ var .CUBEMAP_LAYOUT_CROSS_THREE_BY_FOUR int = 3
 var .CUBEMAP_LAYOUT_CROSS_FOUR_BY_THREE int = 4
 var .CUBEMAP_LAYOUT_PANORAMA int = 5
 
-type FontType = int
+type FontType -> int
 var .FONT_DEFAULT int = 0
 var .FONT_BITMAP int = 1
 var .FONT_SDF int = 2
 
-type BlendMode = int
+type BlendMode -> int
 var .BLEND_ALPHA int = 0
 var .BLEND_ADDITIVE int = 1
 var .BLEND_MULTIPLIED int = 2
@@ -699,7 +699,7 @@ var .BLEND_ALPHA_PREMULTIPLY int = 5
 var .BLEND_CUSTOM int = 6
 var .BLEND_CUSTOM_SEPARATE int = 7
 
-type Gesture = int
+type Gesture -> int
 var .GESTURE_NONE int = 0
 var .GESTURE_TAP int = 1
 var .GESTURE_DOUBLETAP int = 2
@@ -712,31 +712,31 @@ var .GESTURE_SWIPE_DOWN int = 128
 var .GESTURE_PINCH_IN int = 256
 var .GESTURE_PINCH_OUT int = 512
 
-type CameraMode = int
+type CameraMode -> int
 var .CAMERA_CUSTOM int = 0
 var .CAMERA_FREE int = 1
 var .CAMERA_ORBITAL int = 2
 var .CAMERA_FIRST_PERSON int = 3
 var .CAMERA_THIRD_PERSON int = 4
 
-type CameraProjection = int
+type CameraProjection -> int
 var .CAMERA_PERSPECTIVE int = 0
 var .CAMERA_ORTHOGRAPHIC int = 1
 
-type NPatchLayout = int
+type NPatchLayout -> int
 var .NPATCH_NINE_PATCH int = 0
 var .NPATCH_THREE_PATCH_VERTICAL int = 1
 var .NPATCH_THREE_PATCH_HORIZONTAL int = 2
 
-type TraceLogCallback = *void
+type TraceLogCallback -> *void
 
-type LoadFileDataCallback = *void
+type LoadFileDataCallback -> *void
 
-type SaveFileDataCallback = *void
+type SaveFileDataCallback -> *void
 
-type LoadFileTextCallback = *void
+type LoadFileTextCallback -> *void
 
-type SaveFileTextCallback = *void
+type SaveFileTextCallback -> *void
 
 --func InitWindow(width int, height int, title *void) void
 func CloseWindow() void:
@@ -1706,7 +1706,7 @@ func GetRayCollisionTriangle(ray Ray, p1 Vector3, p2 Vector3, p3 Vector3) RayCol
     return lib.GetRayCollisionTriangle(ray, p1, p2, p3)
 func GetRayCollisionQuad(ray Ray, p1 Vector3, p2 Vector3, p3 Vector3, p4 Vector3) RayCollision:
     return lib.GetRayCollisionQuad(ray, p1, p2, p3, p4)
-type AudioCallback = *void
+type AudioCallback -> *void
 
 func InitAudioDevice() void:
     return lib.InitAudioDevice()
@@ -1844,7 +1844,7 @@ func DetachAudioMixedProcessor(processor *void) void:
 use os
 let .ffi = false
 let .lib = load()
-func load():
+func load() dyn:
     ffi = os.newFFI()
     ffi.cbind(Vector2_S, {symbol.float, symbol.float})
     ffi.cbind(Vector3_S, {symbol.float, symbol.float, symbol.float})
@@ -2438,7 +2438,7 @@ func load():
     return lib
 
 -- Macros
-var .GCC_HAVE_DWARF2_CFI_ASM int = 1
+var ._GCC_HAVE_DWARF2_CFI_ASM int = 1
 var .RAYLIB_VERSION_MAJOR int = 5
 var .RAYLIB_VERSION_MINOR int = 0
 var .RAYLIB_VERSION_PATCH int = 0

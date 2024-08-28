@@ -17,37 +17,37 @@ use Tex2D -> rl.Texture2D
 use Rect -> rl.Rectangle
 use Vec2 -> rl.Vector2
 
-let .screenWidth = 600
-let .screenHeight = 400
-let .score = 0
+var .screenWidth = 600
+var .screenHeight = 400
+var .score = 0
 
-let .CharIdleTex = false
-let .CharRunTex = false
-let .WeaponTex = false
-let .GoblinIdleTex = false
-let .GoblinRunTex = false
-let .SlimeIdleTex = false
-let .SlimeRunTex = false
+dyn .CharIdleTex = false
+dyn .CharRunTex = false
+dyn .WeaponTex = false
+dyn .GoblinIdleTex = false
+dyn .GoblinRunTex = false
+dyn .SlimeIdleTex = false
+dyn .SlimeRunTex = false
 
-let .viewPos = Vec2{x=0, y=0}
-let .mapScale = 4.0
-let .boundsMinX = 45.0 * mapScale
-let .boundsMinY = 45.0 * mapScale
-let .boundsMaxX = 700.0 * mapScale
-let .boundsMaxY = 700.0 * mapScale
-let .knight = false
-let .enemies = {_}
+var .viewPos = Vec2{x=0, y=0}
+var .mapScale = 4.0
+var .boundsMinX = 45.0 * mapScale
+var .boundsMinY = 45.0 * mapScale
+var .boundsMaxX = 700.0 * mapScale
+var .boundsMaxY = 700.0 * mapScale
+dyn .knight = false
+dyn .enemies = {_}
 
 -- Assumes script path is the second arg.
-let basePath = os.dirName(os.realPath(os.args()[1])).?
+var basePath = os.dirName(os.realPath(os.args()[1])).?
 
 rl.InitWindow(screenWidth, screenHeight, 'Clash Game')
 rl.SetTargetFPS(60)
 
-let rockTex = rl.LoadTexture("$(basePath)/nature_tileset/Rock.png")
-let logTex = rl.LoadTexture("$(basePath)/nature_tileset/Log.png")
+var rockTex = rl.LoadTexture("$(basePath)/nature_tileset/Rock.png")
+var logTex = rl.LoadTexture("$(basePath)/nature_tileset/Log.png")
 
-let mapTex = rl.LoadTexture("$(basePath)/nature_tileset/OpenWorldMap24x24.png")
+var mapTex = rl.LoadTexture("$(basePath)/nature_tileset/OpenWorldMap24x24.png")
 
 CharIdleTex = rl.LoadTexture("$(basePath)/characters/knight_idle_spritesheet.png")
 CharRunTex = rl.LoadTexture("$(basePath)/characters/knight_run_spritesheet.png")
@@ -60,7 +60,7 @@ GoblinRunTex = rl.LoadTexture("$(basePath)/characters/goblin_run_spritesheet.png
 SlimeIdleTex = rl.LoadTexture("$(basePath)/characters/slime_idle_spritesheet.png")
 SlimeRunTex = rl.LoadTexture("$(basePath)/characters/slime_run_spritesheet.png")
 
-let props = {
+var props = {
     Prop.new(Vec2{x=600, y=300}, rockTex),
     Prop.new(Vec2{x=400, y=500}, logTex),
 }
@@ -70,7 +70,7 @@ while !rl.WindowShouldClose():
     rl.BeginDrawing()
     rl.ClearBackground(rl.WHITE)
 
-    let knightPos = knight.base.getWorldPos()
+    var knightPos = knight.base.getWorldPos()
     viewPos = Vec2{x=knightPos.x - float(screenWidth/2), y=knightPos.y - float(screenHeight/2)}
     if viewPos.x < 0.0: viewPos.x = 0.0
     if viewPos.y < 0.0: viewPos.y = 0.0
@@ -122,8 +122,8 @@ while !rl.WindowShouldClose():
     rl.EndDrawing()
 rl.CloseWindow()
 
-let Character.new():
-    let o = Character{
+func Character.new() Character:
+    var o = Character{
         base = BaseCharacter.new(),
         weapon = WeaponTex,
         weaponCollideRect = Rect{x=0, y=0, width=0, height=0},
@@ -136,8 +136,8 @@ let Character.new():
     o.base.height = float(o.base.texture.height)
     return o
 
-let Character{base, weapon, weaponCollideRect, health}:
-    let tick(self, deltaTime):
+type Character(base dyn, weapon dyn, weaponCollideRect dyn, health dyn):
+    func tick(self, deltaTime dyn):
         if !self.base.getAlive(): return
 
         if rl.IsKeyDown(rl.KEY_A): self.base.velocity.x -= 1.0
@@ -146,12 +146,12 @@ let Character{base, weapon, weaponCollideRect, health}:
         if rl.IsKeyDown(rl.KEY_S): self.base.velocity.y += 1.0
         self.base.tick(deltaTime)
 
-    let render(self):
+    func render(self):
         self.base.render()
         -- Draw the sword
-        let origin = Vec2{x=0, y=0}
-        let offset = Vec2{x=0, y=0}
-        let rotation = 0.0
+        var origin = Vec2{x=0, y=0}
+        var offset = Vec2{x=0, y=0}
+        var rotation = 0.0
         if self.base.rightLeft > 0:
             origin = Vec2{x=0, y=float(self.weapon.height) * self.base.scale}
             offset = Vec2{x=35, y=55}
@@ -172,12 +172,12 @@ let Character{base, weapon, weaponCollideRect, health}:
                 height = float(self.weapon.height) * self.base.scale,
             }
             rotation = if (rl.IsMouseButtonDown(rl.MOUSE_LEFT_BUTTON)) -35.0 else 0.0
-        let source = Rect{x=0, y=0,
+        var source = Rect{x=0, y=0,
             width = float(self.weapon.width * self.base.rightLeft),
             height = float(self.weapon.height),
         }
-        let screenPos = Vec2.sub(self.base.worldPos, viewPos)
-        let dest = Rect{
+        var screenPos = Vec2.sub(self.base.worldPos, viewPos)
+        var dest = Rect{
             x = screenPos.x + offset.x,
             y = screenPos.y + offset.y,
             width = float(self.weapon.width) * self.base.scale,
@@ -185,16 +185,16 @@ let Character{base, weapon, weaponCollideRect, health}:
         }
         rl.DrawTexturePro(self.weapon, source, dest, origin, rotation, rl.WHITE)
 
-    let takeDamage(self, damage):
+    func takeDamage(self, damage dyn):
         self.health -= damage
         if self.health <= 0.0:
             self.base.setAlive(false)
 
-    let getHealth(self): return self.health
-    let getWeaponCollideRect(self): return self.weaponCollideRect
+    func getHealth(self) dyn: return self.health
+    func getWeaponCollideRect(self) dyn: return self.weaponCollideRect
 
 
-let BaseCharacter.new():
+func BaseCharacter.new() BaseCharacter:
     return BaseCharacter{
         worldPos = Vec2{x=0, y=0},
         velocity = Vec2{x=0, y=0},
@@ -214,32 +214,32 @@ let BaseCharacter.new():
         run = false,
     }
 
-let BaseCharacter{
-    worldPos, velocity, alive,
-    width, height, speed, scale,
+type BaseCharacter(
+    worldPos dyn, velocity dyn, alive dyn,
+    width dyn, height dyn, speed dyn, scale dyn,
 
     -- animation variables
-    runningTime, frame, maxFrames, updateTime,
+    runningTime dyn, frame dyn, maxFrames dyn, updateTime dyn,
 
     -- 1 : facing right, -1 : facing left
-    rightLeft,
+    rightLeft dyn,
 
-    worldPosLastFrame,
-    texture, idle, run }:
+    worldPosLastFrame dyn,
+    texture dyn, idle dyn, run dyn):
 
-    let getWorldPos(self):
+    func getWorldPos(self) dyn:
         return self.worldPos
 
-    let setAlive(self, isAlive):
+    func setAlive(self, isAlive bool):
         self.alive = isAlive
 
-    let getAlive(self):
+    func getAlive(self) bool:
         return self.alive
 
-    let undoMovement(self):
+    func undoMovement(self):
         self.worldPos = self.worldPosLastFrame
 
-    let tick(self, deltaTime):
+    func tick(self, deltaTime dyn):
         self.worldPosLastFrame = self.worldPos
 
         -- update animation frame
@@ -269,16 +269,16 @@ let BaseCharacter{
         self.velocity.x = 0.0
         self.velocity.y = 0.0
 
-    let render(self):
+    func render(self):
         if !self.alive: return
-        let source = Rect{x=float(self.frame) * self.width, y=0.0, width=float(self.rightLeft) * self.width, height=self.height}
+        var source = Rect{x=float(self.frame) * self.width, y=0.0, width=float(self.rightLeft) * self.width, height=self.height}
 
-        let screenPos = Vec2.sub(self.worldPos, viewPos)
-        let dest = Rect{x=screenPos.x, y=screenPos.y,
+        var screenPos = Vec2.sub(self.worldPos, viewPos)
+        var dest = Rect{x=screenPos.x, y=screenPos.y,
             width = self.scale * self.width, height = self.scale * self.height}
         rl.DrawTexturePro(self.texture, source, dest, Vec2{x=0, y=0}, 0, rl.WHITE)
 
-    let getCollideRect(self):
+    func getCollideRect(self) Rect:
         return Rect{
             x = self.worldPos.x,
             y = self.worldPos.y,
@@ -286,15 +286,15 @@ let BaseCharacter{
             height = self.height * self.scale,
         }
 
-let Prop.new(pos, tex):
+func Prop.new(pos dyn, tex dyn) Prop:
     return Prop{worldPos=pos, texture=tex, scale=4.0}
 
-let Prop{worldPos, texture, scale}:
-    let render(self):
-        let screenPos = Vec2.sub(self.worldPos, viewPos)
+type Prop(worldPos dyn, texture dyn, scale dyn):
+    func render(self):
+        var screenPos = Vec2.sub(self.worldPos, viewPos)
         rl.DrawTextureEx(self.texture, screenPos, 0.0, self.scale, rl.WHITE)
 
-    let getCollideRect(self):
+    func getCollideRect(self) Rect:
         return Rect{
             x = self.worldPos.x,
             y = self.worldPos.y,
@@ -302,8 +302,8 @@ let Prop{worldPos, texture, scale}:
             height = float(self.texture.height) * self.scale,
         }
 
-let Enemy.new(pos, idleTex, runTex):
-    let o = Enemy{
+func Enemy.new(pos dyn, idleTex dyn, runTex dyn) Enemy:
+    var o = Enemy{
         base = BaseCharacter.new(),
         damagePerSec = 10.0,
         radius = 25.0,
@@ -317,8 +317,8 @@ let Enemy.new(pos, idleTex, runTex):
     o.base.speed = 3.5
     return o
 
-let Enemy{base, target, damagePerSec, radius}:
-    let tick(self, deltaTime):
+type Enemy(base dyn, target dyn, damagePerSec dyn, radius dyn):
+    func tick(self, deltaTime dyn):
         if !self.base.getAlive(): return
 
         -- get toTarget
@@ -329,17 +329,17 @@ let Enemy{base, target, damagePerSec, radius}:
         if rl.CheckCollisionRecs(self.target.base.getCollideRect(), self.base.getCollideRect()):
             self.target.takeDamage(self.damagePerSec * deltaTime)
 
-    let setTarget(self, char):
+    func setTarget(self, char dyn):
         self.target = char
 
-    let getScreenPos(self):
+    func getScreenPos(self) Vec2:
         return Vec2.sub(self.base.worldPos, self.target.base.getWorldPos())
 
-let spawnRandomEnemy(target):
-    let x = float(rl.GetRandomValue(int(boundsMinX), int(boundsMaxX)))
-    let y = float(rl.GetRandomValue(int(boundsMinY), int(boundsMaxY)))
-    let creature = rl.GetRandomValue(0, 1)
-    let enemy = false
+func spawnRandomEnemy(target dyn):
+    var x = float(rl.GetRandomValue(int(boundsMinX), int(boundsMaxX)))
+    var y = float(rl.GetRandomValue(int(boundsMinY), int(boundsMaxY)))
+    var creature = rl.GetRandomValue(0, 1)
+    dyn enemy = false
     if creature == 0:
         enemy = Enemy.new(Vec2{x=x, y=y}, GoblinIdleTex, GoblinRunTex)
     else:
@@ -347,13 +347,13 @@ let spawnRandomEnemy(target):
     enemy.setTarget(target)
     enemies.append(enemy)
 
-let removeEnemy(enemy):
+func removeEnemy(enemy Enemy):
     for enemies -> it, i:
         if it == enemy:
             enemies.remove(i)
             break
 
-let InitGame():
+func InitGame():
     knight = Character.new()
     knight.base.worldPos.x = float(rl.GetRandomValue(int(boundsMinX), int(boundsMaxX)))
     knight.base.worldPos.y = float(rl.GetRandomValue(int(boundsMinY), int(boundsMaxY)))

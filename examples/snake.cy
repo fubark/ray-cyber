@@ -7,30 +7,30 @@ use os
 use rl '../mod.cy'
 use Vec2 -> rl.Vector2
 
-let .SNAKE_LENGTH = 256
-let .SQUARE_SIZE = 31
+var .SNAKE_LENGTH = 256
+var .SQUARE_SIZE = 31
 
-let Snake{pos, size, speed, color}
-let Food{pos, size, active, color}
+type Snake(pos Vec2, size Vec2, speed Vec2, color rl.Color)
+type Food(pos Vec2, size Vec2, active bool, color rl.Color)
 
-let .screenWidth = 800
-let .screenHeight = 450
+var .screenWidth = 800
+var .screenHeight = 450
 
-let .framesCounter = 0
-let .gameOver = false
-let .pause = false
+var .framesCounter = 0
+var .gameOver = false
+var .pause = false
 
-let .fruit = Food{}
-let .snake = List.fill(Snake{}, SNAKE_LENGTH as int)
-let .snakePosition = List.fill(Vec2{}, SNAKE_LENGTH as int)
-let .allowMove = false
-let .offset = Vec2{x=0, y=0}
-let .counterTail = 0
+var .fruit = Food{}
+var .snake = List.fill(Snake{}, SNAKE_LENGTH as int)
+var .snakePosition = List.fill(Vec2{}, SNAKE_LENGTH as int)
+var .allowMove = false
+var .offset = Vec2{x=0, y=0}
+var .counterTail = 0
 
 -- Invoke main.
 main()
 
-let main():
+func main():
     rl.InitWindow(screenWidth, screenHeight, 'classic game: snake')
     InitGame()
     rl.SetTargetFPS(60)
@@ -48,7 +48,7 @@ let main():
     rl.CloseWindow()
 
 -- Initialize game variables
-let InitGame():
+func InitGame():
     framesCounter = 0
     gameOver = false
     pause = false
@@ -76,7 +76,7 @@ let InitGame():
     fruit.color = rl.SKYBLUE
     fruit.active = false
 
-let UpdateGame():
+func UpdateGame():
     if gameOver:
         if rl.IsKeyPressed(rl.KEY_ENTER):
             InitGame()
@@ -140,7 +140,7 @@ let UpdateGame():
                 x = float(rl.GetRandomValue(0, screenWidth/SQUARE_SIZE - 1) * SQUARE_SIZE) + offset.x/2.0,
                 y = float(rl.GetRandomValue(0, screenHeight/SQUARE_SIZE - 1) * SQUARE_SIZE) + offset.y/2.0,
             }
-            let hit = false
+            var hit = false
             for 0..counterTail -> i:
                 if fruit.pos.x == snake[i].pos.x and fruit.pos.y == snake[i].pos.y:
                     hit = true
@@ -159,7 +159,7 @@ let UpdateGame():
 
     framesCounter += 1
 
-let DrawGame():
+func DrawGame():
     rl.BeginDrawing()
     rl.ClearBackground(rl.RAYWHITE)
 
@@ -177,7 +177,7 @@ let DrawGame():
 
         -- Draw snake
         for 0..counterTail -> i:
-            let snakei = snake[i]
+            var snakei = snake[i]
             rl.DrawRectangleV(snakei.pos, snakei.size, snakei.color)
 
         -- Draw fruit to pick
@@ -190,6 +190,6 @@ let DrawGame():
 
     rl.EndDrawing()
 
-let UnloadGame():
+func UnloadGame():
     -- TODO: Unload all dynamic loaded data (textures, sounds, models...)
     pass

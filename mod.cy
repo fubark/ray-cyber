@@ -1842,8 +1842,8 @@ func DetachAudioMixedProcessor(processor *void) void:
     return lib.DetachAudioMixedProcessor(processor)
 
 use os
-let .ffi = false
-let .lib = load()
+dyn .ffi = false
+dyn .lib = load()
 func load() dyn:
     ffi = os.newFFI()
     ffi.cbind(Vector2_S, {symbol.float, symbol.float})
@@ -2434,7 +2434,7 @@ func load() dyn:
     ffi.cfunc('DetachAudioStreamProcessor', {AudioStream, symbol.voidPtr}, symbol.void)
     ffi.cfunc('AttachAudioMixedProcessor', {symbol.voidPtr}, symbol.void)
     ffi.cfunc('DetachAudioMixedProcessor', {symbol.voidPtr}, symbol.void)
-    let lib = ffi.bindLib(Option[String].some(libPath), {gen_table=false})
+    dyn lib = ffi.bindLib(Option[String].some(libPath), {gen_table=false})
     return lib
 
 -- Macros

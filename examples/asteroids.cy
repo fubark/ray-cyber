@@ -9,52 +9,52 @@ use math
 use rl '../mod.cy'
 
 -- Types and Structures Definition
-let Player{ position, speed, acceleration,
-    rotation, collider, color }
+type Player(position Vec2, speed Vec2, acceleration float,
+    rotation float, collider Vec3, color rl.Color)
 
-let Shoot{ position, speed, radius,
-    rotation, lifeSpawn, active, color }
+type Shoot(position Vec2, speed Vec2, radius float,
+    rotation float, lifeSpawn int, active bool, color rl.Color)
 
-let Meteor{ position, speed, radius, active, color }
+type Meteor(position Vec2, speed Vec2, radius float, active bool, color rl.Color)
 
 use Vec2 -> rl.Vector2
 use Vec3 -> rl.Vector3
 
 -- Global Variables Declaration
-let .screenWidth = 800
-let .screenHeight = 450
+var .screenWidth = 800
+var .screenHeight = 450
 
 -- Some Constants
-let .PLAYER_BASE_SIZE = 20.0
-let .PLAYER_SPEED = 6.0
-let .PLAYER_MAX_SHOOTS = 10
+var .PLAYER_BASE_SIZE = 20.0
+var .PLAYER_SPEED = 6.0
+var .PLAYER_MAX_SHOOTS = 10
 
-let .METEORS_SPEED = 2.0
-let .MAX_BIG_METEORS = 4
-let .MAX_MEDIUM_METEORS = 8
-let .MAX_SMALL_METEORS = 16
+var .METEORS_SPEED = 2.0
+var .MAX_BIG_METEORS = 4
+var .MAX_MEDIUM_METEORS = 8
+var .MAX_SMALL_METEORS = 16
 
-let .gameOver = false
-let .pause = false
-let .victory = false
+var .gameOver = false
+var .pause = false
+var .victory = false
 
 -- NOTE: Defined triangle is isosceles with common angles of 70 degrees.
-let .shipHeight = 0.0
+var .shipHeight = 0.0
 
-let .player = Player{}
-let .shoot = List.fill(Shoot{}, PLAYER_MAX_SHOOTS as int)
-let .bigMeteor = List.fill(Meteor{}, MAX_BIG_METEORS as int)
-let .mediumMeteor = List.fill(Meteor{}, MAX_MEDIUM_METEORS as int)
-let .smallMeteor = List.fill(Meteor{}, MAX_SMALL_METEORS as int)
+var .player = Player{}
+var .shoot = List.fill(Shoot{}, PLAYER_MAX_SHOOTS as int)
+var .bigMeteor = List.fill(Meteor{}, MAX_BIG_METEORS as int)
+var .mediumMeteor = List.fill(Meteor{}, MAX_MEDIUM_METEORS as int)
+var .smallMeteor = List.fill(Meteor{}, MAX_SMALL_METEORS as int)
 
-let .midMeteorsCount = 0
-let .smallMeteorsCount = 0
-let .destroyedMeteorsCount = 0
+var .midMeteorsCount = 0
+var .smallMeteorsCount = 0
+var .destroyedMeteorsCount = 0
 
 -- Program main entry point
 main()
 
-let main():
+func main():
     -- Initialization (Note windowTitle is unused on Android)
     rl.InitWindow(screenWidth, screenHeight, 'classic game: asteroids')
     InitGame()
@@ -71,12 +71,12 @@ let main():
     rl.CloseWindow()    -- Close window and OpenGL context
 
 -- Initialize game variables
-let InitGame():
-    let posx = 0.0
-    let posy = 0.0
-    let velx = 0.0
-    let vely = 0.0
-    let correctRange = false
+func InitGame():
+    var posx = 0.0
+    var posy = 0.0
+    var velx = 0.0
+    var vely = 0.0
+    var correctRange = false
     victory = false
     pause = false
 
@@ -157,7 +157,7 @@ let InitGame():
     smallMeteorsCount = 0
 
 -- Update game (one frame)
-let UpdateGame():
+func UpdateGame():
     if gameOver:
         if rl.IsKeyPressed(rl.KEY_ENTER):
             InitGame()
@@ -256,21 +256,21 @@ let UpdateGame():
     }
 
     for 0..MAX_BIG_METEORS -> a:
-        let meteor = bigMeteor[a]
+        var meteor = bigMeteor[a]
         if rl.CheckCollisionCircles(
             Vec2{x=player.collider.x, y=player.collider.y}, player.collider.z,
             meteor.position, meteor.radius) and meteor.active:
             gameOver = true
 
     for 0..MAX_MEDIUM_METEORS -> a:
-        let meteor = mediumMeteor[a]
+        var meteor = mediumMeteor[a]
         if rl.CheckCollisionCircles(
             Vec2{x=player.collider.x, y=player.collider.y}, player.collider.z,
             meteor.position, meteor.radius) and meteor.active:
             gameOver = true
 
     for 0..MAX_SMALL_METEORS -> a:
-        let meteor = smallMeteor[a]
+        var meteor = smallMeteor[a]
         if rl.CheckCollisionCircles(
             Vec2{x=player.collider.x, y=player.collider.y}, player.collider.z,
             meteor.position, meteor.radius) and meteor.active:
@@ -329,10 +329,10 @@ let UpdateGame():
 
     -- Collision logic: player-shoots vs meteors
     for 0..PLAYER_MAX_SHOOTS -> i:
-        let shooti = shoot[i]
+        var shooti = shoot[i]
         if shooti.active:
             for 0..MAX_BIG_METEORS -> a:
-                let meteor = bigMeteor[a]
+                var meteor = bigMeteor[a]
                 if meteor.active and rl.CheckCollisionCircles(shooti.position, shooti.radius, meteor.position, meteor.radius):
                     shooti.active = false
                     shooti.lifeSpawn = 0
@@ -364,7 +364,7 @@ let UpdateGame():
                     break
 
             for 0..MAX_MEDIUM_METEORS -> b:
-                let meteor = mediumMeteor[b]
+                var meteor = mediumMeteor[b]
                 if meteor.active and rl.CheckCollisionCircles(shooti.position, shooti.radius, meteor.position, meteor.radius):
                     shooti.active = false
                     shooti.lifeSpawn = 0
@@ -396,7 +396,7 @@ let UpdateGame():
                     break
 
             for 0..MAX_SMALL_METEORS -> c:
-                let meteor = smallMeteor[c]
+                var meteor = smallMeteor[c]
                 if meteor.active and rl.CheckCollisionCircles(shooti.position, shooti.radius, meteor.position, meteor.radius):
                     shooti.active = false
                     shooti.lifeSpawn = 0
@@ -410,21 +410,21 @@ let UpdateGame():
         victory = true
 
 -- Draw game (one frame)
-let DrawGame():
+func DrawGame():
     rl.BeginDrawing()
     rl.ClearBackground(rl.RAYWHITE)
 
     if !gameOver:
         -- Draw spaceship
-        let v1 = Vec2{
+        var v1 = Vec2{
             x = player.position.x + math.sin(player.rotation*rl.DEG2RAD)*(shipHeight),
             y = player.position.y - math.cos(player.rotation*rl.DEG2RAD)*(shipHeight),
         }
-        let v2 = Vec2{
+        var v2 = Vec2{
             x = player.position.x - math.cos(player.rotation*rl.DEG2RAD)*(PLAYER_BASE_SIZE/2.0),
             y = player.position.y - math.sin(player.rotation*rl.DEG2RAD)*(PLAYER_BASE_SIZE/2.0),
         }
-        let v3 = Vec2{
+        var v3 = Vec2{
             x = player.position.x + math.cos(player.rotation*rl.DEG2RAD)*(PLAYER_BASE_SIZE/2.0),
             y = player.position.y + math.sin(player.rotation*rl.DEG2RAD)*(PLAYER_BASE_SIZE/2.0),
         }
@@ -432,21 +432,21 @@ let DrawGame():
 
         -- Draw meteors
         for 0..MAX_BIG_METEORS -> i:
-            let meteor = bigMeteor[i]
+            var meteor = bigMeteor[i]
             if meteor.active:
                 rl.DrawCircleV(meteor.position, meteor.radius, rl.DARKGRAY)
             else:
                 rl.DrawCircleV(meteor.position, meteor.radius, rl.Fade(rl.LIGHTGRAY, 0.3))
 
         for 0..MAX_MEDIUM_METEORS -> i:
-            let meteor = mediumMeteor[i]
+            var meteor = mediumMeteor[i]
             if meteor.active:
                 rl.DrawCircleV(meteor.position, meteor.radius, rl.GRAY)
             else:
                 rl.DrawCircleV(meteor.position, meteor.radius, rl.Fade(rl.LIGHTGRAY, 0.3))
 
         for 0..MAX_SMALL_METEORS -> i:
-            let meteor = smallMeteor[i]
+            var meteor = smallMeteor[i]
             if meteor.active:
                 rl.DrawCircleV(meteor.position, meteor.radius, rl.GRAY)
             else:
@@ -454,7 +454,7 @@ let DrawGame():
 
         -- Draw shoot
         for 0..PLAYER_MAX_SHOOTS -> i:
-            let shooti = shoot[i]
+            var shooti = shoot[i]
             if shooti.active:
                 rl.DrawCircleV(shooti.position, shooti.radius, rl.BLACK)
 
@@ -468,11 +468,11 @@ let DrawGame():
     rl.EndDrawing()
 
 -- Unload game variables
-let UnloadGame():
+func UnloadGame():
     -- TODO: Unload all dynamic loaded data (textures, sounds, models...)
     pass
 
 -- Update and Draw (one frame)
-let UpdateDrawFrame():
+func UpdateDrawFrame():
     UpdateGame()
     DrawGame()

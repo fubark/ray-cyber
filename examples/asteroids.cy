@@ -9,13 +9,13 @@ use math
 use rl '../mod.cy'
 
 -- Types and Structures Definition
-type Player(position Vec2, speed Vec2, acceleration float,
+type Player(position, speed Vec2, acceleration float,
     rotation float, collider Vec3, color rl.Color)
 
-type Shoot(position Vec2, speed Vec2, radius float,
+type Shoot(position, speed Vec2, radius float,
     rotation float, lifeSpawn int, active bool, color rl.Color)
 
-type Meteor(position Vec2, speed Vec2, radius float, active bool, color rl.Color)
+type Meteor(position, speed Vec2, radius float, active bool, color rl.Color)
 
 use Vec2 -> rl.Vector2
 use Vec3 -> rl.Vector3

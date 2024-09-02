@@ -10,8 +10,8 @@ use Vec2 -> rl.Vector2
 var .SNAKE_LENGTH = 256
 var .SQUARE_SIZE = 31
 
-type Snake(pos Vec2, size Vec2, speed Vec2, color rl.Color)
-type Food(pos Vec2, size Vec2, active bool, color rl.Color)
+type Snake(pos, size, speed Vec2, color rl.Color)
+type Food(pos, size Vec2, active bool, color rl.Color)
 
 var .screenWidth = 800
 var .screenHeight = 450

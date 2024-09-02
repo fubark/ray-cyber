@@ -136,7 +136,7 @@ func Character.new() Character:
     o.base.height = float(o.base.texture.height)
     return o
 
-type Character(base dyn, weapon dyn, weaponCollideRect dyn, health dyn):
+type Character(base, weapon, weaponCollideRect, health dyn):
     func tick(self, deltaTime dyn):
         if !self.base.getAlive(): return
 
@@ -215,17 +215,17 @@ func BaseCharacter.new() BaseCharacter:
     }
 
 type BaseCharacter(
-    worldPos dyn, velocity dyn, alive dyn,
-    width dyn, height dyn, speed dyn, scale dyn,
+    worldPos, velocity, alive,
+    width, height, speed, scale,
 
     -- animation variables
-    runningTime dyn, frame dyn, maxFrames dyn, updateTime dyn,
+    runningTime, frame, maxFrames, updateTime,
 
     -- 1 : facing right, -1 : facing left
-    rightLeft dyn,
+    rightLeft,
 
-    worldPosLastFrame dyn,
-    texture dyn, idle dyn, run dyn):
+    worldPosLastFrame,
+    texture, idle, run dyn):
 
     func getWorldPos(self) dyn:
         return self.worldPos
@@ -286,10 +286,10 @@ type BaseCharacter(
             height = self.height * self.scale,
         }
 
-func Prop.new(pos dyn, tex dyn) Prop:
+func Prop.new(pos, tex dyn) Prop:
     return Prop{worldPos=pos, texture=tex, scale=4.0}
 
-type Prop(worldPos dyn, texture dyn, scale dyn):
+type Prop(worldPos, texture, scale dyn):
     func render(self):
         var screenPos = Vec2.sub(self.worldPos, viewPos)
         rl.DrawTextureEx(self.texture, screenPos, 0.0, self.scale, rl.WHITE)
@@ -302,7 +302,7 @@ type Prop(worldPos dyn, texture dyn, scale dyn):
             height = float(self.texture.height) * self.scale,
         }
 
-func Enemy.new(pos dyn, idleTex dyn, runTex dyn) Enemy:
+func Enemy.new(pos, idleTex, runTex dyn) Enemy:
     var o = Enemy{
         base = BaseCharacter.new(),
         damagePerSec = 10.0,
@@ -317,7 +317,7 @@ func Enemy.new(pos dyn, idleTex dyn, runTex dyn) Enemy:
     o.base.speed = 3.5
     return o
 
-type Enemy(base dyn, target dyn, damagePerSec dyn, radius dyn):
+type Enemy(base, target, damagePerSec, radius dyn):
     func tick(self, deltaTime dyn):
         if !self.base.getAlive(): return
 
